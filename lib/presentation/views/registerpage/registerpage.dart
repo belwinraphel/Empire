@@ -1,15 +1,20 @@
+import 'dart:io';
+
 import 'package:empire/core/utilis/commonvalidator.dart';
- 
+
 import 'package:empire/presentation/views/loginpage/widget.dart';
 import 'package:empire/presentation/views/otppage/otp_page.dart';
+import 'package:empire/presentation/views/registerpage/widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class Registerpage extends StatelessWidget {
   Registerpage({super.key});
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
-  final Usernamec_Controller = TextEditingController();
-  final mobile_Controller = TextEditingController();
-  final Email_Controller = TextEditingController();
+  final usernameController = TextEditingController();
+  final mobileController = TextEditingController();
+  final emailController = TextEditingController();
+  dynamic imageFile;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,12 +31,56 @@ class Registerpage extends StatelessWidget {
                   height: maxHeight / 7,
                 ),
                 const Headline(headlind: 'Sign Up'),
-                Profile(maxHeight: maxHeight),
+                GestureDetector(
+                  onTap: () async {
+                    imageFile =
+                        await ImagePickerHelper.showImagePicker(context);
+                    // setState(() {
+                    //   imageFile;
+                    // });
+                  },
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      CircleAvatar(
+                          backgroundColor:
+                              const Color.fromARGB(255, 229, 234, 236),
+                          radius: 70,
+                          backgroundImage: imageFile == null
+                              ? null
+                              : kIsWeb
+                                  ? NetworkImage(imageFile)
+                                  : FileImage(
+                                      File(imageFile),
+                                    ),
+                          child: imageFile == null
+                              ? const Icon(
+                                  Icons.person_2_rounded,
+                                  size: 100,
+                                  color: Colors.black,
+                                )
+                              : null),
+                      Positioned(
+                          left: 90,
+                          bottom: -0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 229, 234, 236),
+                                shape: BoxShape.circle,
+                                border: Border.all(width: 2)),
+                            child: const Icon(
+                              Icons.add,
+                              size: 30,
+                            ),
+                          )),
+                    ],
+                  ),
+                ),
                 SizedBox(
                   height: maxHeight / 22,
                 ),
                 LoginField(
-                  controller: Usernamec_Controller,
+                  controller: usernameController,
                   label: 'User name',
                   prefixican: Icons.person,
                   issmallScreen: issmallScreen,
@@ -42,7 +91,7 @@ class Registerpage extends StatelessWidget {
                 ),
                 SizedBox(height: maxHeight * 0.030),
                 LoginField(
-                  controller: Email_Controller,
+                  controller: emailController,
                   label: 'Email Address',
                   prefixican: Icons.email,
                   issmallScreen: issmallScreen,
@@ -53,7 +102,7 @@ class Registerpage extends StatelessWidget {
                 ),
                 SizedBox(height: maxHeight * 0.030),
                 LoginField(
-                  controller: mobile_Controller,
+                  controller: mobileController,
                   label: 'Mobile',
                   prefixican: Icons.phone_android_rounded,
                   issmallScreen: issmallScreen,
@@ -72,7 +121,7 @@ class Registerpage extends StatelessWidget {
                       Navigator.push(context, MaterialPageRoute(
                         builder: (context) {
                           return OtpPage(
-                              phoneNumber: mobile_Controller.text,
+                              phoneNumber: mobileController.text,
                               onOtpSubmit: (value) {},
                               onResend: () {},
                               onCancel: () {
@@ -80,7 +129,6 @@ class Registerpage extends StatelessWidget {
                               });
                         },
                       ));
-                      // if (formkey.currentState!.validate()) {}
                     },
                     maxwidth: maxwidth,
                     formKey: formkey),
