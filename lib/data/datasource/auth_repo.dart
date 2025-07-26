@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthRemoteDataSource {
@@ -41,24 +42,17 @@ class AuthRemoteDataSource {
     await _firebaseAuth.verifyPhoneNumber(
       phoneNumber: '+91${phone.toString()}',
       timeout: const Duration(seconds: 60),
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        await _firebaseAuth.signInWithCredential(credential);
-      },
+      verificationCompleted: (PhoneAuthCredential credential) async {},
       verificationFailed: (FirebaseAuthException e) {},
       codeSent: (String verid, int? resendToken) {
         verificationId = verid;
-        print('codesent$verificationId');
       },
-      codeAutoRetrievalTimeout: (String verid) {
-        verificationId = verid;
-        print('codeAutoRetrievalTimeout$verificationId');
-      },
+      codeAutoRetrievalTimeout: (String verid) {},
     );
   }
 
   Future<UserCredential> VerifyOTP(int Otp) async {
-    print('dfdfd$Otp');
-    final otp = '123456';
+    final otp = '${Otp}56';
     if (verificationId != null && otp.isNotEmpty) {
       try {
         final credential = PhoneAuthProvider.credential(
@@ -78,5 +72,48 @@ class AuthRemoteDataSource {
           code: 'auth/missing-verification',
           message: 'Verification ID or OTP is missing');
     }
+  }
+
+  Future<void> savePassword(
+    String newPasswordController,
+    String email,
+    String password,
+  ) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        throw Exception('No authenticated user found');
+      }
+
+      final password = newPasswordController.trim();
+
+      final credential = EmailAuthProvider.credential(
+        email: email,
+        password: password,
+      );
+      
+
+      try {
+        // Try linking email/password provider
+        await user.linkWithCredential(credential);
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'provider-already-linked') {
+          // Provider already linked, update password instead
+          await user.updatePassword(password);
+        } else {
+          print('Password setup failed: ${e.message}');
+        }
+      }
+    } catch (e) {
+      print('Password setup failed: ${e}');
+    }
+  }
+
+  Future<void> login(String email, String password) async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
   }
 }

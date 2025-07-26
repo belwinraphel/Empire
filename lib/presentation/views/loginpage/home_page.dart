@@ -1,7 +1,9 @@
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/commonvalidator.dart';
 import 'package:empire/core/utilis/fonts.dart';
-import 'package:empire/presentation/bloc/loginpage.dart';
+import 'package:empire/presentation/bloc/auth/login.dart';
+import 'package:empire/presentation/bloc/auth/loginpage.dart';
+
 import 'package:empire/presentation/views/homepage/home_page.dart';
 import 'package:empire/presentation/views/loginpage/widget.dart';
 import 'package:empire/presentation/views/registerpage/registerpage.dart';
@@ -10,7 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Loginpage extends StatelessWidget {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final Usernamec_Controller = TextEditingController();
+  final usernamec_Controller = TextEditingController();
   final Password_Controller = TextEditingController();
   bool isremberme = false;
   @override
@@ -47,13 +49,13 @@ class Loginpage extends StatelessWidget {
                       height: maxHeight / 7,
                     ),
                     LoginField(
-                      controller: Usernamec_Controller,
-                      label: 'User name',
+                      controller: usernamec_Controller,
+                      label: 'Email',
                       prefixican: Icons.person,
                       issmallScreen: issmallScreen,
                       maxwidth: issmallScreen ? maxwidth * 0.95 : 400,
                       validator: (value) {
-                        return Validators.validateUsername(value ?? "");
+                        return Validators.validateEmail(value ?? "");
                       },
                     ),
                     SizedBox(height: maxHeight * 0.030),
@@ -170,19 +172,32 @@ class Loginpage extends StatelessWidget {
                     const SizedBox(
                       height: 80,
                     ),
-                    Authbutton(
-                        name: 'Login',
-                        issmallScreen: issmallScreen,
-                        onPressed: () {
+                    BlocListener<LoginBloc, LoginState>(
+                      listener: (context, state) {
+                        if (state is LoginSucess) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('suceesfuly logined')));
                           Navigator.push(context, MaterialPageRoute(
                             builder: (context) {
-                              return HomePage();
+                              return const HomePage();
                             },
                           ));
-                          if (formKey.currentState!.validate()) {}
-                        },
-                        maxwidth: maxwidth,
-                        formKey: formKey),
+                        }
+                      },
+                      child: Authbutton(
+                          name: 'Login',
+                          issmallScreen: issmallScreen,
+                          onPressed: () {
+                            if (formKey.currentState!.validate()) {
+                              context.read<LoginBloc>().add(LogPresed(
+                                  usernamec_Controller.text,
+                                  Password_Controller.text));
+                            }
+                          },
+                          maxwidth: maxwidth,
+                          formKey: formKey),
+                    ),
                     const SizedBox(
                       height: 20,
                     ),

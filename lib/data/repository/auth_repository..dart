@@ -29,4 +29,19 @@ class AuthRepositoryImpl implements AuthRepository {
   Future verifyNumber(int number) async {
     return await remoteDataSource.verifyPhone(number);
   }
+
+  @override
+  Future<void> savePassword(
+    String newPasswordController,
+    String email,
+    String password,
+  ) async {
+    return await remoteDataSource.savePassword(
+        newPasswordController, email, password);
+  }
+
+  @override
+  Future<void> login(String name, String password) {
+    return remoteDataSource.login(name, password);
+  }
 }

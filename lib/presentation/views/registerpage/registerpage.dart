@@ -1,12 +1,14 @@
-import 'dart:io';
+import 'dart:math';
 
 import 'package:empire/core/utilis/commonvalidator.dart';
+import 'package:empire/presentation/bloc/auth/registerpage.dart';
 
 import 'package:empire/presentation/views/loginpage/widget.dart';
 import 'package:empire/presentation/views/otppage/otp_page.dart';
 import 'package:empire/presentation/views/registerpage/widget.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Registerpage extends StatelessWidget {
   Registerpage({super.key});
@@ -31,51 +33,7 @@ class Registerpage extends StatelessWidget {
                   height: maxHeight / 7,
                 ),
                 const Headline(headlind: 'Sign Up'),
-                GestureDetector(
-                  onTap: () async {
-                    imageFile =
-                        await ImagePickerHelper.showImagePicker(context);
-                    // setState(() {
-                    //   imageFile;
-                    // });
-                  },
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      CircleAvatar(
-                          backgroundColor:
-                              const Color.fromARGB(255, 229, 234, 236),
-                          radius: 70,
-                          backgroundImage: imageFile == null
-                              ? null
-                              : kIsWeb
-                                  ? NetworkImage(imageFile)
-                                  : FileImage(
-                                      File(imageFile),
-                                    ),
-                          child: imageFile == null
-                              ? const Icon(
-                                  Icons.person_2_rounded,
-                                  size: 100,
-                                  color: Colors.black,
-                                )
-                              : null),
-                      Positioned(
-                          left: 90,
-                          bottom: -0,
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 229, 234, 236),
-                                shape: BoxShape.circle,
-                                border: Border.all(width: 2)),
-                            child: const Icon(
-                              Icons.add,
-                              size: 30,
-                            ),
-                          )),
-                    ],
-                  ),
-                ),
+                const ProfileImage(),
                 SizedBox(
                   height: maxHeight / 22,
                 ),
@@ -97,7 +55,7 @@ class Registerpage extends StatelessWidget {
                   issmallScreen: issmallScreen,
                   maxwidth: issmallScreen ? maxwidth * 0.95 : 400,
                   validator: (value) {
-                    return Validators.validatePassword(value ?? "");
+                    return Validators.validateEmail(value ?? "");
                   },
                 ),
                 SizedBox(height: maxHeight * 0.030),
@@ -114,13 +72,16 @@ class Registerpage extends StatelessWidget {
                 const SizedBox(
                   height: 80,
                 ),
-                Authbutton(
-                    name: 'Continue',
-                    issmallScreen: issmallScreen,
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(
+                BlocListener<RegisterBloc, RegisterState>(
+                  listener: (context, state) {
+                    if (state is UserExist) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('already Registered')));
+                    } else if (state is NonExist) {
+                      Navigator.pushReplacement(context, MaterialPageRoute(
                         builder: (context) {
                           return OtpPage(
+                              email: emailController.text,
                               phoneNumber: mobileController.text,
                               onOtpSubmit: (value) {},
                               onResend: () {},
@@ -129,9 +90,25 @@ class Registerpage extends StatelessWidget {
                               });
                         },
                       ));
-                    },
-                    maxwidth: maxwidth,
-                    formKey: formkey),
+                    }
+                  },
+                  child: Authbutton(
+                      name: 'Continue',
+                      issmallScreen: issmallScreen,
+                      onPressed: () {
+                        if (formkey.currentState!.validate()) {
+                          context.read<RegisterBloc>().add(
+                                ChekingUserExistenceEvent(
+                                    email: emailController.text,
+                                    phone: int.parse(mobileController.text),
+                                    name: usernameController.text,
+                                    image: imageFile),
+                              );
+                        }
+                      },
+                      maxwidth: maxwidth,
+                      formKey: formkey),
+                ),
               ],
             ),
           );

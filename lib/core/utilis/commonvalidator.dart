@@ -44,4 +44,9 @@ class Validators {
     }
     return null;
   }
+   static String? validateRepeatPassword(String? password, String? repeatPassword) {
+    if (repeatPassword == null || repeatPassword.isEmpty) return 'Please confirm your password';
+    if (password != repeatPassword) return 'Passwords do not match';
+    return null;
+  }
 }
