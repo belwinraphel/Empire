@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
                 RegisterBloc(sl<CheckingUser>(), sl<VerifyNumber>())),
         BlocProvider<OtpBloc>(create: (_) => OtpBloc(sl<VerifyOtp>())),
         BlocProvider<SavePasswordBloc>(create: (_) => SavePasswordBloc(sl())),
-        BlocProvider<LoginBloc>(create: (_) => LoginBloc(sl())),
+        BlocProvider<LoginBloc>(create: (_) => LoginBloc(sl(),sl<SaveLoginStatus>())),
       ],
       child: MaterialApp(
         home: BlocBuilder<AuthBlocStatus, LoginStatusState>(

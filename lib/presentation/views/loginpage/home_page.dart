@@ -126,6 +126,9 @@ class Loginpage extends StatelessWidget {
                               return const HomePage();
                             },
                           ));
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Login Failed')));
                         }
                       },
                       builder: (context, state) {
@@ -183,6 +186,9 @@ class Loginpage extends StatelessWidget {
                               return const HomePage();
                             },
                           ));
+                        } else if (state is ErrorLogin) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Login Failed')));
                         }
                       },
                       child: Authbutton(
