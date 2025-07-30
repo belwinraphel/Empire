@@ -1,6 +1,6 @@
-import 'package:empire/domain/usecase/register.dart';
-import 'package:empire/domain/usecase/send_otp.dart';
-import 'package:empire/domain/usecase/verify_user.dart';
+ 
+import 'package:empire/domain/usecase/auth/register.dart';
+import 'package:empire/domain/usecase/auth/verify_user.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class RegisterEvent {}
@@ -21,6 +21,8 @@ abstract class RegisterState {}
 
 class ChekingInitial extends RegisterState {}
 
+class ChekingLoading extends RegisterState {}
+
 class CheckingUserState extends RegisterState {}
 
 class UserExist extends RegisterState {}
@@ -32,13 +34,14 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final VerifyNumber verifyNumber;
   RegisterBloc(this.checkingUser, this.verifyNumber) : super(ChekingInitial()) {
     on<ChekingUserExistenceEvent>((event, emit) async {
-      emit(CheckingUserState());
+      emit(ChekingLoading());
+
       final result = await checkingUser(
           email: event.email,
           mobile: event.phone,
           name: event.name,
           image: event.image);
-          
+
       if (result) {
         emit(UserExist());
       } else {

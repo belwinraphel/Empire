@@ -1,5 +1,6 @@
-import 'package:empire/domain/usecase/pick_image_camera.dart';
-import 'package:empire/domain/usecase/pick_image_gallery.dart';
+ 
+import 'package:empire/domain/usecase/auth/pick_image_camera.dart';
+import 'package:empire/domain/usecase/auth/pick_image_gallery.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class ImagePickerEvent {}

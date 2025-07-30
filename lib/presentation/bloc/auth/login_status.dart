@@ -1,4 +1,4 @@
-import 'package:empire/domain/usecase/Login_status_auth.dart';
+import 'package:empire/domain/usecase/auth/Login_status_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class LoginStatusevent {}
@@ -21,7 +21,7 @@ class AuthBlocStatus extends Bloc<CheckingLoginStatusevent, LoginStatusState> {
     on<CheckingLoginStatusevent>((event, emit) async {
       emit(LoadinglLoginStatusstate());
       final isloged = await checkLoginStatus();
-       
+
       if (isloged) {
         emit(SucessLoginStatusState());
       } else {

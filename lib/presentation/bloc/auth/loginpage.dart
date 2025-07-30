@@ -1,5 +1,6 @@
-import 'package:empire/domain/usecase/login_auth.dart';
-import 'package:empire/domain/usecase/save_login_status.dart';
+import 'package:empire/domain/usecase/auth/login_auth.dart';
+import 'package:empire/domain/usecase/auth/save_login_status.dart';
+ 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class GoogleLoginpageEvent {}
@@ -12,11 +13,17 @@ class GoogleLoginInitial extends GoogleLoginPageState {}
 
 class GoogleLoginSuceesstate extends GoogleLoginPageState {}
 
-class GoogleLoginFailureState extends GoogleLoginPageState {}
+class GoogleLoginFailureState extends GoogleLoginPageState {
+  String error;
+  GoogleLoginFailureState(this.error);
+}
+
+class GoogleLoginErrorState extends GoogleLoginPageState {
+  String error;
+  GoogleLoginErrorState(this.error);
+}
 
 class GoogleLoginLoadingState extends GoogleLoginPageState {}
-
- 
 
 class AuthBloc extends Bloc<GoogleLoginpageEvent, GoogleLoginPageState> {
   final SigningWithGoogle signingWithGoogle;
@@ -31,12 +38,11 @@ class AuthBloc extends Bloc<GoogleLoginpageEvent, GoogleLoginPageState> {
         if (user != null) {
           emit(GoogleLoginSuceesstate());
           await saveLoginStatus(true);
-          
         } else {
-          emit(GoogleLoginFailureState());
+          emit(GoogleLoginFailureState('Login Failed'));
         }
       } catch (e) {
-        emit(GoogleLoginFailureState());
+        emit(GoogleLoginErrorState(e.toString()));
       }
     });
   }

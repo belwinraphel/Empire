@@ -72,43 +72,46 @@ class Registerpage extends StatelessWidget {
                 const SizedBox(
                   height: 80,
                 ),
-                BlocListener<RegisterBloc, RegisterState>(
-                  listener: (context, state) {
-                    if (state is UserExist) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('already Registered')));
-                    } else if (state is NonExist) {
-                      Navigator.pushReplacement(context, MaterialPageRoute(
-                        builder: (context) {
-                          return OtpPage(
-                              email: emailController.text,
-                              phoneNumber: mobileController.text,
-                              onOtpSubmit: (value) {},
-                              onResend: () {},
-                              onCancel: () {
-                                Navigator.pop(context);
-                              });
-                        },
-                      ));
-                    }
-                  },
-                  child: Authbutton(
-                      name: 'Continue',
-                      issmallScreen: issmallScreen,
-                      onPressed: () {
-                        if (formkey.currentState!.validate()) {
-                          context.read<RegisterBloc>().add(
-                                ChekingUserExistenceEvent(
-                                    email: emailController.text,
-                                    phone: int.parse(mobileController.text),
-                                    name: usernameController.text,
-                                    image: imageFile),
-                              );
-                        }
+                BlocConsumer<RegisterBloc, RegisterState>(
+                    listener: (context, state) {
+                  if (state is UserExist) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('already Registered')));
+                  } else if (state is NonExist) {
+                    Navigator.pushReplacement(context, MaterialPageRoute(
+                      builder: (context) {
+                        return OtpPage(
+                            email: emailController.text,
+                            phoneNumber: mobileController.text,
+                            onOtpSubmit: (value) {},
+                            onResend: () {},
+                            onCancel: () {
+                              Navigator.pop(context);
+                            });
                       },
-                      maxwidth: maxwidth,
-                      formKey: formkey),
-                ),
+                    ));
+                  }
+                }, builder: (context, state) {
+                  final isloading = state is ChekingLoading;
+                  return isloading
+                      ? const CircularProgressIndicator()
+                      : Authbutton(
+                          name: 'Continue',
+                          issmallScreen: issmallScreen,
+                          onPressed: () {
+                            if (formkey.currentState!.validate()) {
+                              context.read<RegisterBloc>().add(
+                                    ChekingUserExistenceEvent(
+                                        email: emailController.text,
+                                        phone: int.parse(mobileController.text),
+                                        name: usernameController.text,
+                                        image: imageFile),
+                                  );
+                            }
+                          },
+                          maxwidth: maxwidth,
+                          formKey: formkey);
+                }),
               ],
             ),
           );

@@ -1,6 +1,10 @@
-import 'package:empire/domain/repositories/auth_repository.dart';
-import 'package:empire/domain/usecase/send_otp.dart';
-import 'package:empire/domain/usecase/verify_user.dart';
+import 'dart:async';
+import 'dart:io';
+
+import 'package:empire/domain/usecase/auth/send_otp.dart';
+ 
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class OtpVerifyEvent {}
@@ -27,15 +31,32 @@ class OtpBloc extends Bloc<OtpVerifyEvent, OtpVerifyState> {
   final VerifyOtp authRepository;
   OtpBloc(this.authRepository) : super(OtpInitial()) {
     on<VerifyOtps>((event, emit) async {
+      emit(OtpLoading());
+
       try {
-        final success = await authRepository(event.otp);
-        if (!success.user!.phoneNumber!.isEmpty) {
+        final result =
+            await authRepository(event.otp); // result = UserCredential?
+
+        final phoneNumber = result.user?.phoneNumber ?? '';
+
+        if (phoneNumber.isNotEmpty) {
           emit(VerifiedOtpVerifyState());
         } else {
-          emit(NotVerifiedOtpVerifyState(errorMessage: "Invalid OTP"));
+          emit(NotVerifiedOtpVerifyState(
+              errorMessage: "Invalid OTP. Try again."));
         }
+      } on SocketException {
+        emit(
+            NotVerifiedOtpVerifyState(errorMessage: "No internet connection."));
+      } on TimeoutException {
+        emit(NotVerifiedOtpVerifyState(
+            errorMessage: "Request timed out. Try again."));
+      } on FirebaseAuthException catch (e) {
+        emit(NotVerifiedOtpVerifyState(
+            errorMessage: e.message ?? "Firebase error occurred."));
       } catch (e) {
-        emit(NotVerifiedOtpVerifyState(errorMessage: e.toString()));
+        emit(NotVerifiedOtpVerifyState(
+            errorMessage: "Unexpected error: ${e.toString()}"));
       }
     });
   }

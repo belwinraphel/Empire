@@ -3,6 +3,7 @@ import 'package:empire/core/utilis/commonvalidator.dart';
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/presentation/bloc/auth/login.dart';
 import 'package:empire/presentation/bloc/auth/loginpage.dart';
+import 'package:empire/presentation/views/forgot/forgot_password_page.dart';
 
 import 'package:empire/presentation/views/homepage/home_page.dart';
 import 'package:empire/presentation/views/loginpage/widget.dart';
@@ -73,36 +74,56 @@ class Loginpage extends StatelessWidget {
                     const SizedBox(
                       height: 20,
                     ),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                            left: issmallScreen ? maxwidth * 0.0322 : maxwidth),
-                        child: Row(
-                          children: [
-                            Container(
-                              height: 18,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                  color: issmallScreen
-                                      ? Colors.black
-                                      : Colors.amber,
-                                  border: Border.all(color: Colors.black87),
-                                  borderRadius: BorderRadius.circular(4)),
-                            ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            const Text(
-                              'Remember me',
-                              style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: issmallScreen ? maxwidth * 0.0322 : 379,
+                          right: issmallScreen ? maxwidth * 0.0322 : 379),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                height: 15,
+                                width: 15,
+                                decoration: BoxDecoration(
+                                    color: issmallScreen
+                                        ? Colors.black
+                                        : Colors.amber,
+                                    border: Border.all(color: Colors.black87),
+                                    borderRadius: BorderRadius.circular(4)),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              const Text(
+                                'Remember me',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
                                   fontFamily: Fonts.raleway,
-                                  color: Colors.black),
-                            )
-                          ],
-                        ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (context) {
+                                  return ForgotPasswordPage();
+                                },
+                              ));
+                            },
+                            child: const Text(
+                              'Forgot Password',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: Fonts.raleway,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(
@@ -123,12 +144,15 @@ class Loginpage extends StatelessWidget {
                         if (state is GoogleLoginSuceesstate) {
                           Navigator.push(context, MaterialPageRoute(
                             builder: (context) {
-                              return const HomePage();
+                              return HomePage();
                             },
                           ));
-                        } else {
+                        } else if (state is GoogleLoginFailureState) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Login Failed')));
+                              const SnackBar(content: Text('Login Failed')));
+                        } else if (state is GoogleLoginErrorState) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(state.error)));
                         }
                       },
                       builder: (context, state) {
@@ -175,35 +199,43 @@ class Loginpage extends StatelessWidget {
                     const SizedBox(
                       height: 80,
                     ),
-                    BlocListener<LoginBloc, LoginState>(
-                      listener: (context, state) {
-                        if (state is LoginSucess) {
+                    BlocConsumer<LoginBloc, LoginState>(
+                        listener: (context, state) {
+                      if (state is LoginSucess) {
+                        if (ScaffoldMessenger.of(context).mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                  content: Text('suceesfuly logined')));
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (context) {
-                              return const HomePage();
-                            },
-                          ));
-                        } else if (state is ErrorLogin) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Login Failed')));
+                                  content: Text('Login Successful')));
                         }
-                      },
-                      child: Authbutton(
-                          name: 'Login',
-                          issmallScreen: issmallScreen,
-                          onPressed: () {
-                            if (formKey.currentState!.validate()) {
-                              context.read<LoginBloc>().add(LogPresed(
-                                  usernamec_Controller.text,
-                                  Password_Controller.text));
-                            }
+
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) {
+                            return HomePage();
                           },
-                          maxwidth: maxwidth,
-                          formKey: formKey),
-                    ),
+                        ));
+                      } else if (state is ErrorLogin) {
+                        if (ScaffoldMessenger.of(context).mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Login Failed')));
+                        }
+                      }
+                    }, builder: (context, state) {
+                      final isloading = state is LoginLoading;
+                      return isloading
+                          ? const CircularProgressIndicator()
+                          : Authbutton(
+                              name: 'Login',
+                              issmallScreen: issmallScreen,
+                              onPressed: () {
+                                if (formKey.currentState!.validate()) {
+                                  context.read<LoginBloc>().add(LogPresed(
+                                      usernamec_Controller.text,
+                                      Password_Controller.text));
+                                }
+                              },
+                              maxwidth: maxwidth,
+                              formKey: formKey);
+                    }),
                     const SizedBox(
                       height: 20,
                     ),

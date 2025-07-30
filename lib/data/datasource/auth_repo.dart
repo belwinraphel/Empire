@@ -53,6 +53,7 @@ class AuthRemoteDataSource {
 
   Future<UserCredential> VerifyOTP(int Otp) async {
     final otp = '${Otp}56';
+    print(verificationId);
     if (verificationId != null && otp.isNotEmpty) {
       try {
         final credential = PhoneAuthProvider.credential(
@@ -92,7 +93,6 @@ class AuthRemoteDataSource {
         email: email,
         password: password,
       );
-      
 
       try {
         // Try linking email/password provider
@@ -115,5 +115,15 @@ class AuthRemoteDataSource {
       email: email,
       password: password,
     );
+  }
+
+
+  Future<void> forgottPassword(String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      throw FirebaseAuthException(
+          code: 'auth/forgottMessange', message: e.toString());
+    }
   }
 }
