@@ -216,7 +216,7 @@ class Loginpage extends StatelessWidget {
                       } else if (state is ErrorLogin) {
                         if (ScaffoldMessenger.of(context).mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Login Failed')));
+                              SnackBar(content: Text(state.error)));
                         }
                       }
                     }, builder: (context, state) {

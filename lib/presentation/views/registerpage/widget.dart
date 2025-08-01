@@ -92,8 +92,7 @@ class ProfileIamge extends StatelessWidget {
             bottom: -0,
             child: Container(
               decoration: BoxDecoration(
-                  color:
-                      const Color.fromARGB(255, 229, 234, 236),
+                  color: const Color.fromARGB(255, 229, 234, 236),
                   shape: BoxShape.circle,
                   border: Border.all(width: 2)),
               child: const Icon(

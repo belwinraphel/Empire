@@ -1,4 +1,5 @@
 import 'package:empire/core/utilis/fonts.dart';
+import 'package:empire/presentation/views/updatProfile/update_profile.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -83,49 +84,77 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
 
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: paddingHorizontal),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 24),
-                        Text(
-                          'Personal',
-                          style: TextStyle(
-                            fontSize: sectionTitleFontSize,
-                            fontFamily: Fonts.ralewayExtraBold,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
+              SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: paddingHorizontal),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24),
+                      Text(
+                        'Personal',
+                        style: TextStyle(
+                          fontSize: sectionTitleFontSize,
+                          fontFamily: Fonts.ralewayExtraBold,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
-                        SizedBox(height: 16),
-                        _buildListItem('Profile', false, listItemFontSize),
-                        _buildListItem(
-                            'Shipping Address', false, listItemFontSize),
-                        _buildListItem(
-                            'Payment methods', true, listItemFontSize),
-                        SizedBox(height: 32),
-                        Text(
-                          'Shop',
-                          style: TextStyle(
-                            fontSize: sectionTitleFontSize,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: Fonts.ralewayExtraBold,
-                            color: Colors.black87,
+                      ),
+                      const SizedBox(height: 16),
+                      Column(
+                        children: [
+                          ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              'Profile',
+                              style: TextStyle(
+                                fontSize: listItemFontSize,
+                                fontFamily: Fonts.ralewaySemibold,
+                                color: const Color(0xFF374151),
+                              ),
+                            ),
+                            trailing: const Icon(
+                              Icons.chevron_right,
+                              color: Color(0xFF9CA3AF),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) {
+                                  return UpdateProfile();
+                                },
+                              ));
+                            },
                           ),
+                          const Divider(
+                            thickness: 1,
+                            color: Color.fromARGB(255, 232, 234, 236),
+                          ),
+                        ],
+                      ),
+                      _buildListItem(
+                          'Shipping Address', false, listItemFontSize),
+                      _buildListItem('Payment methods', true, listItemFontSize),
+                      const SizedBox(height: 32),
+                      Text(
+                        'Shop',
+                        style: TextStyle(
+                          fontSize: sectionTitleFontSize,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: Fonts.ralewayExtraBold,
+                          color: Colors.black87,
                         ),
-                        SizedBox(height: 16),
-                        _buildListItem('Country', false, listItemFontSize),
-                        _buildListItem('Currency', false, listItemFontSize),
-                        _buildListItem(
-                            'Terms and Conditions', false, listItemFontSize),
-                        _buildListItem('Log Out', true, listItemFontSize),
-                        const SizedBox(height: 100),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 16),
+                      GestureDetector(
+                          onTap: () {},
+                          child: _buildListItem(
+                              'Country', false, listItemFontSize)),
+                      _buildListItem('Currency', false, listItemFontSize),
+                      _buildListItem(
+                          'Terms and Conditions', false, listItemFontSize),
+                      _buildListItem('Log Out', true, listItemFontSize),
+                      const SizedBox(height: 100),
+                    ],
                   ),
                 ),
               ),

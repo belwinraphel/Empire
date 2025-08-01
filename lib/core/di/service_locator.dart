@@ -1,14 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:empire/core/utilis/device_info.dart';
 import 'package:empire/data/datasource/auth_repo.dart';
 import 'package:empire/data/datasource/checking_login_status.dart';
 import 'package:empire/data/datasource/image_profile.dart';
+import 'package:empire/data/datasource/local_repository.dart';
 import 'package:empire/data/datasource/register.dart';
 import 'package:empire/data/repository/auth_repository..dart';
 import 'package:empire/data/repository/image_profile.dart';
+import 'package:empire/data/repository/local_repository.dart';
 import 'package:empire/data/repository/login_status.dart';
 import 'package:empire/data/repository/register.dart';
 import 'package:empire/domain/repositories/auth_repository.dart';
 import 'package:empire/domain/repositories/image_profile.dart';
+import 'package:empire/domain/repositories/local_auth.dart';
 import 'package:empire/domain/repositories/login_status_auth.dart';
 import 'package:empire/domain/repositories/register.dart';
 import 'package:empire/domain/usecase/auth/Login_status_auth.dart';
@@ -32,9 +36,15 @@ final sl = GetIt.instance;
 Future<void> init() async {
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => GoogleSignIn());
+  sl.registerLazySingleton(() => FirebaseFirestore.instance);
   sl.registerLazySingleton(() => SigningWithGoogle(sl()));
-  sl.registerLazySingletonAsync(() => SharedPreferences.getInstance());
-  sl.registerLazySingleton(() => AuthRemoteDataSource(sl(), sl()));
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
+  sl.registerLazySingleton(() => AuthRemoteDataSource(
+        sl(),
+        sl(),
+        sl(),
+      ));
 
   sl.registerLazySingleton(() => AuthCheckingLoginStatus());
 
@@ -69,4 +79,14 @@ Future<void> init() async {
 
   ///forgotPassword//
   sl.registerLazySingleton(() => ForgotPassword(sl()));
+  /////locak
+  ///
+  sl.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSourceImpl(sl()),
+  );
+
+  //local
+  sl.registerLazySingleton<LocalRepositoryImapli>(
+    () => LocalRepositoryImapli(sl<SharedPreferences>()),
+  );
 }

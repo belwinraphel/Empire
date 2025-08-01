@@ -7,12 +7,15 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 class OtpPage extends StatelessWidget {
   final String email;
   final String phoneNumber;
+   final String name;
+  
   final void Function(String) onOtpSubmit;
   final VoidCallback onResend;
   final VoidCallback onCancel;
 
   OtpPage(
       {super.key,
+      required this.name,
       required this.phoneNumber,
       required this.onOtpSubmit,
       required this.onResend,
@@ -109,6 +112,8 @@ class OtpPage extends StatelessWidget {
                     Navigator.push(context, MaterialPageRoute(
                       builder: (context) {
                         return Password(
+                          name: name,
+                          phoneNumber: phoneNumber,
                           email: email,
                         );
                       },

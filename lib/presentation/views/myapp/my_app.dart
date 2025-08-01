@@ -1,4 +1,6 @@
 import 'package:empire/core/di/service_locator.dart';
+import 'package:empire/domain/repositories/auth_repository.dart';
+import 'package:empire/domain/repositories/local_auth.dart';
 import 'package:empire/domain/usecase/auth/Login_status_auth.dart';
 import 'package:empire/domain/usecase/auth/forgot_password.dart';
 import 'package:empire/domain/usecase/auth/login_auth.dart';
@@ -48,7 +50,8 @@ class MyApp extends StatelessWidget {
         BlocProvider<OtpBloc>(create: (_) => OtpBloc(sl<VerifyOtp>())),
         BlocProvider<SavePasswordBloc>(create: (_) => SavePasswordBloc(sl())),
         BlocProvider<LoginBloc>(
-            create: (_) => LoginBloc(sl(), sl<SaveLoginStatus>())),
+            create: (_) => LoginBloc(sl(), sl<SaveLoginStatus>(),
+                sl<AuthRepository>(), sl<AuthLocalDataSource>())),
         BlocProvider<ForgotPasswordClickBloc>(
             create: (_) => ForgotPasswordClickBloc(sl<ForgotPassword>())),
       ],

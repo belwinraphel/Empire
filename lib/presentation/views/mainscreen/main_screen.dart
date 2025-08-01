@@ -1,11 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:empire/presentation/views/cart/cart_page.dart';
 import 'package:empire/presentation/views/category/category_page.dart';
 import 'package:empire/presentation/views/favourites/favourite_page.dart';
 import 'package:empire/presentation/views/homepage/home_page.dart';
 import 'package:empire/presentation/views/profile/profile_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class MainScreen extends StatefulWidget {
   MainScreen({super.key});

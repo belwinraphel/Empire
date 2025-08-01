@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:empire/core/utilis/device_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
@@ -6,8 +8,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 class AuthRemoteDataSource {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
+  final FirebaseFirestore _firestore;
 
-  AuthRemoteDataSource(this._firebaseAuth, this._googleSignIn);
+  AuthRemoteDataSource(this._firebaseAuth, this._googleSignIn, this._firestore);
   String? verificationId;
   Future<User?> signInWithGoogle() async {
     try {
@@ -75,48 +78,53 @@ class AuthRemoteDataSource {
     }
   }
 
-  Future<void> savePassword(
-    String newPasswordController,
-    String email,
-    String password,
-  ) async {
+  Future<void> savePassword(String newPasswordController, String email,
+      String password, String name, String phonenumber) async {
     try {
-      final user = FirebaseAuth.instance.currentUser;
+      // final user = FirebaseAuth.instance.currentUser;
 
-      if (user == null) {
-        throw Exception('No authenticated user found');
-      }
+      // if (user == null) {
+      //   throw Exception('No authenticated user found');
+      // }
 
       final password = newPasswordController.trim();
 
-      final credential = EmailAuthProvider.credential(
+      final userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-
-      try {
-        // Try linking email/password provider
-        await user.linkWithCredential(credential);
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'provider-already-linked') {
-          // Provider already linked, update password instead
-          await user.updatePassword(password);
-        } else {
-          print('Password setup failed: ${e.message}');
-        }
-      }
+      final authUid = userCredential.user?.uid;
+      await FirebaseFirestore.instance.collection("user").doc(authUid).set({
+        'name': name,
+        'email': email,
+        'phone': phonenumber,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      // try {
+      //   // Try linking email/password provider
+      //   await user.linkWithCredential(credential);
+      // } on FirebaseAuthException catch (e) {
+      //   if (e.code == 'provider-already-linked') {
+      //     // Provider already linked, update password instead
+      //     await user.updatePassword(password);
+      //   } else {
+      //     print('Password setup failed: ${e.message}');
+      //   }
+      // }
     } catch (e) {
       print('Password setup failed: ${e}');
     }
   }
 
-  Future<void> login(String email, String password) async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
+  Future<User?> login(String email, String password) async {
+    final user = await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
+    print(user);
+    return user.user;
   }
-
 
   Future<void> forgottPassword(String email) async {
     try {
@@ -125,5 +133,34 @@ class AuthRemoteDataSource {
       throw FirebaseAuthException(
           code: 'auth/forgottMessange', message: e.toString());
     }
+  }
+
+  Future<User?> getuser() async {
+    return _firebaseAuth.currentUser;
+  }
+
+  Future<String?> getDeviceId() async {
+    String? result = await DeviceInfoService.getDeviceId();
+    return result;
+  }
+
+  Future<void> storeDeviceId(String uid, String deviceid) async {
+    try {
+      await _firestore
+          .collection('user')
+          .doc(uid)
+          .update({'deviceId': deviceid});
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<String?> getStordDeviceId(
+    String uid,
+  ) async {
+    print(uid.toString() + "inside");
+    final doc = await _firestore.collection('user').doc(uid).get();
+    print(doc.data()?['deviceId']);
+    return doc.data()?['deviceId'];
   }
 }

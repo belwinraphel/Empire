@@ -14,10 +14,12 @@ class LoginField extends StatelessWidget {
       required this.prefixican,
       required this.label,
       required this.validator,
+      this.color = const Color.fromARGB(255, 229, 234, 236),
       required this.controller,
       this.obscureText = false});
 
   final bool issmallScreen;
+  final Color? color;
   final double maxwidth;
   final TextEditingController? controller;
   final IconData prefixican;
@@ -47,7 +49,7 @@ class LoginField extends StatelessWidget {
               prefixican,
               size: issmallScreen ? 28 : 30,
             ),
-            fillColor: const Color.fromARGB(255, 229, 234, 236),
+            fillColor: color,
             border: const OutlineInputBorder(
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.all(Radius.circular(10)))),

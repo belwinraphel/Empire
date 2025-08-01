@@ -7,11 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Password extends StatelessWidget {
-  Password({super.key, required this.email});
+  Password(
+      {super.key,
+      required this.email,
+      required this.name,
+      required this.phoneNumber});
   final passwordcontroller = TextEditingController();
   final password2controller = TextEditingController();
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   String email;
+
+  final String phoneNumber;
+  final String name;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,6 +101,8 @@ class Password extends StatelessWidget {
                               if (formkey.currentState!.validate()) {
                                 context.read<SavePasswordBloc>().add(
                                     Savepassowrd(
+                                        name: name,
+                                        number: phoneNumber,
                                         email: email,
                                         password: passwordcontroller.text,
                                         rePasseord: password2controller.text));

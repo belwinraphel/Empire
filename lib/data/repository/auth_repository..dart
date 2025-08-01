@@ -35,18 +35,35 @@ class AuthRepositoryImpl implements AuthRepository {
     String newPasswordController,
     String email,
     String password,
+    String name,
+    String phonenUmber,
   ) async {
     return await remoteDataSource.savePassword(
-        newPasswordController, email, password);
+        newPasswordController, email, password,name,phonenUmber);
   }
 
   @override
-  Future<void> login(String name, String password) {
+  Future<User?> login(String name, String password) {
     return remoteDataSource.login(name, password);
   }
 
   @override
   Future<void> forgotpassword(String email) {
     return remoteDataSource.forgottPassword(email);
+  }
+
+  @override
+  Future<User?> getCurrentUser() async {
+    return await remoteDataSource.getuser();
+  }
+
+  @override
+  Future<String?> getStoredDeviceId(String uid) async {
+    return await remoteDataSource.getStordDeviceId(uid);
+  }
+
+  @override
+  Future<void> storeDeviceId(String uid, String deviceId) async {
+    await remoteDataSource.storeDeviceId(uid, deviceId);
   }
 }

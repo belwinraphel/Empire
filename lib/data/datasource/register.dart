@@ -14,10 +14,15 @@ class UserFirebaseSource {
         .where('email', isEqualTo: email)
         .where('mobile', isEqualTo: mobile)
         .get();
-    if (result.docs.isEmpty) {
-      await firestore.collection('user').add(
-          {'name': name, 'mobile': mobile, 'email': email, 'image': image});
-    }
+    // if (result.docs.isEmpty) {
+    //   await firestore.collection('user').add({
+    //     'name': name,
+    //     'mobile': mobile,
+    //     'email': email,
+    //     'image': image,
+    //     'deviceId': ''
+    //   });
+    // }
     return result.docs.isNotEmpty;
   }
 }

@@ -1,5 +1,5 @@
 import 'package:empire/data/datasource/auth_repo.dart';
-import 'package:flutter/material.dart';
+ 
 
 class SavePassword {
   final AuthRemoteDataSource authRemoteDataSource;
@@ -8,8 +8,9 @@ class SavePassword {
       String newPasswordController,
       String email,
       String password,
+      String name,String phoneNumber,
     ) async {
     return authRemoteDataSource.savePassword(
-        newPasswordController, email, password);
+        newPasswordController, email, password,name,phoneNumber);
   }
 }

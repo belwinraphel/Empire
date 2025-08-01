@@ -7,8 +7,16 @@ class Savepassowrd extends SavePasswordEvent {
   String email;
   String password;
   String rePasseord;
-  Savepassowrd(
-      {required this.email, required this.password, required this.rePasseord});
+  String name;
+
+  String number;
+  Savepassowrd({
+    required this.email,
+    required this.password,
+    required this.rePasseord,
+    required this.number,
+    required this.name,
+  });
 }
 
 abstract class SavePasswordState {}
@@ -34,7 +42,7 @@ class SavePasswordBloc extends Bloc<SavePasswordEvent, SavePasswordState> {
       emit(LoadingSave());
       try {
         await authRemoteDataSource.savePassword(
-            event.rePasseord.toString(), event.email, event.password);
+            event.rePasseord.toString(), event.email, event.password,event.name,event.number);
         emit(Saved('suceesfuly saved'));
       } catch (e) {
         emit(ErrorSave(e.toString()));

@@ -81,6 +81,7 @@ class Registerpage extends StatelessWidget {
                     Navigator.pushReplacement(context, MaterialPageRoute(
                       builder: (context) {
                         return OtpPage(
+                          name: usernameController.text,
                             email: emailController.text,
                             phoneNumber: mobileController.text,
                             onOtpSubmit: (value) {},
