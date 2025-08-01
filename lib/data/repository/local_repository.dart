@@ -1,17 +1,15 @@
-// data/datasources/auth_local_datasource_impl.dart
+import 'dart:convert';
+
 import 'package:empire/data/datasource/local_repository.dart';
+import 'package:empire/domain/entities/user_entities.dart';
 import 'package:empire/domain/repositories/local_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
- 
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
+  final SharedPreferences prefs;
   final LocalRepositoryImapli localRepositoryImapli;
-  AuthLocalDataSourceImpl(this.localRepositoryImapli);
-
-  @override
-  Future<void> saveUserSession(User user) async {
-    return localRepositoryImapli.saveUserSession(user);
-  }
+      AuthLocalDataSourceImpl(this.localRepositoryImapli, this.prefs);
 
   @override
   Future<String?> getUserId() async {
@@ -19,7 +17,25 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   }
 
   @override
+  UserEntity? getUserSession() {
+    final jsonString = prefs.getString('USER_SESSION');
+
+    if (jsonString == null) return null;
+    final jsonMap = jsonDecode(jsonString);
+    return UserEntity.fromJson(jsonMap);
+  }
+
+  @override
+  @override
   Future<void> clearSession() async {
-    return localRepositoryImapli.clearSession();
+    await prefs.remove('USER_SESSION');
+  }
+
+  @override
+  @override
+  Future<void> saveUserSession(UserEntity user) async {
+    final jsonString = jsonEncode(user.toJson());
+    print(jsonString);
+    await prefs.setString('USER_SESSION', jsonString);
   }
 }

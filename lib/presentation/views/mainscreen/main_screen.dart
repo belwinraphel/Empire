@@ -34,7 +34,6 @@ class _MainScreenState extends State<MainScreen> {
     return LayoutBuilder(builder: (context, constraints) {
       final maxWidth = constraints.maxWidth;
 
-      // Responsive adjustments
       final bool isSmallScreen = maxWidth < 600;
       final paddingHorizontal = isSmallScreen ? 16.0 : 32.0;
       final titleFontSize = isSmallScreen ? 28.0 : 36.0;
@@ -83,8 +82,7 @@ class _MainScreenState extends State<MainScreen> {
                       bottomNavIconSize),
                 ],
               ),
-              SizedBox(height: 8),
-              // Indicator below active icon
+              const SizedBox(height: 8),
               Center(
                 child: Container(
                   width: isSmallScreen ? 80 : 100,

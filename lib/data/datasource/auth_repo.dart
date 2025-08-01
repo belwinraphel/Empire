@@ -122,7 +122,7 @@ class AuthRemoteDataSource {
       email: email,
       password: password,
     );
-    print(user);
+ 
     return user.user;
   }
 
@@ -151,16 +151,15 @@ class AuthRemoteDataSource {
           .doc(uid)
           .update({'deviceId': deviceid});
     } catch (e) {
-      print(e.toString());
+      throw FirebaseAuthException(code: ' ', message: e.toString());
     }
   }
 
   Future<String?> getStordDeviceId(
     String uid,
   ) async {
-    print(uid.toString() + "inside");
     final doc = await _firestore.collection('user').doc(uid).get();
-    print(doc.data()?['deviceId']);
+
     return doc.data()?['deviceId'];
   }
 }

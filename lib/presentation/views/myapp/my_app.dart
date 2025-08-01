@@ -3,12 +3,14 @@ import 'package:empire/domain/repositories/auth_repository.dart';
 import 'package:empire/domain/repositories/local_auth.dart';
 import 'package:empire/domain/usecase/auth/Login_status_auth.dart';
 import 'package:empire/domain/usecase/auth/forgot_password.dart';
+import 'package:empire/domain/usecase/auth/get_user_details.dart';
 import 'package:empire/domain/usecase/auth/login_auth.dart';
 import 'package:empire/domain/usecase/auth/pick_image_camera.dart';
 import 'package:empire/domain/usecase/auth/pick_image_gallery.dart';
 import 'package:empire/domain/usecase/auth/register.dart';
 import 'package:empire/domain/usecase/auth/save_login_status.dart';
 import 'package:empire/domain/usecase/auth/send_otp.dart';
+import 'package:empire/domain/usecase/auth/update_user_deatils.dart';
 import 'package:empire/domain/usecase/auth/verify_user.dart';
 
 import 'package:empire/presentation/bloc/auth/forgot_password.dart';
@@ -17,6 +19,7 @@ import 'package:empire/presentation/bloc/auth/login.dart';
 import 'package:empire/presentation/bloc/auth/login_status.dart';
 import 'package:empire/presentation/bloc/auth/loginpage.dart';
 import 'package:empire/presentation/bloc/auth/otp.dart';
+import 'package:empire/presentation/bloc/auth/profile_bloc.dart';
 
 import 'package:empire/presentation/bloc/auth/profile_image.dart';
 import 'package:empire/presentation/bloc/auth/registerpage.dart';
@@ -50,10 +53,19 @@ class MyApp extends StatelessWidget {
         BlocProvider<OtpBloc>(create: (_) => OtpBloc(sl<VerifyOtp>())),
         BlocProvider<SavePasswordBloc>(create: (_) => SavePasswordBloc(sl())),
         BlocProvider<LoginBloc>(
-            create: (_) => LoginBloc(sl(), sl<SaveLoginStatus>(),
-                sl<AuthRepository>(), sl<AuthLocalDataSource>())),
+            create: (_) => LoginBloc(
+                sl(),
+                sl<SaveLoginStatus>(),
+                sl<AuthRepository>(),
+                sl<ProfileBloc>(),
+                sl<AuthLocalDataSource>())),
         BlocProvider<ForgotPasswordClickBloc>(
             create: (_) => ForgotPasswordClickBloc(sl<ForgotPassword>())),
+        BlocProvider<ProfileBloc>(
+            create: (_) => ProfileBloc(
+                getUserDetails: sl<GetUserDetails>(),
+                updateUserDetails: sl<UpdateUserDetails>())
+              ..add(LoadProfile())),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

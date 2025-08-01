@@ -1,8 +1,10 @@
 import 'package:empire/core/utilis/device_info.dart';
+import 'package:empire/domain/entities/user_entities.dart';
 import 'package:empire/domain/repositories/auth_repository.dart';
 import 'package:empire/domain/repositories/local_auth.dart';
 import 'package:empire/domain/usecase/auth/login.dart';
 import 'package:empire/domain/usecase/auth/save_login_status.dart';
+import 'package:empire/presentation/bloc/auth/profile_bloc.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -32,8 +34,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final SaveLoginStatus saveLoginStatus;
   final AuthRepository repository;
   final AuthLocalDataSource localrepository;
+  final ProfileBloc profileBloc;
   LoginBloc(this.authRemoteDataSource, this.saveLoginStatus, this.repository,
-      this.localrepository)
+      this.profileBloc, this.localrepository)
       : super(InitialLogin()) {
     on<LogPresed>((event, emit) async {
       emit(LoginLoading());
@@ -45,14 +48,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           savedDeviceId = await repository.getStoredDeviceId(use!.uid);
           if (savedDeviceId == null) {
             await repository.storeDeviceId(use.uid, deviceId!);
+            profileBloc.add(LoadProfile());
+            await saveLoginStatus(true);
+            emit(LoginSucess());
           } else if (savedDeviceId != null && savedDeviceId != deviceId) {
             throw Exception('You are already logged in on another device.');
+          } else if (savedDeviceId == deviceId) {
+            profileBloc.add(LoadProfile());
+            await saveLoginStatus(true);
+            emit(LoginSucess());
           }
         });
-        // await localrepository.saveUserSession(user);
-
-        await saveLoginStatus(true);
-        emit(LoginSucess());
       } catch (e) {
         emit(ErrorLogin(e.toString()));
       }

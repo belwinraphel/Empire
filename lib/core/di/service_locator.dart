@@ -5,18 +5,22 @@ import 'package:empire/data/datasource/checking_login_status.dart';
 import 'package:empire/data/datasource/image_profile.dart';
 import 'package:empire/data/datasource/local_repository.dart';
 import 'package:empire/data/datasource/register.dart';
+import 'package:empire/data/datasource/user_remote_data_sources.dart';
 import 'package:empire/data/repository/auth_repository..dart';
 import 'package:empire/data/repository/image_profile.dart';
 import 'package:empire/data/repository/local_repository.dart';
 import 'package:empire/data/repository/login_status.dart';
 import 'package:empire/data/repository/register.dart';
+import 'package:empire/data/repository/user_repository_impl.dart';
 import 'package:empire/domain/repositories/auth_repository.dart';
 import 'package:empire/domain/repositories/image_profile.dart';
 import 'package:empire/domain/repositories/local_auth.dart';
 import 'package:empire/domain/repositories/login_status_auth.dart';
 import 'package:empire/domain/repositories/register.dart';
+import 'package:empire/domain/repositories/user_repository.dart';
 import 'package:empire/domain/usecase/auth/Login_status_auth.dart';
 import 'package:empire/domain/usecase/auth/forgot_password.dart';
+import 'package:empire/domain/usecase/auth/get_user_details.dart';
 import 'package:empire/domain/usecase/auth/login.dart';
 import 'package:empire/domain/usecase/auth/login_auth.dart';
 import 'package:empire/domain/usecase/auth/pick_image_camera.dart';
@@ -25,7 +29,9 @@ import 'package:empire/domain/usecase/auth/register.dart';
 import 'package:empire/domain/usecase/auth/save_login_status.dart';
 import 'package:empire/domain/usecase/auth/save_password.dart';
 import 'package:empire/domain/usecase/auth/send_otp.dart';
+import 'package:empire/domain/usecase/auth/update_user_deatils.dart';
 import 'package:empire/domain/usecase/auth/verify_user.dart';
+import 'package:empire/presentation/bloc/auth/profile_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -82,11 +88,37 @@ Future<void> init() async {
   /////locak
   ///
   sl.registerLazySingleton<AuthLocalDataSource>(
-    () => AuthLocalDataSourceImpl(sl()),
+    () => AuthLocalDataSourceImpl(sl(), sl<SharedPreferences>()),
   );
 
   //local
   sl.registerLazySingleton<LocalRepositoryImapli>(
     () => LocalRepositoryImapli(sl<SharedPreferences>()),
+  );
+
+  ///
+  ///profile
+  sl.registerLazySingleton<UserRemoteDataSource>(
+    () => UserRemoteDataSource(sl(), sl()),
+  );
+
+ 
+  sl.registerLazySingleton<UserRepository>(
+    () => UserRepositoryImpl(sl()),
+  );
+
+  sl.registerLazySingleton<GetUserDetails>(
+    () => GetUserDetails(sl()),
+  );
+
+  sl.registerLazySingleton<UpdateUserDetails>(
+    () => UpdateUserDetails(sl()),
+  );
+
+  sl.registerFactory<ProfileBloc>(
+    () => ProfileBloc(
+      getUserDetails: sl(),
+      updateUserDetails: sl(),
+    ),
   );
 }

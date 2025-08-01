@@ -9,14 +9,15 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<UserEntities?> sigInWithGoogle() async {
+  Future<UserEntity?> sigInWithGoogle() async {
     final user = await remoteDataSource.signInWithGoogle();
     if (user == null) return null;
-    return UserEntities(
+    return UserEntity(
       uid: user.uid,
       email: user.email ?? '',
-      displayName: user.displayName,
+      name: user.displayName,
       photourl: user.photoURL,
+      phoneNumber: user.phoneNumber,
     );
   }
 
