@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   final SharedPreferences prefs;
   final LocalRepositoryImapli localRepositoryImapli;
-      AuthLocalDataSourceImpl(this.localRepositoryImapli, this.prefs);
+  AuthLocalDataSourceImpl(this.localRepositoryImapli, this.prefs);
 
   @override
   Future<String?> getUserId() async {
@@ -26,16 +26,14 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   }
 
   @override
-  @override
   Future<void> clearSession() async {
     await prefs.remove('USER_SESSION');
   }
 
   @override
-  @override
   Future<void> saveUserSession(UserEntity user) async {
     final jsonString = jsonEncode(user.toJson());
-    print(jsonString);
+
     await prefs.setString('USER_SESSION', jsonString);
   }
 }

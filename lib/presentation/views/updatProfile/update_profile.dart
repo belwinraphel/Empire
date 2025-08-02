@@ -123,7 +123,7 @@ class UpdateProfiles extends StatelessWidget {
               ),
             );
           } else if (state is ProfileError) {
-            return Text(state.message);
+            return Scaffold(body: Center(child: Text(state.message)));
           }
           return const SizedBox();
         },

@@ -118,12 +118,16 @@ class AuthRemoteDataSource {
   }
 
   Future<User?> login(String email, String password) async {
-    final user = await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
- 
-    return user.user;
+    try {
+      final user = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      return user.user;
+    } catch (e) {
+      throw FirebaseAuthException(code: 'auth/Login', message: e.toString());
+    }
   }
 
   Future<void> forgottPassword(String email) async {
@@ -161,5 +165,9 @@ class AuthRemoteDataSource {
     final doc = await _firestore.collection('user').doc(uid).get();
 
     return doc.data()?['deviceId'];
+  }
+
+  Future<void> logout() async {
+    await _firebaseAuth.signOut();
   }
 }

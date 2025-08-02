@@ -1,9 +1,9 @@
 import 'package:empire/core/utilis/device_info.dart';
-import 'package:empire/domain/entities/user_entities.dart';
+ 
 import 'package:empire/domain/repositories/auth_repository.dart';
 import 'package:empire/domain/repositories/local_auth.dart';
-import 'package:empire/domain/usecase/auth/login.dart';
-import 'package:empire/domain/usecase/auth/save_login_status.dart';
+import 'package:empire/domain/usecase/auth/login_usecase.dart';
+import 'package:empire/domain/usecase/auth/save_login_status_usecase.dart';
 import 'package:empire/presentation/bloc/auth/profile_bloc.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -40,7 +40,7 @@ class AuthRepositoryImpl implements AuthRepository {
     String phonenUmber,
   ) async {
     return await remoteDataSource.savePassword(
-        newPasswordController, email, password,name,phonenUmber);
+        newPasswordController, email, password, name, phonenUmber);
   }
 
   @override
@@ -66,5 +66,10 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> storeDeviceId(String uid, String deviceId) async {
     await remoteDataSource.storeDeviceId(uid, deviceId);
+  }
+
+  @override
+  Future<void> logout() async {
+    await remoteDataSource.logout();
   }
 }

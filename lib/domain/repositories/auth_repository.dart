@@ -18,4 +18,6 @@ abstract class AuthRepository {
   Future<User?> getCurrentUser();
   Future<void> storeDeviceId(String uid, String deviceId);
   Future<String?> getStoredDeviceId(String uid);
+
+  Future<void> logout();
 }

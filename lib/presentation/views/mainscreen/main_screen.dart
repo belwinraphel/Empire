@@ -49,52 +49,19 @@ class _MainScreenState extends State<MainScreen> {
         bottomNavigationBar: Padding(
           padding:
               EdgeInsets.symmetric(horizontal: paddingHorizontal, vertical: 14),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildBottomNavItem(Icons.home, 0, _selectedIndex == 0,
-                      activeColor, inactiveColor, bottomNavIconSize),
-                  _buildBottomNavItem(
-                      Icons.favorite_border,
-                      1,
-                      _selectedIndex == 1,
-                      activeColor,
-                      inactiveColor,
-                      bottomNavIconSize),
-                  _buildBottomNavItem(Icons.list_alt, 2, _selectedIndex == 2,
-                      activeColor, inactiveColor, bottomNavIconSize),
-                  _buildBottomNavItem(
-                      Icons.mail_outline,
-                      3,
-                      _selectedIndex == 3,
-                      activeColor,
-                      inactiveColor,
-                      bottomNavIconSize),
-                  _buildBottomNavItem(
-                      Icons.person_outline,
-                      4,
-                      _selectedIndex == 4,
-                      activeColor,
-                      inactiveColor,
-                      bottomNavIconSize),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Center(
-                child: Container(
-                  width: isSmallScreen ? 80 : 100,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: _selectedIndex == 4
-                        ? Colors.grey.shade900
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              )
+              _buildBottomNavItem(Icons.home, 0, _selectedIndex == 0,
+                  activeColor, inactiveColor, bottomNavIconSize),
+              _buildBottomNavItem(Icons.favorite_border, 1, _selectedIndex == 1,
+                  activeColor, inactiveColor, bottomNavIconSize),
+              _buildBottomNavItem(Icons.list_alt, 2, _selectedIndex == 2,
+                  activeColor, inactiveColor, bottomNavIconSize),
+              _buildBottomNavItem(Icons.mail_outline, 3, _selectedIndex == 3,
+                  activeColor, inactiveColor, bottomNavIconSize),
+              _buildBottomNavItem(Icons.person_outline, 4, _selectedIndex == 4,
+                  activeColor, inactiveColor, bottomNavIconSize),
             ],
           ),
         ),

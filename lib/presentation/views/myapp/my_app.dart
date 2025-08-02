@@ -1,23 +1,25 @@
 import 'package:empire/core/di/service_locator.dart';
+import 'package:empire/data/datasource/auth_repo.dart';
 import 'package:empire/domain/repositories/auth_repository.dart';
 import 'package:empire/domain/repositories/local_auth.dart';
-import 'package:empire/domain/usecase/auth/Login_status_auth.dart';
-import 'package:empire/domain/usecase/auth/forgot_password.dart';
-import 'package:empire/domain/usecase/auth/get_user_details.dart';
-import 'package:empire/domain/usecase/auth/login_auth.dart';
-import 'package:empire/domain/usecase/auth/pick_image_camera.dart';
-import 'package:empire/domain/usecase/auth/pick_image_gallery.dart';
-import 'package:empire/domain/usecase/auth/register.dart';
-import 'package:empire/domain/usecase/auth/save_login_status.dart';
-import 'package:empire/domain/usecase/auth/send_otp.dart';
-import 'package:empire/domain/usecase/auth/update_user_deatils.dart';
-import 'package:empire/domain/usecase/auth/verify_user.dart';
+import 'package:empire/domain/usecase/auth/Login_status_auth_usecase.dart';
+import 'package:empire/domain/usecase/auth/forgotpassword_usecase.dart';
+import 'package:empire/domain/usecase/auth/get_user_details_usecase.dart';
+import 'package:empire/domain/usecase/auth/login_auth_usecase.dart';
+import 'package:empire/domain/usecase/auth/pick_image_camera_usecase.dart';
+import 'package:empire/domain/usecase/auth/pick_image_gallery_usecase.dart';
+import 'package:empire/domain/usecase/auth/register_usecase.dart';
+import 'package:empire/domain/usecase/auth/save_login_status_usecase.dart';
+import 'package:empire/domain/usecase/auth/send_otp_usecase.dart';
+import 'package:empire/domain/usecase/auth/update_user_deatils_usecase.dart';
+import 'package:empire/domain/usecase/auth/verify_user_usecase.dart';
 
 import 'package:empire/presentation/bloc/auth/forgot_password.dart';
 
 import 'package:empire/presentation/bloc/auth/login.dart';
 import 'package:empire/presentation/bloc/auth/login_status.dart';
 import 'package:empire/presentation/bloc/auth/loginpage.dart';
+import 'package:empire/presentation/bloc/auth/logout_bloc.dart';
 import 'package:empire/presentation/bloc/auth/otp.dart';
 import 'package:empire/presentation/bloc/auth/profile_bloc.dart';
 
@@ -66,6 +68,11 @@ class MyApp extends StatelessWidget {
                 getUserDetails: sl<GetUserDetails>(),
                 updateUserDetails: sl<UpdateUserDetails>())
               ..add(LoadProfile())),
+        BlocProvider<LogoutBloc>(
+            create: (_) => LogoutBloc(
+                  sl<AuthRemoteDataSource>(),
+                  sl<SaveLoginStatus>(),
+                )),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

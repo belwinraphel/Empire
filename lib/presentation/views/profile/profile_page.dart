@@ -1,6 +1,9 @@
 import 'package:empire/core/utilis/fonts.dart';
+import 'package:empire/presentation/bloc/auth/logout_bloc.dart';
+import 'package:empire/presentation/views/loginpage/home_page.dart';
 import 'package:empire/presentation/views/updatProfile/update_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -152,7 +155,66 @@ class _SettingsPageState extends State<SettingsPage> {
                       _buildListItem('Currency', false, listItemFontSize),
                       _buildListItem(
                           'Terms and Conditions', false, listItemFontSize),
-                      _buildListItem('Log Out', true, listItemFontSize),
+                      BlocConsumer<LogoutBloc, LogoutState>(
+                        listener: (context, state) {
+                          if (state is LogoutPressed) {
+                            showDialog(
+                                context: context,
+                                builder: (_) {
+                                  return AlertDialog(
+                                    title: const Text('Logout'),
+                                    content:
+                                        const Text('Are you sure to Logout'),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Cancel')),
+                                      TextButton(
+                                          onPressed: () {
+                                            context
+                                                .read<LogoutBloc>()
+                                                .add(LogoutRequested());
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(const SnackBar(
+                                                    backgroundColor: Colors.red,
+                                                    content: Text(
+                                                        'Suceessfuly Logout')));
+                                          },
+                                          child: const Text('Yes')),
+                                    ],
+                                  );
+                                });
+                          }
+                          if (state is LogoutSucees) {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (_) => Loginpage()),
+                              (route) => false,
+                            );
+                          }
+                        },
+                        builder: (context, state) {
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              'Log Out',
+                              style: TextStyle(
+                                fontSize: listItemFontSize,
+                                fontFamily: Fonts.ralewaySemibold,
+                                color: const Color(0xFF374151),
+                              ),
+                            ),
+                            trailing: const Icon(
+                              Icons.chevron_right,
+                              color: Color(0xFF9CA3AF),
+                            ),
+                            onTap: () {
+                              context.read<LogoutBloc>().add(LogoutClicked());
+                            },
+                          );
+                        },
+                      ),
                       const SizedBox(height: 100),
                     ],
                   ),
