@@ -16,7 +16,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> pages = [
     HomePage(),
     const CategoryPage(),
-    const FavouritePage(),
+    FavouritePage(),
     const CartPage(),
     const SettingsPage(),
   ];

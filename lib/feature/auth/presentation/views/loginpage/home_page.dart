@@ -4,9 +4,8 @@ import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/presentation/bloc/auth/login.dart';
 import 'package:empire/presentation/bloc/auth/loginpage.dart';
 import 'package:empire/presentation/views/forgot/forgot_password_page.dart';
-
-import 'package:empire/presentation/views/homepage/home_page.dart';
 import 'package:empire/presentation/views/loginpage/widget.dart';
+import 'package:empire/presentation/views/mainscreen/main_screen.dart';
 import 'package:empire/presentation/views/registerpage/registerpage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -139,14 +138,14 @@ class Loginpage extends StatelessWidget {
                     const SizedBox(
                       height: 40,
                     ),
+
                     BlocConsumer<AuthBloc, GoogleLoginPageState>(
                       listener: (context, state) {
                         if (state is GoogleLoginSuceesstate) {
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (context) {
-                              return HomePage();
-                            },
-                          ));
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (_) => MainScreen()),
+                            (route) => false,
+                          );
                         } else if (state is GoogleLoginFailureState) {
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Login Failed')));
@@ -208,11 +207,10 @@ class Loginpage extends StatelessWidget {
                                   content: Text('Login Successful')));
                         }
 
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) {
-                            return HomePage();
-                          },
-                        ));
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (_) => MainScreen()),
+                          (route) => false,
+                        );
                       } else if (state is ErrorLogin) {
                         if (ScaffoldMessenger.of(context).mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(

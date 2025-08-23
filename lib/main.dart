@@ -8,7 +8,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
       options: kIsWeb
-          ? const FirebaseOptions(
+          ? const FirebaseOptions( 
               apiKey: "AIzaSyDDemGBh8yl8FjfnzNDNiVd0sg_jXHxou4",
               authDomain: "empire-8f1e5.firebaseapp.com",
               projectId: "empire-8f1e5",

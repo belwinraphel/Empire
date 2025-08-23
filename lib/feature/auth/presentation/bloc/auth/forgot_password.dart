@@ -15,6 +15,7 @@ class ForgotPasswordInitial extends ForgotPasswordClickState {}
 class ForgotPasswordLoading extends ForgotPasswordClickState {}
 
 class ForgotPasswordSucess extends ForgotPasswordClickState {}
+class ForgotPasswordFailure extends ForgotPasswordClickState {}
 
 class ErrorForgotPassword extends ForgotPasswordClickState {
   final String error;

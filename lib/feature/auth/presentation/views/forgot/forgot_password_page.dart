@@ -17,26 +17,22 @@ class ForgotPasswordPage extends StatelessWidget {
       final issmallScreen = constraints.maxWidth < 600;
       return BlocConsumer<ForgotPasswordClickBloc, ForgotPasswordClickState>(
         listener: (context, state) {
-          if (state is ErrorForgotPassword) {
+          if (state is ForgotPasswordSucess) {
             if (ScaffoldMessenger.of(context).mounted) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(state.error)));
-            } else if (state is ForgotPasswordSucess) {
-              if (state is ForgotPasswordSucess) {
-                if (ScaffoldMessenger.of(context).mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text(' Sucessfuly sended a link in you email')));
-                }
-                Navigator.pop(context);
-              }
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text(' Sucessfuly sended a link in you email')));
             }
+             
+          } else if (state is ErrorForgotPassword) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(state.error)));
           }
         },
         builder: (context, state) {
           final isoading = state is ForgotPasswordLoading;
           return Scaffold(
             bottomNavigationBar: isoading
-                ? const CircularProgressIndicator()
+                ? Center(child: const CircularProgressIndicator())
                 : GreenElevatedButton(
                     text: 'Submit',
                     onTap: () {
