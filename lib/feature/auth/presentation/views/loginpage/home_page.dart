@@ -1,12 +1,13 @@
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/commonvalidator.dart';
 import 'package:empire/core/utilis/fonts.dart';
-import 'package:empire/presentation/bloc/auth/login.dart';
-import 'package:empire/presentation/bloc/auth/loginpage.dart';
-import 'package:empire/presentation/views/forgot/forgot_password_page.dart';
-import 'package:empire/presentation/views/loginpage/widget.dart';
-import 'package:empire/presentation/views/mainscreen/main_screen.dart';
-import 'package:empire/presentation/views/registerpage/registerpage.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/login.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/loginpage.dart';
+import 'package:empire/feature/auth/presentation/views/forgot/forgot_password_page.dart';
+import 'package:empire/feature/auth/presentation/views/loginpage/widget.dart';
+import 'package:empire/feature/auth/presentation/views/registerpage/registerpage.dart';
+import 'package:empire/feature/product/presentation/views/mainscreen/main_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

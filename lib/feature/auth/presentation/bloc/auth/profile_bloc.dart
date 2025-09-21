@@ -1,6 +1,7 @@
-import 'package:empire/domain/entities/user_entities.dart';
-import 'package:empire/domain/usecase/auth/get_user_details_usecase.dart';
-import 'package:empire/domain/usecase/auth/update_user_deatils_usecase.dart';
+
+import 'package:empire/feature/auth/domain/entities/user_entities.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/get_user_details_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/update_user_deatils_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class ProfileEvent {}

@@ -1,7 +1,13 @@
 import 'package:empire/core/utilis/color.dart';
-import 'package:empire/core/utilis/fonts.dart';
+
+import 'package:empire/feature/product/presentation/bloc/product_bloc/get_category_bloc.dart';
+import 'package:empire/feature/product/presentation/views/homepage/widget.dart';
+import 'package:empire/feature/product/presentation/views/prodcutdetailpage.dart/productdetailpage.dart';
+import 'package:empire/feature/product/presentation/views/search/seacrh.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
@@ -20,288 +26,364 @@ class HomePage extends StatelessWidget {
       final maxwidth = constraints.maxWidth;
       final maxHeight = constraints.maxHeight;
       final issmallScreen = constraints.maxWidth < 600;
-      return Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header Section with Gradient
-              Container(
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(35),
-                        bottomLeft: Radius.circular(35)),
-                    color: Color.fromARGB(220, 215, 189, 44)),
-                child: Padding(
+      return Builder(builder: (context) {
+        return Scaffold(
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(35),
+                          bottomLeft: Radius.circular(35)),
+                      color: Color.fromARGB(220, 215, 189, 44)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 24),
+                        const Text(
+                          'Welcome',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const Text(
+                          'Belwin Raphel',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Row(
+                          children: [
+                            Icon(Icons.home, size: 16, color: Colors.black54),
+                            SizedBox(width: 4),
+                            Text(
+                              'Home',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(width: 4),
+                            Text(
+                              '- Kuruthukulangra House',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            Icon(Icons.keyboard_arrow_down,
+                                size: 16, color: Colors.black54),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) {
+                                return ProductSearchScreen();
+                              },
+                            ));
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: TextField(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) {
+                                    return ProductSearchScreen();
+                                  },
+                                ));
+                              },
+                              decoration: InputDecoration(
+                                hintText: 'Search ',
+                                hintStyle: TextStyle(color: Colors.grey[500]),
+                                prefixIcon:
+                                    Icon(Icons.search, color: Colors.grey[500]),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 16),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: issmallScreen ? 180 : 110,
+                              padding: const EdgeInsets.all(16),
+                              decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                    bottomLeft: Radius.circular(20),
+                                    topLeft: Radius.circular(20)),
+                                color: ColoRs.discount,
+                              ),
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: Colors.orange[100],
+                                    child: const Icon(Icons.local_shipping,
+                                        color: Colors.orange),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Free Delivery',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const Text(
+                                    '1st order',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Container(
+                              width: issmallScreen ? 180 : 110,
+                              padding: const EdgeInsets.all(16),
+                              decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                    bottomLeft: Radius.circular(20),
+                                    topLeft: Radius.circular(20)),
+                                color: ColoRs.discount,
+                              ),
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: Colors.green[100],
+                                    child: const Icon(Icons.percent,
+                                        color: Colors.green),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    '50% less',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const Text(
+                                    '1st order',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Top Bar
-
-                      const SizedBox(height: 24),
-
-                      // Welcome Text
                       const Text(
-                        'Welcome',
+                        'Categories',
                         style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const Text(
-                        'Belwin Raphel',
-                        style: TextStyle(
-                          fontSize: 28,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
                         ),
                       ),
-                      const SizedBox(height: 8),
-
-                      // Location
-                      const Row(
-                        children: [
-                          Icon(Icons.home, size: 16, color: Colors.black54),
-                          SizedBox(width: 4),
-                          Text(
-                            'Home',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black87,
-                              fontWeight: FontWeight.w500,
+                      const SizedBox(height: 16),
+                      BlocBuilder<CategoryBloc, CategoryState>(
+                          builder: (context, state) {
+                        if (state is CategoryLoadingState) {
+                          return buildShimmerLoading();
+                        } else if (state is CategoryErrorState) {
+                          return buildErrorState(context, state.error);
+                        } else if (state is CategoryLoadedState) {
+                          final category = state.categories;
+                          if (state.categories.isEmpty) {
+                            return const Center(
+                                child: Text("No categories available."));
+                          }
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (context) {
+                                  return ProductDetailScreen();
+                                },
+                              ));
+                            },
+                            child: SizedBox(
+                              height: issmallScreen ? 100 : 200,
+                              child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  shrinkWrap: true,
+                                  itemCount: state.categories.length,
+                                  itemBuilder: (context, index) {
+                                    return Column(
+                                      children: [
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 6),
+                                          child: Container(
+                                            height: 70,
+                                            width: 75,
+                                            decoration: const BoxDecoration(
+                                                color: Color(0xFFE0E9F6),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(12))),
+                                            child: Center(
+                                              child: Image.network(
+                                                height: 50,
+                                                width: 70,
+                                                category[index].imageUrl,
+                                                loadingBuilder: (context, child,
+                                                    loadingProgress) {
+                                                  if (loadingProgress == null) {
+                                                    return child;
+                                                  } else {
+                                                    return Shimmer(
+                                                      gradient:
+                                                          const LinearGradient(
+                                                        colors: [
+                                                          Colors.black,
+                                                          Colors.white,
+                                                        ],
+                                                      ),
+                                                      child: child,
+                                                    );
+                                                  }
+                                                },
+                                                errorBuilder: (context, error,
+                                                    stackTrace) {
+                                                  return Container(
+                                                    color: Theme.of(
+                                                      context,
+                                                    )
+                                                        .colorScheme
+                                                        .surfaceVariant,
+                                                    child: Icon(
+                                                      Icons.image,
+                                                      color: Theme.of(
+                                                        context,
+                                                      )
+                                                          .colorScheme
+                                                          .onSurfaceVariant,
+                                                      size: 40,
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          category[index]
+                                              .category
+                                              .toString()
+                                              .toUpperCase(),
+                                          style: const TextStyle(
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }),
                             ),
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            '- Kuruthukulangra House',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black54,
-                            ),
-                          ),
-                          Icon(Icons.keyboard_arrow_down,
-                              size: 16, color: Colors.black54),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Search Bar
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: 'Search Chips',
-                            hintStyle: TextStyle(color: Colors.grey[500]),
-                            prefixIcon:
-                                Icon(Icons.search, color: Colors.grey[500]),
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 16),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Offer Cards
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: issmallScreen ? 180 : 110,
-                            padding: const EdgeInsets.all(16),
-                            decoration: const BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                  bottomRight: Radius.circular(20),
-                                  topRight: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20),
-                                  topLeft: Radius.circular(20)),
-                              color: ColoRs.discount,
-                            ),
-                            child: Column(
-                              children: [
-                                CircleAvatar(
-                                  radius: 20,
-                                  backgroundColor: Colors.orange[100],
-                                  child: const Icon(Icons.local_shipping,
-                                      color: Colors.orange),
-                                ),
-                                const SizedBox(height: 8),
-                                const Text(
-                                  'Free Delivery',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                const Text(
-                                  '1st order',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Container(
-                            width: issmallScreen ? 180 : 110,
-                            padding: const EdgeInsets.all(16),
-                            decoration: const BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                  bottomRight: Radius.circular(20),
-                                  topRight: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20),
-                                  topLeft: Radius.circular(20)),
-                              color: ColoRs.discount,
-                            ),
-                            child: Column(
-                              children: [
-                                CircleAvatar(
-                                  radius: 20,
-                                  backgroundColor: Colors.green[100],
-                                  child: const Icon(Icons.percent,
-                                      color: Colors.green),
-                                ),
-                                const SizedBox(height: 8),
-                                const Text(
-                                  '50% less',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                const Text(
-                                  '1st order',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                          );
+                        }
+                        return buildShimmerLoading();
+                      }),
                     ],
                   ),
                 ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Categories',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Most Used',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: issmallScreen ? 100 : 200,
-                      child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          shrinkWrap: true,
-                          itemCount: images.length,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 6),
-                                  child: Container(
-                                    height: 70,
-                                    width: 65,
-                                    decoration: const BoxDecoration(
-                                        color: Color(0xFFE0E9F6),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(12))),
-                                    child: Center(
-                                        child: Image.asset(
-                                      images[index]['image'] ?? '',
-                                      height: 50,
-                                      width: 50,
-                                    )),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  images[index]['tittle']
-                                      .toString()
-                                      .toUpperCase(),
-                                  style: const TextStyle(
-                                      color: Colors.black38,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: Fonts.raleway),
-                                ),
-                              ],
-                            );
-                          }),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Most Used Section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Most Used',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 130,
-                      child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: images.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 6.0),
-                              child: SizedBox(
-                                height: issmallScreen ? 110 : 100,
-                                width: issmallScreen ? 120 : 110,
-                                child: GridView.builder(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: images.length,
-                                  padding: const EdgeInsets.all(0),
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    mainAxisSpacing: 4,
-                                    crossAxisSpacing: 4,
-                                    childAspectRatio: 1 / 1,
-                                  ),
-                                  itemBuilder: (context, index) {
-                                    if (index == 3) {
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        height: 130,
+                        child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: images.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 6.0),
+                                child: SizedBox(
+                                  height: issmallScreen ? 110 : 100,
+                                  width: issmallScreen ? 120 : 110,
+                                  child: GridView.builder(
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: images.length,
+                                    padding: const EdgeInsets.all(0),
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      mainAxisSpacing: 4,
+                                      crossAxisSpacing: 4,
+                                      childAspectRatio: 1 / 1,
+                                    ),
+                                    itemBuilder: (context, index) {
+                                      if (index == 3) {
+                                        return Container(
+                                          height: 30,
+                                          width: 40,
+                                          decoration: const BoxDecoration(
+                                              color: Color(0xFFE0E9F6),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10))),
+                                        );
+                                      }
                                       return Container(
                                         height: 30,
                                         width: 40,
@@ -309,38 +391,26 @@ class HomePage extends StatelessWidget {
                                             color: Color(0xFFE0E9F6),
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(10))),
+                                        child: Center(
+                                            child: Image.asset(
+                                                images[index]['image'] ?? '')),
                                       );
-                                    }
-                                    return Container(
-                                      height: 30,
-                                      width: 40,
-                                      decoration: const BoxDecoration(
-                                          color: Color(0xFFE0E9F6),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10))),
-                                      child: Center(
-                                          child: Image.asset(
-                                              images[index]['image'] ?? '')),
-                                    );
-                                  },
+                                    },
+                                  ),
                                 ),
-                              ),
-                            );
-                          }),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Bottom Labels
-
-                    const SizedBox(height: 100),
-                  ],
+                              );
+                            }),
+                      ),
+                      const SizedBox(height: 20),
+                      const SizedBox(height: 100),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
+        );
+      });
     });
   }
 }

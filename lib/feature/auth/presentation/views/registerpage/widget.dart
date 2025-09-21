@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:empire/presentation/bloc/auth/profile_image.dart';
+
+import 'package:empire/feature/auth/presentation/bloc/auth/profile_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -105,8 +106,8 @@ class ProfileIamge extends StatelessWidget {
   }
 }
 
-class ProfileImage extends StatelessWidget {
-  const ProfileImage({
+class ProfileImages extends StatelessWidget {
+  const ProfileImages({
     super.key,
   });
 

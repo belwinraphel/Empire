@@ -1,8 +1,9 @@
-import 'package:empire/presentation/views/cart/cart_page.dart';
-import 'package:empire/presentation/views/category/category_page.dart';
-import 'package:empire/presentation/views/favourites/favourite_page.dart';
-import 'package:empire/presentation/views/homepage/home_page.dart';
-import 'package:empire/presentation/views/profile/profile_page.dart';
+import 'package:empire/feature/auth/presentation/views/profile/profile_page.dart';
+import 'package:empire/feature/product/presentation/views/Favourite/favouritePage.dart';
+import 'package:empire/feature/product/presentation/views/cart/cart_page.dart';
+import 'package:empire/feature/product/presentation/views/CategoryPage/categorypage.dart';
+import 'package:empire/feature/product/presentation/views/sucategoryPage/subcategorypage.dart';
+import 'package:empire/feature/product/presentation/views/homepage/home_page.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -15,8 +16,8 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final List<Widget> pages = [
     HomePage(),
+    const Favouritepage(),
     const CategoryPage(),
-    FavouritePage(),
     const CartPage(),
     const SettingsPage(),
   ];

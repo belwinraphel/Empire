@@ -1,4 +1,5 @@
-import 'package:empire/domain/usecase/auth/forgotpassword_usecase.dart';
+
+import 'package:empire/feature/auth/domain/usecase/auth/forgotpassword_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class ForgotPasswordClickevent {}

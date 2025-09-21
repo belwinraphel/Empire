@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:empire/domain/entities/user_entities.dart';
+import 'package:empire/feature/auth/domain/entities/user_entities.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserRemoteDataSource {

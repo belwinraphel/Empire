@@ -54,9 +54,9 @@ class AuthRemoteDataSource {
     );
   }
 
-  Future<UserCredential> VerifyOTP(int Otp) async {
-    final otp = '${Otp}56';
-    print(verificationId);
+  Future<UserCredential> verifyOTP(int oTp) async {
+    final otp = '${oTp}56';
+ 
     if (verificationId != null && otp.isNotEmpty) {
       try {
         final credential = PhoneAuthProvider.credential(

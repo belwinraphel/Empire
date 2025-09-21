@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:empire/domain/usecase/auth/send_otp_usecase.dart';
  
+ 
+import 'package:empire/feature/auth/domain/usecase/auth/send_otp_usecase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';

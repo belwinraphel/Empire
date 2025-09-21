@@ -1,9 +1,11 @@
 import 'package:empire/core/utilis/commonvalidator.dart';
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/core/utilis/widget.dart';
-import 'package:empire/presentation/bloc/auth/profile_bloc.dart';
-import 'package:empire/presentation/views/loginpage/widget.dart';
-import 'package:empire/presentation/views/registerpage/widget.dart';
+
+import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
+import 'package:empire/feature/auth/presentation/views/loginpage/widget.dart';
+import 'package:empire/feature/auth/presentation/views/registerpage/widget.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -79,7 +81,7 @@ class UpdateProfiles extends StatelessWidget {
                         ),
                       ),
                       const SizedBox20(),
-                      const ProfileImage(),
+                       const ProfileImages(),
                       const SizedBox30(),
                       LoginField(
                         color: const Color(0xffF1F4FE),

@@ -1,34 +1,35 @@
 import 'package:empire/core/di/service_locator.dart';
-import 'package:empire/data/datasource/auth_repo.dart';
-import 'package:empire/domain/repositories/auth_repository.dart';
-import 'package:empire/domain/repositories/local_auth.dart';
-import 'package:empire/domain/usecase/auth/Login_status_auth_usecase.dart';
-import 'package:empire/domain/usecase/auth/forgotpassword_usecase.dart';
-import 'package:empire/domain/usecase/auth/get_user_details_usecase.dart';
-import 'package:empire/domain/usecase/auth/login_auth_usecase.dart';
-import 'package:empire/domain/usecase/auth/pick_image_camera_usecase.dart';
-import 'package:empire/domain/usecase/auth/pick_image_gallery_usecase.dart';
-import 'package:empire/domain/usecase/auth/register_usecase.dart';
-import 'package:empire/domain/usecase/auth/save_login_status_usecase.dart';
-import 'package:empire/domain/usecase/auth/send_otp_usecase.dart';
-import 'package:empire/domain/usecase/auth/update_user_deatils_usecase.dart';
-import 'package:empire/domain/usecase/auth/verify_user_usecase.dart';
+import 'package:empire/feature/auth/data/datasource/auth_repo.dart';
+import 'package:empire/feature/auth/domain/repositories/auth_repository.dart';
+import 'package:empire/feature/auth/domain/repositories/local_auth.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/forgotpassword_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/get_user_details_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/login_auth_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/loginstatue_usecase.dart';
 
-import 'package:empire/presentation/bloc/auth/forgot_password.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/pick_image_camera_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/pick_image_gallery_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/register_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/save_login_status_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/send_otp_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/update_user_deatils_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/verify_user_usecase.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/forgot_password.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/login.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/login_status.dart';
 
-import 'package:empire/presentation/bloc/auth/login.dart';
-import 'package:empire/presentation/bloc/auth/login_status.dart';
-import 'package:empire/presentation/bloc/auth/loginpage.dart';
-import 'package:empire/presentation/bloc/auth/logout_bloc.dart';
-import 'package:empire/presentation/bloc/auth/otp.dart';
-import 'package:empire/presentation/bloc/auth/profile_bloc.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/loginpage.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/logout_bloc.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/otp.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/profile_image.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/registerpage.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/savepassowrd.dart';
+import 'package:empire/feature/auth/presentation/views/loginpage/home_page.dart';
+import 'package:empire/feature/product/domain/usecase/get_category_usecase.dart';
+import 'package:empire/feature/product/presentation/bloc/product_bloc/get_category_bloc.dart';
+import 'package:empire/feature/product/presentation/views/mainscreen/main_screen.dart';
 
-import 'package:empire/presentation/bloc/auth/profile_image.dart';
-import 'package:empire/presentation/bloc/auth/registerpage.dart';
-import 'package:empire/presentation/bloc/auth/savepassowrd.dart';
-
-import 'package:empire/presentation/views/loginpage/home_page.dart';
-import 'package:empire/presentation/views/mainscreen/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -43,7 +44,7 @@ class MyApp extends StatelessWidget {
             create: (_) =>
                 AuthBloc(sl<SigningWithGoogle>(), sl<SaveLoginStatus>())),
         BlocProvider<AuthBlocStatus>(
-          create: (_) => AuthBlocStatus(sl<CheckLoginStatus>())
+          create: (_) => AuthBlocStatus(sl<CheckLoginStatusUsecase>())
             ..add(CheckingLoginStatusevent()),
         ),
         BlocProvider<ImageAuth>(
@@ -73,6 +74,10 @@ class MyApp extends StatelessWidget {
                   sl<AuthRemoteDataSource>(),
                   sl<SaveLoginStatus>(),
                 )),
+        BlocProvider(
+            create: (_) => CategoryBloc(
+                  sl<CategoryUsecase>(),
+                )..add(GetCategoryEvent()))
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

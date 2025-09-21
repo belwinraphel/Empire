@@ -1,5 +1,6 @@
-import 'package:empire/presentation/bloc/auth/otp.dart';
-import 'package:empire/presentation/views/password/password.dart';
+
+import 'package:empire/feature/auth/presentation/bloc/auth/otp.dart';
+import 'package:empire/feature/auth/presentation/views/password/password.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';

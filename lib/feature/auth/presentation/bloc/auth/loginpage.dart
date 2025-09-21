@@ -1,6 +1,7 @@
-import 'package:empire/domain/usecase/auth/login_auth_usecase.dart';
-import 'package:empire/domain/usecase/auth/save_login_status_usecase.dart';
+
  
+import 'package:empire/feature/auth/domain/usecase/auth/login_auth_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/save_login_status_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class GoogleLoginpageEvent {}

@@ -1,4 +1,6 @@
-import 'package:empire/domain/usecase/auth/Login_status_auth_usecase.dart';
+
+ 
+import 'package:empire/feature/auth/domain/usecase/auth/loginstatue_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class LoginStatusevent {}
@@ -16,7 +18,7 @@ class SucessLoginStatusState extends LoginStatusState {}
 class NotLoginState extends LoginStatusState {}
 
 class AuthBlocStatus extends Bloc<CheckingLoginStatusevent, LoginStatusState> {
-  final CheckLoginStatus checkLoginStatus;
+  final CheckLoginStatusUsecase checkLoginStatus;
   AuthBlocStatus(this.checkLoginStatus) : super(InitialLoginStatusstate()) {
     on<CheckingLoginStatusevent>((event, emit) async {
       emit(LoadinglLoginStatusstate());

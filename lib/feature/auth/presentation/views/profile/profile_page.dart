@@ -1,7 +1,9 @@
 import 'package:empire/core/utilis/fonts.dart';
-import 'package:empire/presentation/bloc/auth/logout_bloc.dart';
-import 'package:empire/presentation/views/loginpage/home_page.dart';
-import 'package:empire/presentation/views/updatProfile/update_profile.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/logout_bloc.dart';
+import 'package:empire/feature/auth/presentation/views/loginpage/home_page.dart';
+import 'package:empire/feature/auth/presentation/views/updatProfile/update_profile.dart';
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
