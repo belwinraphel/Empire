@@ -12,3 +12,4 @@ class CheckingUser {
         email: email, mobile: mobile, name: name, image: image);
   }
 }
+  

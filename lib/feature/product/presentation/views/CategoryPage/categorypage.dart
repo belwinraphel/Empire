@@ -1,7 +1,10 @@
+import 'package:empire/core/utilis/color.dart';
+import 'package:empire/core/utilis/widget.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/get_category_bloc.dart';
 import 'package:empire/feature/product/presentation/views/CategoryPage/widget.dart';
+import 'package:empire/feature/product/presentation/views/search/seacrh.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CategoryPage extends StatelessWidget {
@@ -10,192 +13,164 @@ class CategoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ColoRs.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Empire in',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Welcome',
-                                    style: TextStyle(
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: const Center(
-                                      child: Text(
-                                        '₹0',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: const Icon(
-                                      Icons.person,
-                                      color: Colors.black,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          const Row(
-                            children: [
-                              Text(
-                                'HOME',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              Text(
-                                ' - Belwin raphel No 29 pea...',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              Icon(
-                                Icons.keyboard_arrow_down,
-                                color: Colors.black,
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Search Bar
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: 'Search ',
-                            hintStyle: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 16,
-                            ),
-                            prefixIcon: Icon(
-                              Icons.search,
-                              color: Colors.grey[600],
-                              size: 24,
-                            ),
-                            suffixIcon: Icon(
-                              Icons.mic,
-                              color: Colors.grey[600],
-                              size: 24,
-                            ),
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Content
-              BlocBuilder<CategoryBloc, CategoryState>(
-                builder: (context, state) {
-                  if (state is CategoryLoadingState) {
-                    return buildShimmerLoading();
-                  } else if (state is CategoryErrorState) {
-                    return buildErrorState(context, state.error);
-                  } else if (state is CategoryLoadedState) {
-                    if (state.categories.isEmpty) {
-                      return const Center(
-                          child: Text("No categories available."));
-                    }
-                    return ListView.builder(
-                      padding: const EdgeInsets.all(0),
-                      shrinkWrap: true,
-                      itemCount: state.categories.length,
-                      itemBuilder: (context, index) {
-                        final category = state.categories[index];
-                        return CategoryItems(category: category);
-                      },
-                    );
-                  }
-                  return buildShimmerLoading();
-                },
-              ),
-            ],
+            children: [searchSection(context), categorySection()],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildBottomNavItem(IconData icon, String label, bool isSelected) {
+  Padding categorySection() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          BlocBuilder<CategoryBloc, CategoryState>(
+            builder: (context, state) {
+              if (state is CategoryLoadingState) {
+                return buildShimmerLoading();
+              } else if (state is CategoryErrorState) {
+                return buildErrorState(context, state.error);
+              } else if (state is CategoryLoadedState) {
+                if (state.categories.isEmpty) {
+                  return const Center(child: Text("No categories available."));
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.all(0),
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: state.categories.length,
+                  itemBuilder: (context, index) {
+                    final category = state.categories[index];
+                    return CategoryItems(category: category);
+                  },
+                );
+              }
+              return buildShimmerLoading();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container searchSection(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.23,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: const BoxDecoration(
+          gradient: LinearGradient(
+        colors: [ColoRs.background, ColoRs.white],
+        end: Alignment(0.0, 1),
+        begin: Alignment(0.0, -1),
+      )),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 24),
+          const Text(
+            'Welcome',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Belwin Raphel',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              CircleAvatar(
+                
+                backgroundColor: ColoRs.white,
+              )
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Row(
+            children: [
+              Icon(Icons.home, size: 16, color: Colors.black54),
+              SizedBox(width: 4),
+              Text(
+                'Home',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(width: 4),
+              Text(
+                '- Kuruthukulangra House',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                ),
+              ),
+              Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.black54),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: TextField(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) {
+                    return ProductSearchScreen();
+                  },
+                ));
+              },
+              decoration: const InputDecoration(
+                filled: true,
+                fillColor: ColoRs.white,
+                hintText: 'Search ',
+                hintStyle: TextStyle(
+                  color: ColoRs.black,
+                  fontSize: 16,
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: ColoRs.black,
+                  size: 24,
+                ),
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 6,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox20()
+        ],
+      ),
+    );
+  }
+
+  Widget buildBottomNavItem(IconData icon, String label, bool isSelected) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -260,9 +235,7 @@ class CategorySection extends StatelessWidget {
             itemBuilder: (context, index) {
               final category = categories[index];
               return GestureDetector(
-                onTap: () {
-                  // Handle category tap
-                },
+                onTap: () {},
                 child: Column(
                   children: [
                     Expanded(

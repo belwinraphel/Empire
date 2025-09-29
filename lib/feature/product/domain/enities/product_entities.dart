@@ -17,10 +17,17 @@ class ProductEntity extends Equatable {
   final String category;
   final int quantities;
   final List<String> images;
- 
+  final String mainCategoryId;
+  final String subcategoryId;
+  final String mainCategoryName;
+  final String subcategoryName;
   final List<String> filterTags;
   final List<Variant> variantDetails;
   const ProductEntity({
+    required this.mainCategoryId,
+    required this.subcategoryId,
+    required this.mainCategoryName,
+    required this.subcategoryName,
     this.productDocId,
     required this.name,
     required this.description,
@@ -37,35 +44,40 @@ class ProductEntity extends Equatable {
     required this.category,
     required this.quantities,
     required this.images,
- 
     required this.filterTags,
-
     required this.variantDetails,
   });
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'description': description,
-    'price': price,
-    'discountPrice': discountPrice,
-    'sku': sku,
-    'tags': tags,
-    'inStock': inStock,
-    'weight': weight,
-    'length': length,
-    'width': width,
-    'height': height,
-    'taxRate': taxRate,
-    'category': category,
-    'quantities': quantities,
-    'images': images,
- 
-    'filterTags': filterTags,
-    'variantDetails': variantDetails.map((v) => v.toJson()).toList(),
-    'productDocId': productDocId,
-  };
+        'mainCategoryId': mainCategoryId,
+        'subcategoryId': subcategoryId,
+        'mainCategoryName': mainCategoryName,
+        'subcategoryName': subcategoryName,
+        'name': name,
+        'description': description,
+        'price': price,
+        'discountPrice': discountPrice,
+        'sku': sku,
+        'tags': tags,
+        'inStock': inStock,
+        'weight': weight,
+        'length': length,
+        'width': width,
+        'height': height,
+        'taxRate': taxRate,
+        'category': category,
+        'quantities': quantities,
+        'images': images,
+        'filterTags': filterTags,
+        'variantDetails': variantDetails.map((v) => v.toJson()).toList(),
+        'productDocId': productDocId,
+      };
 
   ProductEntity copyWith({
+    String? mainCategoryId,
+    String? subcategoryId,
+    String? mainCategoryName,
+    String? subcategoryName,
     String? productDocId,
     String? name,
     String? description,
@@ -89,6 +101,10 @@ class ProductEntity extends Equatable {
     String? timestamp,
   }) {
     return ProductEntity(
+      mainCategoryId: mainCategoryId ?? this.mainCategoryId,
+      subcategoryId: subcategoryId ?? this.subcategoryId,
+      mainCategoryName: mainCategoryName ?? this.subcategoryName,
+      subcategoryName: subcategoryName ?? this.subcategoryName,
       productDocId: productDocId ?? this.productDocId,
       name: name ?? this.name,
       description: description ?? this.description,
@@ -105,7 +121,6 @@ class ProductEntity extends Equatable {
       category: category ?? this.category,
       quantities: quantities ?? this.quantities,
       images: images ?? this.images,
-  
       filterTags: filterTags ?? this.filterTags,
       variantDetails: variantDetails,
     );
@@ -113,25 +128,28 @@ class ProductEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-    name,
-    description,
-    price,
-    discountPrice,
-    sku,
-    tags,
-    inStock,
-    weight,
-    length,
-    width,
-    height,
-    taxRate,
-    category,
-    quantities,
-    images,
- 
-    filterTags,
-    variantDetails,
-  ];
+        mainCategoryId,
+        subcategoryId,
+        mainCategoryName,
+        subcategoryName,
+        name,
+        description,
+        price,
+        discountPrice,
+        sku,
+        tags,
+        inStock,
+        weight,
+        length,
+        width,
+        height,
+        taxRate,
+        category,
+        quantities,
+        images,
+        filterTags,
+        variantDetails,
+      ];
 }
 
 class Variant extends Equatable {
@@ -150,12 +168,12 @@ class Variant extends Equatable {
   });
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'image': image,
-    'Regular': regularPrice,
-    'salePrice': salePrice,
-    'quantity': quantity,
-  };
+        'name': name,
+        'image': image,
+        'Regular': regularPrice,
+        'salePrice': salePrice,
+        'quantity': quantity,
+      };
 
   @override
   List<Object?> get props => [name, image, regularPrice, salePrice, quantity];

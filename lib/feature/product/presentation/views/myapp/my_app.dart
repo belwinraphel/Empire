@@ -1,5 +1,5 @@
 import 'package:empire/core/di/service_locator.dart';
-import 'package:empire/feature/auth/data/datasource/auth_repo.dart';
+import 'package:empire/feature/auth/domain/data/datasource/auth_repo.dart';
 import 'package:empire/feature/auth/domain/repositories/auth_repository.dart';
 import 'package:empire/feature/auth/domain/repositories/local_auth.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/forgotpassword_usecase.dart';

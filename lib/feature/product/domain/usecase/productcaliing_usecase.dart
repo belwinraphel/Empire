@@ -10,8 +10,9 @@ class ProductcallingUsecase {
   Future<Either<Failures, List<ProductEntity>>> call(
     String mainCategoryId,
     String subcategoryId,
+    String subcategoryname
   ) {
-    return prodcuctRepository.getProducts(mainCategoryId, subcategoryId);
+    return prodcuctRepository.getProducts(mainCategoryId, subcategoryId,subcategoryname);
   }
 
   Future<Either<Failures, List<Brand>>> getProductBrand(

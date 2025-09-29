@@ -2,6 +2,7 @@ import 'package:empire/core/di/service_locator.dart';
 import 'package:empire/feature/product/data/datasource/product_datasource.dart';
 import 'package:empire/feature/product/domain/enities/listproducts.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/serach_bloc.dart';
+import 'package:empire/feature/product/presentation/views/prodcutdetailpage.dart/productdetailpage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,20 +50,31 @@ class ProductSearchScreen extends StatelessWidget {
                               itemCount: state.products.length,
                               itemBuilder: (context, index) {
                                 final product = state.products[index];
-                                return ListTile(
-                                  leading: product.images.isNotEmpty
-                                      ? Image.network(
-                                          product.images[0],
-                                          width: 50,
-                                          height: 50,
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  const Icon(Icons.image),
-                                        )
-                                      : const Icon(Icons.image),
-                                  title: Text(product.name),
-                                  subtitle: Text(
-                                    'Price: \$${product.price.toStringAsFixed(2)} | Brand: ${product.filterTags.join(", ")}',
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(context, MaterialPageRoute(
+                                      builder: (context) {
+                                        return ProductDetailScreen(
+                                          product: product,
+                                        );
+                                      },
+                                    ));
+                                  },
+                                  child: ListTile(
+                                    leading: product.images.isNotEmpty
+                                        ? Image.network(
+                                            product.images[0],
+                                            width: 50,
+                                            height: 50,
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    const Icon(Icons.image),
+                                          )
+                                        : const Icon(Icons.image),
+                                    title: Text(product.name),
+                                    subtitle: Text(
+                                      'Price: \$${product.price.toStringAsFixed(2)} | Brand: ${product.filterTags.join(", ")}',
+                                    ),
                                   ),
                                 );
                               },

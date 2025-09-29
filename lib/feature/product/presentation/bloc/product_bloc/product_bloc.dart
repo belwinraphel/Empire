@@ -12,9 +12,11 @@ abstract class Productevent extends Equatable {
 class ProductCallingEvent extends Productevent {
   final String mainCategoryId;
   final String subCategoryId;
+  String subcategoryname;
   ProductCallingEvent({
     required this.mainCategoryId,
     required this.subCategoryId,
+    required this.subcategoryname,
   });
   @override
   List<Object?> get props => [mainCategoryId, subCategoryId];
@@ -49,7 +51,7 @@ class ProductcalingBloc extends Bloc<ProductCallingEvent, Productstate> {
     on<ProductCallingEvent>((event, emit) async {
       final result = await productcaliingUsecase(
         event.mainCategoryId,
-        event.subCategoryId,
+        event.subCategoryId,event.subcategoryname
       );
 
       result.fold(

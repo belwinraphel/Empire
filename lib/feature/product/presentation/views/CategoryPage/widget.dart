@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:empire/core/di/service_locator.dart';
+import 'package:empire/core/utilis/color.dart';
 
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/feature/product/domain/enities/category_entities.dart';
@@ -73,122 +74,117 @@ Widget buildCategoryList(BuildContext context, CategoryLoadedState state) {
 class CategoryItems extends StatelessWidget {
   final CategoryEntities category;
 
-  const CategoryItems({required this.category});
+  const CategoryItems({super.key, required this.category});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => SubCategoryBloc(sl<GettingSubcategoryUsecase>())
         ..add(GetSubCategoryEvent(category.uid)),
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  Text(
-                    category.category,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ],
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Text(
+                  category.category,
+                  style: const TextStyle(
+                      fontFamily: Fonts.celiasbold, fontSize: 18),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            BlocBuilder<SubCategoryBloc, SubCategoryState>(
-              builder: (context, state) {
-                if (state is SubCategoryLoadingState) {
-                  return buildShimmerLoading();
-                } else if (state is SubCategoryErrorState) {
-                  return buildErrorState(context, state.error);
-                } else if (state is SubCategoryLoadedState) {
-                  if (state.categories.isEmpty) {
-                    return const Center(
+          ),
+          const SizedBox(height: 12),
+          BlocBuilder<SubCategoryBloc, SubCategoryState>(
+            builder: (context, state) {
+              if (state is SubCategoryLoadingState) {
+                return buildShimmerLoading();
+              } else if (state is SubCategoryErrorState) {
+                return buildErrorState(context, state.error);
+              } else if (state is SubCategoryLoadedState) {
+                if (state.categories.isEmpty) {
+                  return const Center(
+                    child: Column(
+                      children: [
+                        Text("No subcategories available."),
+                      ],
+                    ),
+                  );
+                }
+                return GridView.builder(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(0),
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    childAspectRatio: 0.75,
+                    crossAxisSpacing: 9,
+                    mainAxisSpacing: 0,
+                  ),
+                  itemCount: state.categories.length,
+                  itemBuilder: (context, index) {
+                    final subCategory = state.categories[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) {
+                            return SubCategoryPage(
+                              subcategoyId: subCategory.uid,
+                              mainCtageoruId: category.uid,
+                              subcategName: subCategory.category,
+                            );
+                          },
+                        ));
+                      },
                       child: Column(
                         children: [
-                          Text("No subcategories available."),
-                        ],
-                      ),
-                    );
-                  }
-                  return GridView.builder(
-                    shrinkWrap: true,
-                    padding: const EdgeInsets.all(0),
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      childAspectRatio: 0.8,
-                      // crossAxisSpacing: 9,
-                      // mainAxisSpacing: 8,
-                    ),
-                    itemCount: state.categories.length,
-                    itemBuilder: (context, index) {
-                      final subCategory = state.categories[index];
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (context) {
-                              return SubCategoryPage(
-                                categoyId: subCategory.uid,
-                                mainCtageoruId: category.uid,
-                              );
-                            },
-                          ));
-                        },
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 90,
-                              width: 85,
-                              decoration: BoxDecoration(
-                                color: const Color(0xffE0E9F6),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: CachedNetworkImage(
-                                    imageUrl: subCategory.imageUrl,
-                                    fit: BoxFit.fill,
-                                    placeholder: (context, url) =>
-                                        Shimmer.fromColors(
-                                      baseColor: Colors.grey[300]!,
-                                      highlightColor: Colors.grey[100]!,
-                                      child:
-                                          const SizedBox(height: 90, width: 90),
-                                    ),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.error),
-                                  ),
+                          Container(
+                            height: 80,
+                            width: 85,
+                            decoration: BoxDecoration(
+                              color: ColoRs.homecardcolor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: CachedNetworkImage(
+                                imageUrl: subCategory.imageUrl,
+                                fit: BoxFit.fill,
+                                placeholder: (context, url) =>
+                                    Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[100]!,
+                                  child: const SizedBox(height: 90, width: 90),
                                 ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
+                          ),
+                          const SizedBox(height: 4),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 5, right: 5),
+                            child: Text(
                               subCategory.category,
                               textAlign: TextAlign.center,
                               style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 0.90,
-                                color: Colors.black87,
+                                fontSize: 13,
+                                fontFamily: Fonts.celiasmediumbold,
                               ),
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                }
-                return buildShimmerLoading();
-              },
-            ),
-          ],
-        ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              }
+              return buildShimmerLoading();
+            },
+          ),
+        ],
       ),
     );
   }
@@ -294,92 +290,6 @@ class CategoryItem extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class CategorySection extends StatelessWidget {
-  final String title;
-  final List<CategoryItem> categories;
-
-  const CategorySection({
-    super.key,
-    required this.title,
-    required this.categories,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 16),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              childAspectRatio: 0.8,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
-            itemCount: categories.length,
-            itemBuilder: (context, index) {
-              final category = categories[index];
-              return GestureDetector(
-                onTap: () {},
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.image,
-                              color: Colors.grey,
-                              size: 30,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      category.doc.category,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
-                        height: 1.2,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-      ),
     );
   }
 }

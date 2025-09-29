@@ -1,8 +1,9 @@
 import 'package:empire/core/utilis/color.dart';
 
 import 'package:empire/feature/product/presentation/bloc/product_bloc/get_category_bloc.dart';
+import 'package:empire/feature/product/presentation/views/CategoryPage/categorypage.dart';
 import 'package:empire/feature/product/presentation/views/homepage/widget.dart';
-import 'package:empire/feature/product/presentation/views/prodcutdetailpage.dart/productdetailpage.dart';
+
 import 'package:empire/feature/product/presentation/views/search/seacrh.dart';
 
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ class HomePage extends StatelessWidget {
       final issmallScreen = constraints.maxWidth < 600;
       return Builder(builder: (context) {
         return Scaffold(
+          backgroundColor: ColoRs.white,
           body: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,7 +232,7 @@ class HomePage extends StatelessWidget {
                       BlocBuilder<CategoryBloc, CategoryState>(
                           builder: (context, state) {
                         if (state is CategoryLoadingState) {
-                          return buildShimmerLoading();
+                          return homeShimmerLoading(context);
                         } else if (state is CategoryErrorState) {
                           return buildErrorState(context, state.error);
                         } else if (state is CategoryLoadedState) {
@@ -243,7 +245,7 @@ class HomePage extends StatelessWidget {
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(
                                 builder: (context) {
-                                  return ProductDetailScreen();
+                                  return const CategoryPage();
                                 },
                               ));
                             },
@@ -263,7 +265,7 @@ class HomePage extends StatelessWidget {
                                             height: 70,
                                             width: 75,
                                             decoration: const BoxDecoration(
-                                                color: Color(0xFFE0E9F6),
+                                                color: ColoRs.homecardcolor,
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(12))),
                                             child: Center(
@@ -276,14 +278,11 @@ class HomePage extends StatelessWidget {
                                                   if (loadingProgress == null) {
                                                     return child;
                                                   } else {
-                                                    return Shimmer(
-                                                      gradient:
-                                                          const LinearGradient(
-                                                        colors: [
-                                                          Colors.black,
-                                                          Colors.white,
-                                                        ],
-                                                      ),
+                                                    return Shimmer.fromColors(
+                                                      baseColor:
+                                                          Colors.grey[300]!,
+                                                      highlightColor:
+                                                          Colors.grey[100]!,
                                                       child: child,
                                                     );
                                                   }
@@ -330,7 +329,7 @@ class HomePage extends StatelessWidget {
                             ),
                           );
                         }
-                        return buildShimmerLoading();
+                        return homeShimmerLoading(context);
                       }),
                     ],
                   ),
@@ -379,7 +378,7 @@ class HomePage extends StatelessWidget {
                                           height: 30,
                                           width: 40,
                                           decoration: const BoxDecoration(
-                                              color: Color(0xFFE0E9F6),
+                                              color: ColoRs.homecardcolor,
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(10))),
                                         );
@@ -388,7 +387,7 @@ class HomePage extends StatelessWidget {
                                         height: 30,
                                         width: 40,
                                         decoration: const BoxDecoration(
-                                            color: Color(0xFFE0E9F6),
+                                            color: ColoRs.homecardcolor,
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(10))),
                                         child: Center(

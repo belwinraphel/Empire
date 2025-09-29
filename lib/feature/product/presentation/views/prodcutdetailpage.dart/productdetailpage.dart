@@ -1,6 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:empire/core/utilis/color.dart';
+import 'package:empire/feature/product/domain/enities/product_entities.dart';
+import 'package:empire/feature/product/presentation/views/prodcutdetailpage.dart/widget.dart';
 import 'package:flutter/material.dart';
 
 class ProductDetailScreen extends StatefulWidget {
+  final ProductEntity product;
+  ProductDetailScreen({required this.product});
   @override
   _ProductDetailScreenState createState() => _ProductDetailScreenState();
 }
@@ -22,48 +28,60 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      height: 300,
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Color(0xFFE6B800),
-                            Color(0xFFFFD700),
-                          ],
+                    Stack(
+                      children: [
+                        Container(
+                          height: 300,
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Color(0xFFE6B800),
+                                Color(0xFFFFD700),
+                              ],
+                            ),
+                          ),
+                          child: Center(
+                            child: CachedNetworkImage(
+                              imageUrl: widget.product.images.first,
+                              fit: BoxFit.fill,
+                              placeholder: (context, url) {
+                                return const CircularProgressIndicator();
+                              },
+                              // color: isActive ? Colors.white : null,
+                              errorWidget: (context, error, stackTrace) =>
+                                  const Icon(Icons.error),
+                            ),
+                          ),
                         ),
-                      ),
-                      child: Center(
-                        child: Image.network(
-                          'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202025-09-22%20at%203.36.39%E2%80%AFAM-s4AG4yz3ifBiFSjPF2PHMZFdTERMmQ.png',
-                          height: 280,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(
+                              Icons.arrow_back_ios,
+                              color: ColoRs.black,
+                            )),
+                      ],
                     ),
-
-                    // Product Details Section
                     Container(
                       padding: const EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Price
-                          const Text(
-                            '\$17.00',
-                            style: TextStyle(
+                          Text(
+                            '\$${widget.product.price}',
+                            style: const TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
                             ),
                           ),
                           const SizedBox(height: 12),
-
-                          // Description
                           Text(
-                            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam arcu mauris, scelerisque eu mauris et, pretium rutrum ipsum.',
+                            widget.product.description,
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -71,121 +89,167 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
-
-                          // Variations Section
-                          Row(
-                            children: [
-                              const Text(
-                                'Variations',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: Colors.pink[50],
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: const Text(
-                                  'Pink',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.pink,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Text(
-                                  'M',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Container(
-                                width: 24,
-                                height: 24,
-                                decoration: const BoxDecoration(
-                                  color: Colors.green,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.check,
-                                  color: Colors.white,
-                                  size: 16,
-                                ),
-                              ),
-                            ],
-                          ),
+                          widget.product.category == 'Dress'
+                              ? Row(
+                                  children: [
+                                    const Text(
+                                      'Variations',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: Colors.pink[50],
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: const Text(
+                                        'Pink',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.pink,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[100],
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Text(
+                                        'M',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      width: 24,
+                                      height: 24,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.green,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.check,
+                                        color: Colors.white,
+                                        size: 16,
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        _buildVariantImage(
+                                            'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=60&h=60&fit=crop'),
+                                        const SizedBox(width: 8),
+                                        _buildVariantImage(
+                                            'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=60&h=60&fit=crop'),
+                                        const SizedBox(width: 8),
+                                        _buildVariantImage(
+                                            'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=60&h=60&fit=crop'),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox(),
                           const SizedBox(height: 16),
-
-                          // Product Variant Images
-                          Row(
-                            children: [
-                              _buildVariantImage(
-                                  'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=60&h=60&fit=crop'),
-                              const SizedBox(width: 8),
-                              _buildVariantImage(
-                                  'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=60&h=60&fit=crop'),
-                              const SizedBox(width: 8),
-                              _buildVariantImage(
-                                  'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=60&h=60&fit=crop'),
-                            ],
-                          ),
                           const SizedBox(height: 32),
-
-                          // Specifications Section
-                          const Text(
-                            'Specifications',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Material
-                          _buildSpecRow('Material', 'Cotton 95%'),
+                          widget.product.category == 'Dress'
+                              ? Column(
+                                  children: [
+                                    const Text(
+                                      'Specifications',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _buildSpecRow('Material', 'Cotton 95%'),
+                                    const SizedBox(height: 12),
+                                    _buildSpecRow('Origin', 'EU'),
+                                    const SizedBox(height: 20),
+                                    const Text(
+                                      'Size',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : widget.product.category == 'electronics'
+                                  ? Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(height: 16),
+                                        const Titlesnew(
+                                            nametitle: 'Shipping Details'),
+                                        const SizedBox(height: 16),
+                                        buildDetailRow(
+                                          'Weight (kg)',
+                                          widget.product.weight
+                                              .toStringAsFixed(2),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: buildDetailRow(
+                                                'Length (cm)',
+                                                widget.product.length
+                                                    .toStringAsFixed(0),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: buildDetailRow(
+                                                'Width (cm)',
+                                                widget.product.width
+                                                    .toStringAsFixed(0),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: buildDetailRow(
+                                                'Height (cm)',
+                                                widget.product.height
+                                                    .toStringAsFixed(0),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 24),
+                                      ],
+                                    )
+                                  : const SizedBox(),
+                          const SizedBox(),
                           const SizedBox(height: 12),
-
-                          // Origin
-                          _buildSpecRow('Origin', 'EU'),
-                          const SizedBox(height: 20),
-
-                          // Size Section
-                          const Text(
-                            'Size',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-
-                          Row(
-                            children: [
-                              _buildSizeOption('S', false),
-                              const SizedBox(width: 12),
-                              _buildSizeOption('M', true),
-                              const SizedBox(width: 12),
-                              _buildSizeOption('L', false),
-                              const SizedBox(width: 12),
-                              _buildSizeOption('XL', false),
-                            ],
-                          ),
+                          widget.product.category == 'Dress'
+                              ? Row(
+                                  children: [
+                                    _buildSizeOption('S', false),
+                                    const SizedBox(width: 12),
+                                    _buildSizeOption('M', true),
+                                    const SizedBox(width: 12),
+                                    _buildSizeOption('L', false),
+                                    const SizedBox(width: 12),
+                                    _buildSizeOption('XL', false),
+                                  ],
+                                )
+                              : const SizedBox(),
+                          if (widget.product.variantDetails.isNotEmpty) ...[
+                            const Titlesnew(nametitle: 'Variants'),
+                            const SizedBox(height: 16),
+                            buildVariantsSection(widget.product.variantDetails),
+                          ],
                           const SizedBox(height: 40),
                         ],
                       ),
@@ -195,7 +259,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ),
 
-            // Bottom Action Buttons
+            
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -211,7 +275,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
               child: Row(
                 children: [
-                  // Favorite Button
+                  
                   GestureDetector(
                     onTap: () {
                       setState(() {
@@ -233,7 +297,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                   const SizedBox(width: 16),
 
-                  // Add to Cart Button
+                 
                   Expanded(
                     child: Container(
                       height: 50,
@@ -262,14 +326,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                   const SizedBox(width: 12),
 
-                  // Buy Now Button
+                  
                   Expanded(
                     child: Container(
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Proceeding to checkout!')),
+                            const SnackBar(
+                                content: Text('Proceeding to checkout!')),
                           );
                         },
                         style: ElevatedButton.styleFrom(

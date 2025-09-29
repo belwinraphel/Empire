@@ -1,4 +1,4 @@
-import 'package:empire/feature/auth/data/datasource/checking_login_status.dart';
+import 'package:empire/feature/auth/domain/data/datasource/checking_login_status.dart';
 import 'package:empire/feature/auth/domain/repositories/login_status_auth.dart';
  
 

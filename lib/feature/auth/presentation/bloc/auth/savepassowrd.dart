@@ -1,5 +1,5 @@
 
-import 'package:empire/feature/auth/data/datasource/auth_repo.dart';
+import 'package:empire/feature/auth/domain/data/datasource/auth_repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class SavePasswordEvent {}

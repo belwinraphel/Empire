@@ -1,6 +1,6 @@
 
 
-import 'package:empire/feature/auth/data/datasource/auth_repo.dart';
+import 'package:empire/feature/auth/domain/data/datasource/auth_repo.dart';
 
 class SavePassword {
   final AuthRemoteDataSource authRemoteDataSource;

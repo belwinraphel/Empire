@@ -13,8 +13,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Loginpage extends StatelessWidget {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final usernamec_Controller = TextEditingController();
-  final Password_Controller = TextEditingController();
+  final usernamecController = TextEditingController();
+  final passwordController = TextEditingController();
   bool isremberme = false;
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,7 @@ class Loginpage extends StatelessWidget {
                       height: maxHeight / 7,
                     ),
                     LoginField(
-                      controller: usernamec_Controller,
+                      controller: usernamecController,
                       label: 'Email',
                       prefixican: Icons.person,
                       issmallScreen: issmallScreen,
@@ -62,7 +62,7 @@ class Loginpage extends StatelessWidget {
                     SizedBox(height: maxHeight * 0.030),
                     LoginField(
                       obscureText: true,
-                      controller: Password_Controller,
+                      controller: passwordController,
                       label: 'Password',
                       prefixican: Icons.lock_outline,
                       issmallScreen: issmallScreen,
@@ -228,8 +228,8 @@ class Loginpage extends StatelessWidget {
                               onPressed: () {
                                 if (formKey.currentState!.validate()) {
                                   context.read<LoginBloc>().add(LogPresed(
-                                      usernamec_Controller.text,
-                                      Password_Controller.text));
+                                      usernamecController.text,
+                                      passwordController.text));
                                 }
                               },
                               maxwidth: maxwidth,
