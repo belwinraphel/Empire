@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/widget.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/get_category_bloc.dart';
 import 'package:empire/feature/product/presentation/views/CategoryPage/widget.dart';
 import 'package:empire/feature/product/presentation/views/search/seacrh.dart';
@@ -13,11 +15,14 @@ class CategoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColoRs.white,
+      backgroundColor: ColoRs.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: [searchSection(context), categorySection()],
+          child: Container(
+            color: ColoRs.white,
+            child: Column(
+              children: [searchSection(context), categorySection()],
+            ),
           ),
         ),
       ),
@@ -71,57 +76,137 @@ class CategoryPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 24),
-          const Text(
-            'Welcome',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.black87,
-              fontWeight: FontWeight.w500,
-            ),
+          BlocBuilder<ProfileBloc, ProfileState>(
+            builder: (context, state) {
+              if (state is ProfileLoaded) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Welcome',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          state.user.name!,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        state.user.photourl == null
+                            ? const Icon(Icons.person_pin)
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(26),
+                                child: CachedNetworkImage(
+                                  height: 51,
+                                  width: 55,
+                                  imageUrl: state.user.photourl!,
+                                  fit: BoxFit.fill,
+                                  placeholder: (context, url) {
+                                    return const CircularProgressIndicator();
+                                  },
+                                  // color: isActive ? Colors.white : null,
+                                  errorWidget: (context, error, stackTrace) =>
+                                      const Icon(Icons.error),
+                                ),
+                              ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Row(
+                      children: [
+                        Icon(Icons.home, size: 16, color: Colors.black54),
+                        SizedBox(width: 4),
+                        Text(
+                          'Home',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          '- Kuruthukulangra House',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        Icon(Icons.keyboard_arrow_down,
+                            size: 16, color: Colors.black54),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                );
+              }
+              return const Column(
+                children: [
+                  SizedBox(height: 24),
+                  Text(
+                    'Welcome',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        ' ',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      CircleAvatar(
+                        backgroundColor: ColoRs.white,
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.home, size: 16, color: Colors.black54),
+                      SizedBox(width: 4),
+                      Text(
+                        'Home',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        ' ',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      Icon(Icons.keyboard_arrow_down,
+                          size: 16, color: Colors.black54),
+                    ],
+                  ),
+                  SizedBox(height: 24),
+                ],
+              );
+            },
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Belwin Raphel',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              CircleAvatar(
-                
-                backgroundColor: ColoRs.white,
-              )
-            ],
-          ),
-          const SizedBox(height: 8),
-          const Row(
-            children: [
-              Icon(Icons.home, size: 16, color: Colors.black54),
-              SizedBox(width: 4),
-              Text(
-                'Home',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(width: 4),
-              Text(
-                '- Kuruthukulangra House',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                ),
-              ),
-              Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.black54),
-            ],
-          ),
-          const SizedBox(height: 24),
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),

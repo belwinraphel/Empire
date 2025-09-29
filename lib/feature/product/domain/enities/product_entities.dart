@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 class ProductEntity extends Equatable {
@@ -47,7 +48,43 @@ class ProductEntity extends Equatable {
     required this.filterTags,
     required this.variantDetails,
   });
-
+  factory ProductEntity.fromDocument(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return ProductEntity(
+      mainCategoryId: data['mainCategoryId'] ?? "",
+      subcategoryId: data['subcategoryId'] ?? "",
+      mainCategoryName: data['mainCategoryName'] ?? "",
+      subcategoryName: data['subcategoryName'] ?? "",
+      productDocId: data[''] ?? '',
+      name: data['name'] ?? '',
+      description: data['description'] ?? '',
+      price: (data['price'] as num?)?.toDouble() ?? 0.0,
+      discountPrice: (data['discountPrice'] as num?)?.toDouble() ?? 0.0,
+      sku: data['sku'] ?? '',
+      tags: List<String>.from(data['tags'] ?? []),
+      inStock: data['inStock'] ?? false,
+      weight: (data['weight'] as num?)?.toDouble() ?? 0.0,
+      length: (data['length'] as num?)?.toDouble() ?? 0.0,
+      width: (data['width'] as num?)?.toDouble() ?? 0.0,
+      height: (data['height'] as num?)?.toDouble() ?? 0.0,
+      taxRate: (data['taxRate'] as num?)?.toDouble() ?? 0.0,
+      category: data['category'] ?? '',
+      quantities: data['quantities'] ?? 0,
+      images: List<String>.from(data['images'] ?? []),
+      filterTags: List<String>.from(data['filterTags'] ?? []),
+      variantDetails: data['variantDetails']
+          .map<Variant>(
+            (v) => Variant(
+              name: v['name'] ?? "",
+              image: v['image'] ?? "",
+              regularPrice: (v['regularPrice'] as num?)?.toDouble() ?? 0.0,
+              salePrice: (v['salePrice'] as num?)?.toDouble() ?? 0.0,
+              quantity: v['quantity'] ?? 0,
+            ),
+          )
+          .toList(),
+    );
+  }
   Map<String, dynamic> toJson() => {
         'mainCategoryId': mainCategoryId,
         'subcategoryId': subcategoryId,

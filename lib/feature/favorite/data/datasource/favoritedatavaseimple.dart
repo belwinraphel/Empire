@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dartz/dartz.dart';
+import 'package:empire/core/utilis/failure.dart';
+import 'package:empire/feature/product/domain/enities/product_entities.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class FavoritesRemoteDataSource {
   Stream<Set<String>> getFavoritesStream();
   Future<void> addFavorite(String productId);
   Future<void> removeFavorite(String productId);
+  Future<Either<Failures, List<ProductEntity>>> getFavoriteProduct();
 }
 
 class FavoritesRemoteDataSourceImpl implements FavoritesRemoteDataSource {
@@ -23,8 +27,7 @@ class FavoritesRemoteDataSourceImpl implements FavoritesRemoteDataSource {
     if (user == null) {
       return Stream.value({});
     }
-    print(user);
-    print('started');
+
     return _firestore
         .collection('user')
         .doc(user.uid)
@@ -57,5 +60,43 @@ class FavoritesRemoteDataSourceImpl implements FavoritesRemoteDataSource {
         .collection('favorites')
         .doc(productId)
         .delete();
+  }
+
+  @override
+  Future<Either<Failures, List<ProductEntity>>> getFavoriteProduct() async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) {
+        return const Left(Failures.server('User not logged in'));
+      }
+
+     
+      final favorites = await FirebaseFirestore.instance
+          .collection('user')
+          .doc(user.uid)
+          .collection('favorites')
+          .get();
+
+      List<String> favoritesProductIds =
+          favorites.docs.map((doc) => doc.id).toList();
+
+      if (favoritesProductIds.isEmpty) {
+        return const Right([]); // No favorites
+      }
+
+     
+      final productSnapShot =
+          await FirebaseFirestore.instance.collection('products').get();
+
+      // Filter only favorite products
+      List<ProductEntity> products = productSnapShot.docs
+          .where((doc) => favoritesProductIds.contains(doc.id))
+          .map((doc) => ProductEntity.fromDocument(doc))
+          .toList();
+
+      return Right(products);
+    } catch (e) {
+      return Left(Failures.server(e.toString()));
+    }
   }
 }

@@ -91,7 +91,9 @@ class CategoryItems extends StatelessWidget {
                 Text(
                   category.category,
                   style: const TextStyle(
-                      fontFamily: Fonts.celiasbold, fontSize: 18),
+                      fontWeight: FontWeight.bold,
+                      fontFamily: Fonts.celiasbold,
+                      fontSize: 20),
                 ),
               ],
             ),
@@ -119,8 +121,8 @@ class CategoryItems extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
-                    childAspectRatio: 0.75,
-                    crossAxisSpacing: 9,
+                    childAspectRatio: 0.74,
+                    crossAxisSpacing: 0,
                     mainAxisSpacing: 0,
                   ),
                   itemCount: state.categories.length,
@@ -141,8 +143,8 @@ class CategoryItems extends StatelessWidget {
                       child: Column(
                         children: [
                           Container(
-                            height: 80,
-                            width: 85,
+                            height: 90,
+                            width: 90,
                             decoration: BoxDecoration(
                               color: ColoRs.homecardcolor,
                               borderRadius: BorderRadius.circular(12),
@@ -151,12 +153,14 @@ class CategoryItems extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                               child: CachedNetworkImage(
                                 imageUrl: subCategory.imageUrl,
+                                height: 90,
+                                width: 90,
                                 fit: BoxFit.fill,
                                 placeholder: (context, url) =>
                                     Shimmer.fromColors(
                                   baseColor: Colors.grey[300]!,
                                   highlightColor: Colors.grey[100]!,
-                                  child: const SizedBox(height: 90, width: 90),
+                                  child: const SizedBox(height: 80, width: 85),
                                 ),
                                 errorWidget: (context, url, error) =>
                                     const Icon(Icons.error),
@@ -171,7 +175,8 @@ class CategoryItems extends StatelessWidget {
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                 fontSize: 13,
-                                fontFamily: Fonts.celiasmediumbold,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: Fonts.celiasregular,
                               ),
                             ),
                           ),
