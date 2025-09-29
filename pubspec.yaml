@@ -45,6 +45,8 @@ dependencies:
   logger: ^2.6.0
   device_info_plus:  
   shimmer: ^3.0.0
+  flutter_svg: ^2.0.17
+  flutter_staggered_animations: ^1.1.1
   cached_network_image: ^3.4.1
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -104,6 +106,15 @@ flutter:
     - family: Raleway-Semibold
       fonts:
         - asset: fonts/Raleway-SemiBold.ttf
+    - family: celias-bold
+      fonts:
+        - asset: fonts/Celias-Bold.ttf
+    - family: celias-medium
+      fonts:
+        - asset: fonts/Celias-Medium.ttf
+    - family: celias-regular
+      fonts:
+        - asset: fonts/Celias.ttf
 
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
