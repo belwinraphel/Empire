@@ -113,7 +113,7 @@ class AuthRemoteDataSource {
       //   }
       // }
     } catch (e) {
-      print('Password setup failed: ${e}');
+  
     }
   }
 

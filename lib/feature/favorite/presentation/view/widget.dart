@@ -204,3 +204,4 @@ class Product {
     this.deliveryTime = 10,
   });
 }
+

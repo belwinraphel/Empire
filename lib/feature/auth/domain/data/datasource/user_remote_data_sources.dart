@@ -31,14 +31,14 @@ class UserRemoteDataSource {
 
   Future<void> updateUserProfile(UserEntity user) async {
     String? uploadedImageUrls;
-    print(user.photourl);
+ 
     try {
       final file = File(user.photourl!);
       final image = await uploadImageToCloudinary(file);
       if (image == null || image.isEmpty) {
         return;
       }
-      print(uploadedImageUrls);
+ 
       uploadedImageUrls = image;
       await firestore.collection('user').doc(user.uid).update({
         'name': user.name,

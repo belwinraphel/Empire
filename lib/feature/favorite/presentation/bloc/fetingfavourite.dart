@@ -3,60 +3,63 @@ import 'package:empire/feature/product/domain/enities/product_entities.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-abstract class FavoriteEvent extends Equatable {
-  const FavoriteEvent();
+abstract class FetchingFavoriteEvent extends Equatable {
+  const FetchingFavoriteEvent();
 
   @override
   List<Object?> get props => [];
 }
 
-class LoadFavorites extends FavoriteEvent {}
-abstract class FavoriteState extends Equatable {
-  const FavoriteState();
+class LoadFetchingFavorites extends FetchingFavoriteEvent {}
+
+abstract class FetchingFavoriteState extends Equatable {
+  const FetchingFavoriteState();
 
   @override
   List<Object?> get props => [];
 }
 
-class FavoriteInitial extends FavoriteState {}
+class FetchingFavoriteInitial extends FetchingFavoriteState {}
 
-class FavoriteLoading extends FavoriteState {}
+class FetchingFavoriteLoading extends FetchingFavoriteState {}
 
-class FavoriteLoaded extends FavoriteState {
+class FetchingFavoriteLoaded extends FetchingFavoriteState {
   final List<ProductEntity> products;
 
-  const FavoriteLoaded(this.products);
+  const FetchingFavoriteLoaded(this.products);
 
   @override
   List<Object?> get props => [products];
 }
 
-class FavoriteError extends FavoriteState {
+class FetchingFavoriteError extends FetchingFavoriteState {
   final String message;
 
-  const FavoriteError(this.message);
+  const FetchingFavoriteError(this.message);
 
   @override
   List<Object?> get props => [message];
 }
-class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
+
+class FetchingFavoriteBloc
+    extends Bloc<FetchingFavoriteEvent, FetchingFavoriteState> {
   final FavoritesRepository repository;
 
-  FavoriteBloc(this.repository) : super(FavoriteInitial()) {
-    on<LoadFavorites>(_onLoadFavorites);
+  FetchingFavoriteBloc(this.repository) : super(FetchingFavoriteInitial()) {
+    on<LoadFetchingFavorites>(_onLoadFavorites);
   }
 
   Future<void> _onLoadFavorites(
-    LoadFavorites event,
-    Emitter<FavoriteState> emit,
+    LoadFetchingFavorites event,
+    Emitter<FetchingFavoriteState> emit,
   ) async {
-    emit(FavoriteLoading());
+    emit(FetchingFavoriteLoading());
 
     final result = await repository.getFavoriteProduct();
 
     result.fold(
-      (failure) => emit(FavoriteError(failure.message)),
-      (products) => emit(FavoriteLoaded(products)),
+      (failure) => emit(FetchingFavoriteError(failure.message)),
+      (products) => emit(FetchingFavoriteLoaded(products)),
     );
   }
 }

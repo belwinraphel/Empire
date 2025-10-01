@@ -32,6 +32,24 @@ import 'package:empire/feature/auth/domain/usecase/auth/send_otp_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/update_user_deatils_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/verify_user_usecase.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
+import 'package:empire/feature/cart/data/datasource/cartdatatsource.dart';
+import 'package:empire/feature/cart/data/repository/cartrepitoryompli.dart';
+import 'package:empire/feature/cart/domain/repository/cart_repository.dart';
+import 'package:empire/feature/cart/domain/usecase/add_cart_usecase.dart';
+import 'package:empire/feature/cart/domain/usecase/breakdown_usecase.dart';
+import 'package:empire/feature/cart/domain/usecase/clearcartusecase.dart';
+import 'package:empire/feature/cart/domain/usecase/get_cart_use_case.dart';
+import 'package:empire/feature/cart/domain/usecase/remove_from_cart_usecase.dart';
+import 'package:empire/feature/cart/domain/usecase/updatequantityusecase.dart';
+import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
+import 'package:empire/feature/checkout/data/datasource/checkoutdatasource.dart';
+import 'package:empire/feature/checkout/data/repository/checkoutrepositoryimpli.dart';
+import 'package:empire/feature/checkout/domain/usecase/applycoupon_usecase.dart';
+import 'package:empire/feature/checkout/domain/usecase/get_address_usecase.dart';
+import 'package:empire/feature/checkout/domain/usecase/getpaymentmethod_usecase.dart';
+import 'package:empire/feature/checkout/domain/usecase/getshippingmethod_usecase.dart';
+import 'package:empire/feature/checkout/domain/usecase/submit_checkout_usecase.dart';
+import 'package:empire/feature/checkout/presentaton/bloc/checkoutbloc.dart';
 import 'package:empire/feature/favorite/data/datasource/favoritedatavaseimple.dart';
 import 'package:empire/feature/favorite/data/repository/favoriterepositoryimple.dart';
 import 'package:empire/feature/favorite/domain/repository/favotiterepository.dart';
@@ -165,15 +183,82 @@ Future<void> init() async {
   );
 
   ///favorite
- 
+
   sl.registerLazySingleton(() => GetFavoritesStreamUseCase(sl()));
   sl.registerLazySingleton(() => AddFavoriteUseCase(sl()));
   sl.registerLazySingleton(() => RemoveFavoriteUseCase(sl()));
   sl.registerLazySingleton<FavoritesRepository>(
     () => FavoritesRepositoryImpl(remoteDataSource: sl()),
   );
- sl.registerLazySingleton<FavoritesRemoteDataSource>(
+  sl.registerLazySingleton<FavoritesRemoteDataSource>(
     () => FavoritesRemoteDataSourceImpl(auth: sl(), firestore: sl()),
   );
+// Cart Feature
+  sl.registerLazySingleton<CartFirestoreDataSource>(
+    () => CartFirestoreDataSource(sl(), sl()),
+  );
+  sl.registerLazySingleton<CartRepository>(
+    () => CartRepositoryImpl(sl()),
+  );
+  sl.registerLazySingleton<AddToCartUseCase>(
+    () => AddToCartUseCase(sl()),
+  );
+  sl.registerLazySingleton<UpdateQuantityUseCase>(
+    () => UpdateQuantityUseCase(sl()),
+  );
+  sl.registerLazySingleton<RemoveFromCartUseCase>(
+    () => RemoveFromCartUseCase(sl()),
+  );
+  sl.registerLazySingleton<ClearCartUseCase>(
+    () => ClearCartUseCase(sl()),
+  );
+  sl.registerLazySingleton<GetCartStreamUseCase>(
+    () => GetCartStreamUseCase(sl()),
+  );
+  sl.registerLazySingleton<CalculateBreakdownUseCase>(
+    () => CalculateBreakdownUseCase(),
+  );
+  sl.registerLazySingleton<CartBloc>(
+    () => CartBloc(
+      addToCartUseCase: sl<AddToCartUseCase>(),
+      updateQuantityUseCase: sl<UpdateQuantityUseCase>(),
+      removeFromCartUseCase: sl<RemoveFromCartUseCase>(),
+      clearCartUseCase: sl<ClearCartUseCase>(),
+      getCartStreamUseCase: sl<GetCartStreamUseCase>(),
+      calculateBreakdownUseCase: sl<CalculateBreakdownUseCase>(),
+    ),
+  );
 
+  // Checkout Feature
+  sl.registerLazySingleton<CheckoutFirestoreDataSource>(
+    () => CheckoutFirestoreDataSource(sl(), sl()),
+  );
+  sl.registerLazySingleton<CheckoutRepositoryImpl>(
+    () => CheckoutRepositoryImpl(sl()),
+  );
+  sl.registerLazySingleton<GetAddressesUseCase>(
+    () => GetAddressesUseCase(sl()),
+  );
+  sl.registerLazySingleton<GetShippingMethodsUseCase>(
+    () => GetShippingMethodsUseCase(sl()),
+  );
+  sl.registerLazySingleton<GetPaymentMethodsUseCase>(
+    () => GetPaymentMethodsUseCase(sl()),
+  );
+  sl.registerLazySingleton<ApplyCouponUseCase>(
+    () => ApplyCouponUseCase(sl()),
+  );
+  sl.registerLazySingleton<SubmitCheckoutUseCase>(
+    () => SubmitCheckoutUseCase(sl()),
+  );
+  sl.registerLazySingleton<CheckoutBloc>(
+    () => CheckoutBloc(
+      getAddressesUseCase: sl(),
+      getShippingMethodsUseCase: sl(),
+      getPaymentMethodsUseCase: sl(),
+      applyCouponUseCase: sl(),
+      submitCheckoutUseCase: sl(),
+      calculateBreakdownUseCase: sl(),
+    ),
+  );
 }

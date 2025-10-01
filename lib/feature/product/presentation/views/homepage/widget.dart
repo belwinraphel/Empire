@@ -416,8 +416,7 @@ class Category extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          BlocBuilder<CategoryBloc, CategoryState>(
-              builder: (context, state) {
+          BlocBuilder<CategoryBloc, CategoryState>(builder: (context, state) {
             if (state is CategoryLoadingState) {
               return homeShimmerLoading(context);
             } else if (state is CategoryErrorState) {
@@ -425,8 +424,7 @@ class Category extends StatelessWidget {
             } else if (state is CategoryLoadedState) {
               final category = state.categories;
               if (state.categories.isEmpty) {
-                return const Center(
-                    child: Text("No categories available."));
+                return const Center(child: Text("No categories available."));
               }
               return GestureDetector(
                 onTap: () {
@@ -439,8 +437,7 @@ class Category extends StatelessWidget {
                 child: GridView.builder(
                     shrinkWrap: true,
                     padding: const EdgeInsets.all(0),
-                    physics:
-                        const NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 4,
@@ -452,36 +449,30 @@ class Category extends StatelessWidget {
                     itemBuilder: (context, index) {
                       return Column(
                         children: [
-                          Container(
-                            height: 90,
-                            width: 90,
-                            decoration: const BoxDecoration(
-                                color: ColoRs.homecardcolor,
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular(12))),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.all(8.0),
+                          Card(
+                            elevation: 6,
+                            child: Container(
+                              height: 84,
+                              width: 84,
+                              decoration: const BoxDecoration(
+                                  color: ColoRs.homecardcolor,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(12))),
                               child: ClipRRect(
-                                borderRadius:
-                                    BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(8),
                                 child: CachedNetworkImage(
-                                  imageUrl:
-                                      category[index].imageUrl,
+                                  imageUrl: category[index].imageUrl,
                                   height: 90,
                                   width: 90,
                                   fit: BoxFit.fill,
                                   placeholder: (context, url) =>
                                       Shimmer.fromColors(
-                                    baseColor:
-                                        Colors.grey[300]!,
-                                    highlightColor:
-                                        Colors.grey[100]!,
-                                    child: const SizedBox(
-                                        height: 80, width: 85),
+                                    baseColor: Colors.grey[300]!,
+                                    highlightColor: Colors.grey[100]!,
+                                    child:
+                                        const SizedBox(height: 80, width: 85),
                                   ),
-                                  errorWidget: (context, url,
-                                          error) =>
+                                  errorWidget: (context, url, error) =>
                                       const Icon(Icons.error),
                                 ),
                               ),
@@ -489,8 +480,7 @@ class Category extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Padding(
-                            padding: const EdgeInsets.only(
-                                left: 5, right: 5),
+                            padding: const EdgeInsets.only(left: 5, right: 5),
                             child: Text(
                               category[index].category,
                               textAlign: TextAlign.center,

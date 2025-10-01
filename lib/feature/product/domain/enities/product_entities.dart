@@ -55,7 +55,7 @@ class ProductEntity extends Equatable {
       subcategoryId: data['subcategoryId'] ?? "",
       mainCategoryName: data['mainCategoryName'] ?? "",
       subcategoryName: data['subcategoryName'] ?? "",
-      productDocId: data[''] ?? '',
+      productDocId: doc.id ?? '',
       name: data['name'] ?? '',
       description: data['description'] ?? '',
       price: (data['price'] as num?)?.toDouble() ?? 0.0,

@@ -26,8 +26,18 @@ import 'package:empire/feature/auth/presentation/bloc/auth/profile_image.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/registerpage.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/savepassowrd.dart';
 import 'package:empire/feature/auth/presentation/views/loginpage/home_page.dart';
+import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
+import 'package:empire/feature/favorite/domain/usecase/add_favorites_usecase.dart';
+import 'package:empire/feature/favorite/domain/usecase/get_favourite_usecase.dart';
+import 'package:empire/feature/favorite/domain/usecase/remove_favorites_usecase.dart';
+import 'package:empire/feature/favorite/presentation/bloc/favorite.dart';
 import 'package:empire/feature/product/domain/usecase/get_category_usecase.dart';
+import 'package:empire/feature/product/domain/usecase/getting_subcategory_usecase.dart';
+import 'package:empire/feature/product/domain/usecase/productcaliing_usecase.dart';
+import 'package:empire/feature/product/presentation/bloc/product_bloc/centralizedstate/category.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/get_category_bloc.dart';
+import 'package:empire/feature/product/presentation/bloc/product_bloc/get_subcategory.dart';
+import 'package:empire/feature/product/presentation/bloc/product_bloc/product_bloc.dart';
 import 'package:empire/feature/product/presentation/views/mainscreen/main_screen.dart';
 
 import 'package:flutter/material.dart';
@@ -40,6 +50,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        /////auth//////////
         BlocProvider<AuthBloc>(
             create: (_) =>
                 AuthBloc(sl<SigningWithGoogle>(), sl<SaveLoginStatus>())),
@@ -74,17 +85,42 @@ class MyApp extends StatelessWidget {
                   sl<AuthRemoteDataSource>(),
                   sl<SaveLoginStatus>(),
                 )),
+
+        //////category////////////
+
         BlocProvider(
             create: (_) => CategoryBloc(
                   sl<CategoryUsecase>(),
-                )..add(GetCategoryEvent()))
+                )..add(GetCategoryEvent())),
+        BlocProvider(
+            create: (_) => CategorsyBloc(
+                  categoryUsecase: sl<CategoryUsecase>(),
+                  gettingSubcategoryUsecase: sl<GettingSubcategoryUsecase>(),
+                )..add(FetchAllCategoryData())),
+        /////sucbategory/////
+
+        BlocProvider(
+            create: (_) => SubCategoryBloc(sl<GettingSubcategoryUsecase>())),
+        /////cartbloc/////////
+        BlocProvider(
+          create: (context) => sl<CartBloc>(),
+        ),
+
+        BlocProvider(
+            create: (_) => ProductcalingBloc(sl<ProductcallingUsecase>())),
+        BlocProvider(
+            create: (context) => FavoritesBloc(
+                  getFavoritesStreamUseCase: sl<GetFavoritesStreamUseCase>(),
+                  addFavoriteUseCase: sl<AddFavoriteUseCase>(),
+                  removeFavoriteUseCase: sl<RemoveFavoriteUseCase>(),
+                )..add(LoadFavorites())),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: BlocBuilder<AuthBlocStatus, LoginStatusState>(
           builder: (context, state) {
             if (state is SucessLoginStatusState) {
-              return MainScreen();
+              return const MainScreen();
             } else if (state is NotLoginState) {
               return Loginpage();
             } else {

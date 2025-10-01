@@ -87,16 +87,35 @@ class HomePage extends StatelessWidget {
                                             );
                                           }
                                           return Container(
-                                            height: 30,
-                                            width: 40,
                                             decoration: const BoxDecoration(
                                                 color: ColoRs.homecardcolor,
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(10))),
-                                            child: Center(
-                                                child: Image.asset(images[index]
-                                                        ['image'] ??
-                                                    '')),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(3.0),
+                                              child: Card(
+                                                elevation: 4,
+                                                child: Container(
+                                                  height: 30,
+                                                  width: 40,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                          color: ColoRs
+                                                              .homecardcolor,
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          10))),
+                                                  child: Center(
+                                                      child: Image.asset(
+                                                          images[index]
+                                                                  ['image'] ??
+                                                              '')),
+                                                ),
+                                              ),
+                                            ),
                                           );
                                         },
                                       ),
