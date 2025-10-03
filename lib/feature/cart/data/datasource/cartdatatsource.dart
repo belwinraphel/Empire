@@ -24,42 +24,6 @@ class CartFirestoreDataSource {
     }
   }
 
-  Future<VariantSnapshot> _getVariantSnapshot(
-      String productId, String variantName) async {
-    final productDoc =
-        await firestore.collection('products').doc(productId).get();
-    if (!productDoc.exists) throw Exception('Product not found');
-    final data = productDoc.data()!;
-    final variants = data['variantDetails'] as List<dynamic>? ?? [];
-    final variantMap = variants.firstWhere(
-      (v) => v['name'] == variantName,
-      orElse: () => throw Exception('Variant not found'),
-    );
-    final double salePrice =
-        (variantMap['salePrice'] as num? ?? 0.0).toDouble();
-    final double regularPrice =
-        (variantMap['regularPrice'] as num? ?? 0.0).toDouble();
-    final double effectivePrice = salePrice > 0 ? salePrice : regularPrice;
-    final int priceCents = (effectivePrice * 100).round();
-    final int taxBasisPoints =
-        ((data['taxRate'] as num? ?? 0.0).toDouble() * 10000).round();
-    final int weightGrams =
-        ((data['weight'] as num? ?? 0.0).toDouble() * 1000).round();
-    final String sku = data['sku'] ?? '';
-    final int stock = variantMap['quantity'] ?? 0;
-    return VariantSnapshot(
-      name: variantName,
-      imageUrl: variantMap['image'],
-      priceCents: priceCents,
-      currency: 'USD',
-      vendorId: '',
-      taxBasisPoints: taxBasisPoints,
-      weightGrams: weightGrams,
-      sku: sku,
-      stock: stock,
-    );
-  }
-
   Future<void> addToCart(
       String productId, String variantName, int quantity) async {
     await _ensureDocExists();
@@ -82,6 +46,43 @@ class CartFirestoreDataSource {
       }
       transaction.update(_cartDoc(), {'items': items});
     });
+  }
+
+  Future<VariantSnapshot> _getVariantSnapshot(
+      String productId, String variantName) async {
+    final productDoc =
+        await firestore.collection('products').doc(productId).get();
+    if (!productDoc.exists) throw Exception('Product not found');
+    final data = productDoc.data()!;
+    final variants = data['variantDetails'] as List<dynamic>? ?? [];
+    final variantMap = variants.firstWhere(
+      (v) => v['name'] == variantName,
+      orElse: () => throw Exception('Variant not found'),
+    );
+    final double salePrice =
+        (variantMap['salePrice'] as num? ?? 0.0).toDouble();
+    final double regularPrice =
+        (variantMap['regularPrice'] as num? ?? 0.0).toDouble();
+    final double effectivePrice = salePrice > 0 ? salePrice : regularPrice;
+    final int price = (effectivePrice).round();
+
+    final int weightGrams =
+        ((data['weight'] as num? ?? 0.0).toDouble() * 1000).round();
+    final String sku = data['sku'] ?? '';
+    final int stock = variantMap['quantity'] ?? 0;
+    print(variantName);
+    print(variantMap['image']);
+    print(price);
+    print(sku);
+    print(stock);
+    return VariantSnapshot(
+      name: variantName,
+      imageUrl: variantMap['image'],
+      price: price,
+      weightGrams: weightGrams,
+      sku: sku,
+      stock: stock,
+    );
   }
 
   Stream<List<CartItem>> getCartStream() {

@@ -3,10 +3,8 @@ import 'package:equatable/equatable.dart';
 class VariantSnapshot extends Equatable {
   final String name;
   final String? imageUrl;
-  final int priceCents;
-  final String currency;
-  final String vendorId;
-  final int taxBasisPoints;  
+  final int price;
+
   final int weightGrams;
   final String sku;
   final int stock;
@@ -14,10 +12,7 @@ class VariantSnapshot extends Equatable {
   const VariantSnapshot({
     required this.name,
     this.imageUrl,
-    required this.priceCents,
-    required this.currency,
-    required this.vendorId,
-    required this.taxBasisPoints,
+    required this.price,
     required this.weightGrams,
     required this.sku,
     required this.stock,
@@ -27,10 +22,7 @@ class VariantSnapshot extends Equatable {
     return VariantSnapshot(
       name: map['name'] ?? '',
       imageUrl: map['imageUrl'],
-      priceCents: map['priceCents'] ?? 0,
-      currency: map['currency'] ?? 'USD',
-      vendorId: map['vendorId'] ?? '',
-      taxBasisPoints: map['taxBasisPoints'] ?? 0,
+      price: map['price'] ?? 0,
       weightGrams: map['weightGrams'] ?? 0,
       sku: map['sku'] ?? '',
       stock: map['stock'] ?? 0,
@@ -41,10 +33,7 @@ class VariantSnapshot extends Equatable {
     return {
       'name': name,
       'imageUrl': imageUrl,
-      'priceCents': priceCents,
-      'currency': currency,
-      'vendorId': vendorId,
-      'taxBasisPoints': taxBasisPoints,
+      'price': price,
       'weightGrams': weightGrams,
       'sku': sku,
       'stock': stock,
@@ -52,5 +41,5 @@ class VariantSnapshot extends Equatable {
   }
 
   @override
-  List<Object?> get props => [name, imageUrl, priceCents, currency, vendorId, taxBasisPoints, weightGrams, sku, stock];
+  List<Object?> get props => [name, imageUrl, price, weightGrams, sku, stock];
 }

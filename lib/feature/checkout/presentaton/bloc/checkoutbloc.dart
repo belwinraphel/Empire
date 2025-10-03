@@ -240,7 +240,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
           paymentMethod: current.data.paymentMethod!,
           coupon: current.data.coupon,
           tipCents: current.data.tipCents,
-          walletAppliedCents: current.data.breakdown.walletAppliedCents,
+          walletAppliedCents: current.data.breakdown.subtotal,
           idempotencyKey: key,
         );
         yield result.fold(

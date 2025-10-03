@@ -6,7 +6,7 @@ class CartItem extends Equatable {
   final String productId;
   final String variantName;
   final int quantity;
-  final VariantSnapshot? snapshot; // Optional for ID-only flow
+  final VariantSnapshot? snapshot; 
 
   const CartItem({
     required this.productId,

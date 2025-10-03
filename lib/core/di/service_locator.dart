@@ -164,7 +164,7 @@ Future<void> init() async {
   //////category
   sl.registerSingleton<Logger>(Logger());
   sl.registerLazySingleton<CategoryDataSource>(
-    () => CategoryDataSourceImpl(sl<Logger>()),
+    () => CategoryDataSourceImpl(logger: sl<Logger>()),
   );
 
   sl.registerLazySingleton<CategoryRepository>(

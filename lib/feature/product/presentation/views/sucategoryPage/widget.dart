@@ -3,8 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/noresult%20.dart';
 import 'package:empire/feature/cart/domain/entities/variant_snapshot.dart';
-
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
+
 import 'package:empire/feature/favorite/presentation/bloc/favorite.dart';
 
 import 'package:empire/feature/product/domain/enities/product_entities.dart';
@@ -480,31 +480,10 @@ class _ProductCardState extends State<ProductCard> {
                     onPressed: () {
                       if (selectedVariantName != null &&
                           widget.product.productDocId != null) {
-                        final double effectivePrice =
-                            selectedVariant!.salePrice > 0
-                                ? selectedVariant!.salePrice
-                                : selectedVariant!.regularPrice;
-                        final int priceCents = (effectivePrice * 100).round();
-                        final int taxBasisPoints =
-                            (widget.product.taxRate * 10000).round();
-                        final int weightGrams =
-                            (widget.product.weight * 1000).round();
-                        final snapshot = VariantSnapshot(
-                          name: selectedVariantName!,
-                          imageUrl: selectedVariant!.image,
-                          priceCents: priceCents,
-                          currency: 'USD',
-                          vendorId: '',
-                          taxBasisPoints: taxBasisPoints,
-                          weightGrams: weightGrams,
-                          sku: widget.product.sku,
-                          stock: selectedVariant!.quantity,
-                        );
                         context.read<CartBloc>().add(AddToCart(
                               widget.product.productDocId!,
                               selectedVariantName!,
                               1,
-                              snapshot: snapshot,
                             ));
 
                         ScaffoldMessenger.of(context).showSnackBar(

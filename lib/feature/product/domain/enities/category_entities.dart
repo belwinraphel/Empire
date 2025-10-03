@@ -32,3 +32,13 @@ class CategoryEntities extends Equatable {
   List<Object> get props => [category, uid, description, imageUrl];
 }
 
+List<CategoryEntities> parseCategories(List<Map<String, dynamic>> docs) {
+  return docs.map((data) {
+    return CategoryEntities(
+      uid: data['uid'] ?? '',
+      category: data['category'] ?? '',
+      description: data['description'] ?? '',
+      imageUrl: data['imageUrl'] ?? '',
+    );
+  }).toList();
+}

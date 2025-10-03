@@ -12,64 +12,89 @@ import 'package:empire/feature/checkout/presentaton/bloc/checkoutbloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
- 
 class CheckoutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cartState = BlocProvider.of<CartBloc>(context).state;
-    if (cartState is! CartLoaded) return const Scaffold(body: Center(child: Text('Cart empty')));
+    if (cartState is! CartLoaded)
+      return const Scaffold(body: Center(child: Text('Cart empty')));
     return BlocProvider<CheckoutBloc>(
       create: (context) => CheckoutBloc(
-        getAddressesUseCase: RepositoryProvider.of<GetAddressesUseCase>(context),
-        getShippingMethodsUseCase: RepositoryProvider.of<GetShippingMethodsUseCase>(context),
-        getPaymentMethodsUseCase: RepositoryProvider.of<GetPaymentMethodsUseCase>(context),
+        getAddressesUseCase:
+            RepositoryProvider.of<GetAddressesUseCase>(context),
+        getShippingMethodsUseCase:
+            RepositoryProvider.of<GetShippingMethodsUseCase>(context),
+        getPaymentMethodsUseCase:
+            RepositoryProvider.of<GetPaymentMethodsUseCase>(context),
         applyCouponUseCase: RepositoryProvider.of<ApplyCouponUseCase>(context),
-        submitCheckoutUseCase: RepositoryProvider.of<SubmitCheckoutUseCase>(context),
-        calculateBreakdownUseCase: RepositoryProvider.of<CalculateBreakdownUseCase>(context),
+        submitCheckoutUseCase:
+            RepositoryProvider.of<SubmitCheckoutUseCase>(context),
+        calculateBreakdownUseCase:
+            RepositoryProvider.of<CalculateBreakdownUseCase>(context),
       )..add(InitializeCheckout(cartState.items, cartState.breakdown)),
       child: Scaffold(
         appBar: AppBar(title: const Text('Checkout')),
         body: BlocBuilder<CheckoutBloc, CheckoutState>(
           builder: (context, state) {
-            if (state is CheckoutLoading) return const Center(child: CircularProgressIndicator());
-            if (state is CheckoutFailure) return Center(child: Text(state.message));
-            if (state is CheckoutSuccess) return Center(child: Text('Order: ${state.orderId}'));
+            if (state is CheckoutLoading)
+              return const Center(child: CircularProgressIndicator());
+            if (state is CheckoutFailure)
+              return Center(child: Text(state.message));
+            if (state is CheckoutSuccess)
+              return Center(child: Text('Order: ${state.orderId}'));
             final loaded = state as CheckoutLoaded;
             return ListView(
               children: [
                 // Address dropdown or list
                 DropdownButton<Address>(
                   value: loaded.data.address,
-                  items: loaded.addresses.map((a) => DropdownMenuItem(value: a, child: Text(a.street))).toList(),
-                  onChanged: (a) => context.read<CheckoutBloc>().add(SelectAddress(a!)),
+                  items: loaded.addresses
+                      .map((a) =>
+                          DropdownMenuItem(value: a, child: Text(a.street)))
+                      .toList(),
+                  onChanged: (a) =>
+                      context.read<CheckoutBloc>().add(SelectAddress(a!)),
                 ),
                 // Shipping dropdown
                 DropdownButton<ShippingMethod>(
                   value: loaded.data.shippingMethod,
-                  items: loaded.shippingMethods.map((s) => DropdownMenuItem(value: s, child: Text(s.name))).toList(),
-                  onChanged: (s) => context.read<CheckoutBloc>().add(SelectShippingMethod(s!)),
+                  items: loaded.shippingMethods
+                      .map((s) =>
+                          DropdownMenuItem(value: s, child: Text(s.name)))
+                      .toList(),
+                  onChanged: (s) => context
+                      .read<CheckoutBloc>()
+                      .add(SelectShippingMethod(s!)),
                 ),
                 // Payment dropdown
                 DropdownButton<PaymentMethod>(
                   value: loaded.data.paymentMethod,
-                  items: loaded.paymentMethods.map((p) => DropdownMenuItem(value: p, child: Text(p.type))).toList(),
-                  onChanged: (p) => context.read<CheckoutBloc>().add(SelectPaymentMethod(p!)),
+                  items: loaded.paymentMethods
+                      .map((p) =>
+                          DropdownMenuItem(value: p, child: Text(p.type)))
+                      .toList(),
+                  onChanged: (p) =>
+                      context.read<CheckoutBloc>().add(SelectPaymentMethod(p!)),
                 ),
                 // Coupon input
                 TextField(
-                  onSubmitted: (code) => context.read<CheckoutBloc>().add(ApplyCoupon(code)),
+                  onSubmitted: (code) =>
+                      context.read<CheckoutBloc>().add(ApplyCoupon(code)),
                   decoration: const InputDecoration(labelText: 'Coupon'),
                 ),
                 // Tip input
                 TextField(
                   keyboardType: TextInputType.number,
-                  onChanged: (val) => context.read<CheckoutBloc>().add(UpdateTip(int.tryParse(val) ?? 0 * 100)),
+                  onChanged: (val) => context
+                      .read<CheckoutBloc>()
+                      .add(UpdateTip(int.tryParse(val) ?? 0 * 100)),
                   decoration: const InputDecoration(labelText: 'Tip ()'),
                 ),
                 // Breakdown display
-                Text('Total: \$${loaded.data.breakdown.totalCents / 100}'),
+                Text('Total: \$${loaded.data.breakdown.subtotal / 100}'),
                 ElevatedButton(
-                  onPressed: () => context.read<CheckoutBloc>().add(SubmitCheckout()),
+                  onPressed: () =>
+                      context.read<CheckoutBloc>().add(SubmitCheckout()),
                   child: const Text('Submit'),
                 ),
               ],

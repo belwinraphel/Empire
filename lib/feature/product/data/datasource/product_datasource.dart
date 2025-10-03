@@ -3,6 +3,7 @@ import 'package:empire/core/utilis/failure.dart';
 import 'package:empire/feature/product/domain/enities/listproducts.dart';
 import 'package:empire/feature/product/domain/enities/product_entities.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 abstract class ProductsDataSource {
   Future<Either<Failures, List<ProductEntity>>> gettingProduct(
@@ -20,61 +21,36 @@ abstract class ProductsDataSource {
 }
 
 class ProducsDataSourceimpli extends ProductsDataSource {
+  final FirebaseFirestore firestore;
+  ProducsDataSourceimpli({FirebaseFirestore? firestoreInstance})
+      : firestore = firestoreInstance ?? FirebaseFirestore.instance;
   @override
   Future<Either<Failures, List<ProductEntity>>> gettingProduct(
       String mainCategoryId,
       String subcategoryId,
       String subcategoryname) async {
     try {
-      final snapShot =
-          await FirebaseFirestore.instance.collection('products').get();
-      List<ProductEntity> products = snapShot.docs.map((data) {
-        return ProductEntity(
-          mainCategoryId: data['mainCategoryId'] ?? "",
-          subcategoryId: data['subcategoryId'] ?? "",
-          mainCategoryName: data['mainCategoryName'] ?? "",
-          subcategoryName: data['subcategoryName'] ?? "",
-          productDocId: data.id,
-          name: data['name'] ?? '',
-          description: data['description'] ?? '',
-          price: (data['price'] as num?)?.toDouble() ?? 0.0,
-          discountPrice: (data['discountPrice'] as num?)?.toDouble() ?? 0.0,
-          sku: data['sku'] ?? '',
-          tags: List<String>.from(data['tags'] ?? []),
-          inStock: data['inStock'] ?? false,
-          weight: (data['weight'] as num?)?.toDouble() ?? 0.0,
-          length: (data['length'] as num?)?.toDouble() ?? 0.0,
-          width: (data['width'] as num?)?.toDouble() ?? 0.0,
-          height: (data['height'] as num?)?.toDouble() ?? 0.0,
-          taxRate: (data['taxRate'] as num?)?.toDouble() ?? 0.0,
-          category: data['category'] ?? '',
-          quantities: data['quantities'] ?? 0,
-          images: List<String>.from(data['images'] ?? []),
-          filterTags: List<String>.from(data['filterTags'] ?? []),
-          variantDetails: data['variantDetails']
-              .map<Variant>(
-                (v) => Variant(
-                  name: v['name'] ?? "",
-                  image: v['image'] ?? "",
-                  regularPrice: (v['regularPrice'] as num?)?.toDouble() ?? 0.0,
-                  salePrice: (v['salePrice'] as num?)?.toDouble() ?? 0.0,
-                  quantity: v['quantity'] ?? 0,
-                ),
-              )
-              .toList(),
-        );
+      Query query = firestore.collection('products');
+      
+
+      final snapShot = await query.get();
+
+      final docs = snapShot.docs.map((doc) {
+        return {'productDocId': doc.id, ...doc.data() as Map<String, dynamic>};
       }).toList();
-      List<ProductEntity> subcategoryProducts = [];
-      if (subcategoryname.isEmpty) {
-        return right(products);
-      } else {
-        subcategoryProducts = products
-            .where((products) => products.subcategoryName == subcategoryname)
+
+      final products = await compute(parseProducts, docs);
+
+      if (subcategoryname != null && subcategoryname.isNotEmpty) {
+        final filtered = products
+            .where((p) => p.subcategoryName == subcategoryname)
             .toList();
-        return right(subcategoryProducts);
+        return Right(filtered);
       }
+
+      return Right(products);
     } catch (e) {
-      return left(Failures.server(e.toString()));
+      return Left(Failures.server(e.toString()));
     }
   }
 
@@ -86,69 +62,37 @@ class ProducsDataSourceimpli extends ProductsDataSource {
     double? maxPrice,
   ) async {
     try {
-      final productSnapshot =
-          await FirebaseFirestore.instance.collection('products').get();
+      Query query = firestore.collection('products');
+ 
 
-      List<ProductEntity> products = productSnapshot.docs.map((data) {
-        return ProductEntity(
-          mainCategoryId: data['mainCategoryId'] ?? "",
-          subcategoryId: data['subcategoryId'] ?? "",
-          mainCategoryName: data['mainCategoryName'] ?? "",
-          subcategoryName: data['subcategoryName'] ?? "",
-          productDocId: data.id,
-          name: data['name'] ?? '',
-          description: data['description'] ?? '',
-          price: (data['price'] as num?)?.toDouble() ?? 0.0,
-          discountPrice: (data['discountPrice'] as num?)?.toDouble() ?? 0.0,
-          sku: data['sku'] ?? '',
-          tags: List<String>.from(data['tags'] ?? []),
-          inStock: data['inStock'] ?? false,
-          weight: (data['weight'] as num?)?.toDouble() ?? 0.0,
-          length: (data['length'] as num?)?.toDouble() ?? 0.0,
-          width: (data['width'] as num?)?.toDouble() ?? 0.0,
-          height: (data['height'] as num?)?.toDouble() ?? 0.0,
-          taxRate: (data['taxRate'] as num?)?.toDouble() ?? 0.0,
-          category: data['category'] ?? '',
-          quantities: data['quantities'] ?? 0,
-          images: List<String>.from(data['images'] ?? []),
-          filterTags: List<String>.from(data['filterTags'] ?? []),
-          variantDetails: (data['variantDetails'] as List<dynamic>?)
-                  ?.map<Variant>(
-                    (v) => Variant(
-                      name: v['name'] ?? '',
-                      image: v['image'] ?? '',
-                      regularPrice:
-                          (v['regularPrice'] as num?)?.toDouble() ?? 0.0,
-                      salePrice: (v['salePrice'] as num?)?.toDouble() ?? 0.0,
-                      quantity: v['quantity'] ?? 0,
-                    ),
-                  )
-                  .toList() ??
-              [],
-        );
+      if (minPrice != null) query = query.where('price', isGreaterThanOrEqualTo: minPrice);
+      if (maxPrice != null) query = query.where('price', isLessThanOrEqualTo: maxPrice);
+
+      final snapShot = await query.get();
+
+      final docs = snapShot.docs.map((doc) {
+        return {'productDocId': doc.id, ...doc.data() as Map<String, dynamic>};
       }).toList();
 
-      List<ProductEntity> filteredProducts = products;
+      var products = await compute(parseProducts, docs);
 
+      // Brand filtering on client side
       if (brandFilters != null && brandFilters.isNotEmpty) {
-        filteredProducts = filteredProducts
+        products = products
             .where((product) =>
                 brandFilters.any((brand) => product.filterTags.contains(brand)))
             .toList();
       }
 
-      if (minPrice != null) {
-        filteredProducts = filteredProducts
-            .where((product) => product.price >= minPrice)
-            .toList();
-      }
-      if (maxPrice != null) {
-        filteredProducts = filteredProducts
-            .where((product) => product.price <= maxPrice)
+      // Search filtering on client side
+      if (searchQuery != null && searchQuery.isNotEmpty) {
+        final queryLower = searchQuery.toLowerCase();
+        products = products
+            .where((p) => p.name.toLowerCase().contains(queryLower))
             .toList();
       }
 
-      return Right(filteredProducts);
+      return Right(products);
     } catch (e) {
       return Left(Failures.server(e.toString()));
     }

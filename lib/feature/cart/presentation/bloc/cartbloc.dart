@@ -11,6 +11,7 @@ import 'package:empire/feature/cart/domain/usecase/remove_from_cart_usecase.dart
 import 'package:empire/feature/cart/domain/usecase/updatequantityusecase.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 abstract class CartState extends Equatable {
   @override
   List<Object> get props => [];
@@ -36,7 +37,8 @@ class CartError extends CartState {
   @override
   List<Object> get props => [message];
 }
- abstract class CartEvent extends Equatable {
+
+abstract class CartEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
@@ -119,10 +121,13 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<AddToCart>((event, emit) async {
       if (state is CartLoaded) {
         final current = state as CartLoaded;
-        final index = current.items.indexWhere((item) => item.productId == event.productId && item.variantName == event.variantName);
+        final index = current.items.indexWhere((item) =>
+            item.productId == event.productId &&
+            item.variantName == event.variantName);
         List<CartItem> newItems = List.from(current.items);
         if (index != -1) {
-          newItems[index] = newItems[index].copyWith(quantity: newItems[index].quantity + event.quantity);
+          newItems[index] = newItems[index]
+              .copyWith(quantity: newItems[index].quantity + event.quantity);
         } else {
           newItems.add(CartItem(
             productId: event.productId,
@@ -131,44 +136,62 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             snapshot: event.snapshot,
           ));
         }
-        emit(CartLoaded(items: newItems, breakdown: calculateBreakdownUseCase(items: newItems)));
+        // emit(CartLoaded(
+        //     items: newItems,
+        //     breakdown: calculateBreakdownUseCase(items: newItems)));
       }
-      final result = await addToCartUseCase(event.productId, event.variantName, event.quantity);
+      final result = await addToCartUseCase(
+          event.productId, event.variantName, event.quantity);
       result.fold((failure) => add(_CartError(failure.message)), (_) => null);
     });
 
     on<UpdateQuantity>((event, emit) async {
       if (state is CartLoaded) {
         final current = state as CartLoaded;
-        final index = current.items.indexWhere((item) => item.productId == event.productId && item.variantName == event.variantName);
+        final index = current.items.indexWhere((item) =>
+            item.productId == event.productId &&
+            item.variantName == event.variantName);
         if (index != -1) {
           List<CartItem> newItems = List.from(current.items);
-          newItems[index] = newItems[index].copyWith(quantity: event.newQuantity);
-          emit(CartLoaded(items: newItems, breakdown: calculateBreakdownUseCase(items: newItems)));
+          newItems[index] =
+              newItems[index].copyWith(quantity: event.newQuantity);
+          emit(CartLoaded(
+              items: newItems,
+              breakdown: calculateBreakdownUseCase(items: newItems)));
         }
       }
-      final result = await updateQuantityUseCase(event.productId, event.variantName, event.newQuantity);
+      final result = await updateQuantityUseCase(
+          event.productId, event.variantName, event.newQuantity);
       result.fold((failure) => add(_CartError(failure.message)), (_) => null);
     });
 
     on<RemoveFromCart>((event, emit) async {
       if (state is CartLoaded) {
         final current = state as CartLoaded;
-        final newItems = current.items.where((item) => !(item.productId == event.productId && item.variantName == event.variantName)).toList();
-        emit(CartLoaded(items: newItems, breakdown: calculateBreakdownUseCase(items: newItems)));
+        final newItems = current.items
+            .where((item) => !(item.productId == event.productId &&
+                item.variantName == event.variantName))
+            .toList();
+        emit(CartLoaded(
+            items: newItems,
+            breakdown: calculateBreakdownUseCase(items: newItems)));
       }
-      final result = await removeFromCartUseCase(event.productId, event.variantName);
+      final result =
+          await removeFromCartUseCase(event.productId, event.variantName);
       result.fold((failure) => add(_CartError(failure.message)), (_) => null);
     });
 
     on<ClearCart>((event, emit) async {
-      emit(CartLoaded(items: [], breakdown: calculateBreakdownUseCase(items: [])));
+      emit(CartLoaded(
+          items: [], breakdown: calculateBreakdownUseCase(items: [])));
       final result = await clearCartUseCase();
       result.fold((failure) => add(_CartError(failure.message)), (_) => null);
     });
 
     on<CartUpdated>((event, emit) {
-      emit(CartLoaded(items: event.items, breakdown: calculateBreakdownUseCase(items: event.items)));
+      emit(CartLoaded(
+          items: event.items,
+          breakdown: calculateBreakdownUseCase(items: event.items)));
     });
 
     on<_CartError>((event, emit) {

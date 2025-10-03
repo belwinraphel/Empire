@@ -152,7 +152,7 @@ class SearchSection extends StatelessWidget {
                               ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: MediaQuery.of(context).size.height / 60),
                     const Row(
                       children: [
                         Icon(Icons.home, size: 16, color: Colors.black54),
@@ -177,7 +177,7 @@ class SearchSection extends StatelessWidget {
                             size: 16, color: Colors.black54),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: MediaQuery.of(context).size.height / 60),
                   ],
                 );
               }
