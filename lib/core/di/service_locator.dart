@@ -44,6 +44,7 @@ import 'package:empire/feature/cart/domain/usecase/updatequantityusecase.dart';
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
 import 'package:empire/feature/checkout/data/datasource/checkoutdatasource.dart';
 import 'package:empire/feature/checkout/data/repository/checkoutrepositoryimpli.dart';
+import 'package:empire/feature/checkout/domain/repository/chekout.dart';
 import 'package:empire/feature/checkout/domain/usecase/applycoupon_usecase.dart';
 import 'package:empire/feature/checkout/domain/usecase/get_address_usecase.dart';
 import 'package:empire/feature/checkout/domain/usecase/getpaymentmethod_usecase.dart';
@@ -212,8 +213,8 @@ Future<void> init() async {
   sl.registerLazySingleton<ClearCartUseCase>(
     () => ClearCartUseCase(sl()),
   );
-  sl.registerLazySingleton<GetCartStreamUseCase>(
-    () => GetCartStreamUseCase(sl()),
+  sl.registerLazySingleton<GetCart>(
+    () => GetCart(sl()),
   );
   sl.registerLazySingleton<CalculateBreakdownUseCase>(
     () => CalculateBreakdownUseCase(),
@@ -224,7 +225,7 @@ Future<void> init() async {
       updateQuantityUseCase: sl<UpdateQuantityUseCase>(),
       removeFromCartUseCase: sl<RemoveFromCartUseCase>(),
       clearCartUseCase: sl<ClearCartUseCase>(),
-      getCartStreamUseCase: sl<GetCartStreamUseCase>(),
+      getCart: sl<GetCart>(),
       calculateBreakdownUseCase: sl<CalculateBreakdownUseCase>(),
     ),
   );
@@ -236,6 +237,8 @@ Future<void> init() async {
   sl.registerLazySingleton<CheckoutRepositoryImpl>(
     () => CheckoutRepositoryImpl(sl()),
   );
+
+  sl.registerSingleton<CheckoutRepository>(sl<CheckoutRepositoryImpl>());
   sl.registerLazySingleton<GetAddressesUseCase>(
     () => GetAddressesUseCase(sl()),
   );
@@ -251,7 +254,7 @@ Future<void> init() async {
   sl.registerLazySingleton<SubmitCheckoutUseCase>(
     () => SubmitCheckoutUseCase(sl()),
   );
-  sl.registerLazySingleton<CheckoutBloc>(
+  sl.registerFactory<CheckoutBloc>(
     () => CheckoutBloc(
       getAddressesUseCase: sl(),
       getShippingMethodsUseCase: sl(),

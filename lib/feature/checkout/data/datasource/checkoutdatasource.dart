@@ -5,43 +5,45 @@ import 'package:empire/feature/checkout/domain/enities/coupon.dart';
 import 'package:empire/feature/checkout/domain/enities/payment.dart';
 import 'package:empire/feature/checkout/domain/enities/shippingmethod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
- 
 
 class CheckoutFirestoreDataSource {
   final FirebaseFirestore firestore;
-   final FirebaseAuth auth;
+  final FirebaseAuth auth;
   final String userId = 'test_user';
 
-  CheckoutFirestoreDataSource(this.firestore,this.auth);
+  CheckoutFirestoreDataSource(this.firestore, this.auth);
 
   Future<List<Address>> getAddresses() async {
-     final user = auth.currentUser;
+    final user = auth.currentUser;
     if (user == null) {
       return [];
     }
 
-    final doc = await firestore.collection('users').doc(userId).get();
+    final doc = await firestore.collection('user').doc(userId).get();
     final addresses = doc.data()?['addresses'] as List<dynamic>? ?? [];
+    print(addresses);
     return addresses.map((a) => Address.fromMap(a)).toList();
   }
 
   Future<List<ShippingMethod>> getShippingMethods(List<CartItem> items) async {
-    // Mock; in prod, calculate based on items weight/address
     return [
       const ShippingMethod(id: 'standard', name: 'Standard', costCents: 500),
-      const ShippingMethod(id: 'express', name: 'Express', costCents: 1000, isDynamic: true, perKgCents: 100),
+      const ShippingMethod(
+          id: 'express',
+          name: 'Express',
+          costCents: 1000,
+          isDynamic: true,
+          perKgCents: 100),
     ];
   }
 
   Future<List<PaymentMethod>> getPaymentMethods() async {
-    // Mock; in prod, from Stripe or similar
     return [
       const PaymentMethod(id: 'card1', type: 'card', last4: '4242'),
     ];
   }
 
   Future<Coupon> applyCoupon(String code, List<CartItem> items) async {
-    // Mock; in prod, validate against db
     if (code == 'DISCOUNT10') {
       return const Coupon(code: 'DISCOUNT10', discountCents: 1000);
     }

@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    context.read<CartBloc>().add(LoadCart());
     return Scaffold(
       appBar: AppBar(title: const Text('Cart')),
       body: BlocBuilder<CartBloc, CartState>(

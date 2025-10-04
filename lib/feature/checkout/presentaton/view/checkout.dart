@@ -1,107 +1,725 @@
-import 'package:empire/feature/cart/domain/usecase/breakdown_usecase.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:empire/core/di/service_locator.dart';
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
-import 'package:empire/feature/checkout/domain/enities/addres.dart';
-import 'package:empire/feature/checkout/domain/enities/payment.dart';
-import 'package:empire/feature/checkout/domain/enities/shippingmethod.dart';
-import 'package:empire/feature/checkout/domain/usecase/applycoupon_usecase.dart';
-import 'package:empire/feature/checkout/domain/usecase/get_address_usecase.dart';
-import 'package:empire/feature/checkout/domain/usecase/getpaymentmethod_usecase.dart';
-import 'package:empire/feature/checkout/domain/usecase/getshippingmethod_usecase.dart';
-import 'package:empire/feature/checkout/domain/usecase/submit_checkout_usecase.dart';
 import 'package:empire/feature/checkout/presentaton/bloc/checkoutbloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+/// Modern checkout page widget following Material 3 design principles
+/// Features responsive design with clean UI matching e-commerce standards
 class CheckoutPage extends StatelessWidget {
+  const CheckoutPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final cartState = BlocProvider.of<CartBloc>(context).state;
-    if (cartState is! CartLoaded)
-      return const Scaffold(body: Center(child: Text('Cart empty')));
+    if (cartState is! CartLoaded) {
+      return const Scaffold(
+        body: Center(child: Text('Cart empty')),
+      );
+    }
+
     return BlocProvider<CheckoutBloc>(
-      create: (context) => CheckoutBloc(
-        getAddressesUseCase:
-            RepositoryProvider.of<GetAddressesUseCase>(context),
-        getShippingMethodsUseCase:
-            RepositoryProvider.of<GetShippingMethodsUseCase>(context),
-        getPaymentMethodsUseCase:
-            RepositoryProvider.of<GetPaymentMethodsUseCase>(context),
-        applyCouponUseCase: RepositoryProvider.of<ApplyCouponUseCase>(context),
-        submitCheckoutUseCase:
-            RepositoryProvider.of<SubmitCheckoutUseCase>(context),
-        calculateBreakdownUseCase:
-            RepositoryProvider.of<CalculateBreakdownUseCase>(context),
-      )..add(InitializeCheckout(cartState.items, cartState.breakdown)),
+      create: (context) => sl<CheckoutBloc>()
+        ..add(InitializeCheckout(cartState.items, cartState.breakdown)),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Checkout')),
+        backgroundColor: Colors.grey[50],
+        appBar: _buildAppBar(context),
         body: BlocBuilder<CheckoutBloc, CheckoutState>(
           builder: (context, state) {
-            if (state is CheckoutLoading)
+            if (state is CheckoutLoading) {
               return const Center(child: CircularProgressIndicator());
-            if (state is CheckoutFailure)
-              return Center(child: Text(state.message));
-            if (state is CheckoutSuccess)
+            }
+            if (state is CheckoutSuccess) {
               return Center(child: Text('Order: ${state.orderId}'));
+            }
+            if (state is CheckoutInitial) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
             final loaded = state as CheckoutLoaded;
-            return ListView(
-              children: [
-                // Address dropdown or list
-                DropdownButton<Address>(
-                  value: loaded.data.address,
-                  items: loaded.addresses
-                      .map((a) =>
-                          DropdownMenuItem(value: a, child: Text(a.street)))
-                      .toList(),
-                  onChanged: (a) =>
-                      context.read<CheckoutBloc>().add(SelectAddress(a!)),
-                ),
-                // Shipping dropdown
-                DropdownButton<ShippingMethod>(
-                  value: loaded.data.shippingMethod,
-                  items: loaded.shippingMethods
-                      .map((s) =>
-                          DropdownMenuItem(value: s, child: Text(s.name)))
-                      .toList(),
-                  onChanged: (s) => context
-                      .read<CheckoutBloc>()
-                      .add(SelectShippingMethod(s!)),
-                ),
-                // Payment dropdown
-                DropdownButton<PaymentMethod>(
-                  value: loaded.data.paymentMethod,
-                  items: loaded.paymentMethods
-                      .map((p) =>
-                          DropdownMenuItem(value: p, child: Text(p.type)))
-                      .toList(),
-                  onChanged: (p) =>
-                      context.read<CheckoutBloc>().add(SelectPaymentMethod(p!)),
-                ),
-                // Coupon input
-                TextField(
-                  onSubmitted: (code) =>
-                      context.read<CheckoutBloc>().add(ApplyCoupon(code)),
-                  decoration: const InputDecoration(labelText: 'Coupon'),
-                ),
-                // Tip input
-                TextField(
-                  keyboardType: TextInputType.number,
-                  onChanged: (val) => context
-                      .read<CheckoutBloc>()
-                      .add(UpdateTip(int.tryParse(val) ?? 0 * 100)),
-                  decoration: const InputDecoration(labelText: 'Tip ()'),
-                ),
-                // Breakdown display
-                Text('Total: \$${loaded.data.breakdown.subtotal / 100}'),
-                ElevatedButton(
-                  onPressed: () =>
-                      context.read<CheckoutBloc>().add(SubmitCheckout()),
-                  child: const Text('Submit'),
-                ),
-              ],
-            );
+            return _buildCheckoutBody(context, loaded);
           },
         ),
       ),
     );
   }
+
+  /// Builds the app bar with back button, title, and share action
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+      title: const Text(
+        'Checkout',
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      centerTitle: false,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
+          onPressed: () {
+            // Handle share action
+          },
+        ),
+        const Padding(
+          padding: EdgeInsets.only(right: 16.0),
+          child: Center(
+            child: Text(
+              'Share',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Builds the main checkout body with scrollable content
+  Widget _buildCheckoutBody(BuildContext context, CheckoutLoaded state) {
+    return Column(
+      children: [
+        // Scrollable content
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDeliveryInfoCard(state),
+                const SizedBox(height: 20),
+                _buildBeforeCheckoutSection(),
+                const SizedBox(height: 20),
+                _buildGiftOrderingCard(),
+                const SizedBox(height: 12),
+                _buildFreeDeliveryCard(),
+                const SizedBox(height: 12),
+                _buildDeliveryAddressCard(state),
+                const SizedBox(height: 100), // Space for bottom bar
+              ],
+            ),
+          ),
+        ),
+        // Fixed bottom action bar
+        _buildBottomActionBar(context, state),
+      ],
+    );
+  }
+
+  /// Delivery information card with product details and timing
+  Widget _buildDeliveryInfoCard(CheckoutLoaded cartState) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.access_time, color: Colors.green[600], size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'Delivery in 8 minutes',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.green[600],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Shipment of ${cartState.data.items.length} item',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 16),
+          ListView.builder(
+              shrinkWrap: true,
+              itemCount: cartState.data.items.length,
+              itemBuilder: (context, index) {
+                return Row(
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: CachedNetworkImage(
+                        imageUrl:
+                            cartState.data.items[index].snapshot?.imageUrl ??
+                                '',
+                        width: 60,
+                        height: 60,
+                        fit: BoxFit.fill,
+                        placeholder: (context, url) =>
+                            const CircularProgressIndicator(),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    // Product info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            cartState.data.items[index].snapshot?.name ?? '',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${cartState.data.items[index].snapshot?.weightGrams} gm ',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.green[600],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.remove,
+                                color: Colors.white, size: 16),
+                            onPressed: () {
+                              context.read<CartBloc>().add(UpdateQuantity(
+                                  cartState.data.items[index].productId,
+                                  cartState.data.items[index].variantName,
+                                  cartState.data.items[index].quantity - 1));
+                            },
+                            constraints: const BoxConstraints(
+                                minWidth: 32, minHeight: 32),
+                            padding: EdgeInsets.zero,
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              cartState.data.items[index].quantity.toString(),
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.add,
+                                color: Colors.white, size: 16),
+                            onPressed: () {
+                              context.read<CartBloc>().add(UpdateQuantity(
+                                  cartState.data.items[index].productId,
+                                  cartState.data.items[index].variantName,
+                                  cartState.data.items[index].quantity + 1));
+                            },
+                            constraints: const BoxConstraints(
+                                minWidth: 32, minHeight: 32),
+                            padding: EdgeInsets.zero,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    Text(
+                      '₹${cartState.data.items[index].snapshot?.price}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                );
+              }),
+        ],
+      ),
+    );
+  }
+
+  /// "Before you checkout" section with horizontal product categories
+  Widget _buildBeforeCheckoutSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section header
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Before you checkout',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            TextButton(
+              onPressed: () {},
+              child: const Text(
+                'see all',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Order again',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[600],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Horizontal scrollable categories
+        SizedBox(
+          height: 140,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              _buildCategoryCard(
+                  'Favourites', '5 products', ['🍇', '🍟', '🍫'], '+2'),
+              const SizedBox(width: 12),
+              _buildCategoryCard(
+                  'Milk, Curd & Paneer', '3 products', ['🥛', '🥛', '🥛']),
+              const SizedBox(width: 12),
+              _buildCategoryCard(
+                  'Fruits', '6 products', ['🍇', '🍌', '🥭'], '+3'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Individual category card for horizontal scroll
+  Widget _buildCategoryCard(String title, String subtitle, List<String> emojis,
+      [String? badge]) {
+    return Container(
+      width: 120,
+      padding: const EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Product images/emojis
+          Row(
+            children: [
+              ...emojis.take(3).map((emoji) => Container(
+                    width: 24,
+                    height: 24,
+                    margin: const EdgeInsets.only(right: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Center(
+                      child: Text(emoji, style: const TextStyle(fontSize: 12)),
+                    ),
+                  )),
+            ],
+          ),
+          const Spacer(),
+
+          // Title and subtitle
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // See all button
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: const Text(
+              'See all',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Gift ordering card
+  Widget _buildGiftOrderingCard() {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.card_giftcard, color: Colors.orange[400], size: 24),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Ordering a gift?',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Get your items in a gift bag for ₹35',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.green[100],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              'Select',
+              style: TextStyle(
+                color: Colors.green[700],
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Free delivery card
+  Widget _buildFreeDeliveryCard() {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.blue[100],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(Icons.percent, color: Colors.blue[600], size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Free delivery',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Add items worth ₹660 more',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Delivery address card
+  Widget _buildDeliveryAddressCard(CheckoutLoaded state) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.home, color: Colors.grey[600], size: 24),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Delivering to Home',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Akruti Vega, 502 B - Wing Saiwadi, Vijay Nagar...',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            'Change',
+            style: TextStyle(
+              color: Colors.green[600],
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Bottom action bar with payment method and place order button
+  Widget _buildBottomActionBar(BuildContext context, CheckoutLoaded state) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Row(
+          children: [
+            // Payment method section
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'PAY USING',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(Icons.keyboard_arrow_up,
+                          color: Colors.grey[600], size: 16),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  const Text(
+                    'PhonePe UPI',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(width: 16),
+
+            // Place order button
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.green[600],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () =>
+                      context.read<CheckoutBloc>().add(SubmitCheckout()),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 16),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              '₹142',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              'TOTAL',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          'Place order',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(Icons.arrow_forward,
+                            color: Colors.white, size: 16),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Custom painter for decorative wave separator
+class WavePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.grey[300]!
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    final path = Path();
+    final waveHeight = 8.0;
+    final waveLength = size.width / 4;
+
+    path.moveTo(0, size.height / 2);
+
+    for (double x = 0; x <= size.width; x += waveLength) {
+      path.quadraticBezierTo(
+        x + waveLength / 2,
+        size.height / 2 - waveHeight,
+        x + waveLength,
+        size.height / 2,
+      );
+    }
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -22,8 +22,8 @@ class CartRepositoryImpl implements CartRepository {
   }
 
   @override
-  Stream<List<CartItem>> getCartStream() {
-    return dataSource.getCartStream();
+  Future<List<CartItem>> getCart() {
+    return dataSource.getCart();
   }
 
   @override

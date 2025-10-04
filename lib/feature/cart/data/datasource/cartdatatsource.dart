@@ -85,11 +85,11 @@ class CartFirestoreDataSource {
     );
   }
 
-  Stream<List<CartItem>> getCartStream() {
-    return _cartDoc().snapshots().map((snap) {
-      final items = snap.data()?['items'] as List<dynamic>? ?? [];
-      return items.map((item) => CartItem.fromMap(item)).toList();
-    });
+  Future<List<CartItem>> getCart() async {
+    final snap = await _cartDoc().get();
+    final data = snap.data();
+    final items = data?['items'] as List<dynamic>? ?? [];
+    return items.map((item) => CartItem.fromMap(item)).toList();
   }
 
   Future<void> updateQuantity(

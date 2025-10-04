@@ -3,12 +3,12 @@
 import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
 import 'package:empire/feature/cart/domain/repository/cart_repository.dart';
 
-class GetCartStreamUseCase {
+class GetCart {
   final CartRepository repository;
 
-  GetCartStreamUseCase(this.repository);
+  GetCart(this.repository);
 
-  Stream<List<CartItem>> call() {
-    return repository.getCartStream();
+Future<List<CartItem>> call() {
+    return repository.getCart();
   }
 }

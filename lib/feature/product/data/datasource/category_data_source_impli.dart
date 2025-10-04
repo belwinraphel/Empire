@@ -1,9 +1,7 @@
- 
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:empire/core/utilis/failure.dart';
- 
+
 import 'package:empire/feature/product/data/datasource/category_data_source.dart';
 import 'package:empire/feature/product/domain/enities/category_entities.dart';
 import 'package:flutter/foundation.dart';
@@ -11,19 +9,18 @@ import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
 class CategoryDataSourceImpl implements CategoryDataSource {
-final Logger logger;
+  final Logger logger;
   final FirebaseFirestore firestore;
 
-
-  CategoryDataSourceImpl({required this.logger, FirebaseFirestore? firestoreInstance})
+  CategoryDataSourceImpl(
+      {required this.logger, FirebaseFirestore? firestoreInstance})
       : firestore = firestoreInstance ?? FirebaseFirestore.instance;
 
   @override
   Future<Either<List<CategoryEntities>, Failures>> getCategory() async {
-       try {
+    try {
       final snapshot = await firestore.collection('category').get();
 
-      // Convert to plain maps for compute
       final docs = snapshot.docs.map((doc) {
         return {
           'uid': doc.id,
@@ -33,7 +30,6 @@ final Logger logger;
         };
       }).toList();
 
-      
       final categories = await compute(parseCategories, docs);
 
       return left(categories);
@@ -41,11 +37,7 @@ final Logger logger;
       logger.e('Error fetching categories: $e');
       return right(Failures.server(e.toString()));
     }
-
   }
-
-  
- 
 
   @override
   Future<Either<Failures, List<CategoryEntities>>> getSubCategory(

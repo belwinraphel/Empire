@@ -43,6 +43,8 @@ abstract class CartEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class LoadCart extends CartEvent {}
+
 class AddToCart extends CartEvent {
   final String productId;
   final String variantName;
@@ -101,23 +103,30 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   final UpdateQuantityUseCase updateQuantityUseCase;
   final RemoveFromCartUseCase removeFromCartUseCase;
   final ClearCartUseCase clearCartUseCase;
-  final GetCartStreamUseCase getCartStreamUseCase;
+  final GetCart getCart;
   final CalculateBreakdownUseCase calculateBreakdownUseCase;
-
-  late StreamSubscription<List<CartItem>> _cartSubscription;
 
   CartBloc({
     required this.addToCartUseCase,
     required this.updateQuantityUseCase,
     required this.removeFromCartUseCase,
     required this.clearCartUseCase,
-    required this.getCartStreamUseCase,
+    required this.getCart,
     required this.calculateBreakdownUseCase,
   }) : super(CartLoading()) {
-    _cartSubscription = getCartStreamUseCase().listen((items) {
-      add(CartUpdated(items));
-    });
+    on<LoadCart>((event, emit) async {
+      emit(CartLoading());
+      try {
+        final cart = await getCart();
 
+        emit(CartLoaded(
+          items: cart,
+          breakdown: calculateBreakdownUseCase(items: cart),
+        ));
+      } catch (e) {
+        emit(CartError(e.toString()));
+      }
+    });
     on<AddToCart>((event, emit) async {
       if (state is CartLoaded) {
         final current = state as CartLoaded;
@@ -188,20 +197,14 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       result.fold((failure) => add(_CartError(failure.message)), (_) => null);
     });
 
-    on<CartUpdated>((event, emit) {
-      emit(CartLoaded(
-          items: event.items,
-          breakdown: calculateBreakdownUseCase(items: event.items)));
-    });
+    // on<CartUpdated>((event, emit) {
+    //   emit(CartLoaded(
+    //       items: event.items,
+    //       breakdown: calculateBreakdownUseCase(items: event.items)));
+    // });
 
     on<_CartError>((event, emit) {
       emit(CartError(event.message));
     });
-  }
-
-  @override
-  Future<void> close() {
-    _cartSubscription.cancel();
-    return super.close();
   }
 }
