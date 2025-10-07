@@ -14,12 +14,11 @@ class CalculateBreakdownUseCase {
   }) {
     ////////// sum of all product price
     int subtotal = items.fold(0, (sum, item) {
-      print(sum.toString() + "===========" + item.snapshot!.price.toString());
       if (item.snapshot == null)
         throw Exception('Snapshot required for calculations');
       return sum + item.snapshot!.price * item.quantity;
     });
-    print('total' + subtotal.toString());
+
     ////////// list of item total ex([30rs,40rs])
     // List<int> itemSubtotals =
     //     items.map((item) => item.snapshot!.priceCents * item.quantity).toList();

@@ -14,62 +14,6 @@ import 'package:empire/feature/checkout/domain/usecase/get_address_usecase.dart'
 import 'package:empire/feature/checkout/domain/usecase/getpaymentmethod_usecase.dart';
 import 'package:empire/feature/checkout/domain/usecase/getshippingmethod_usecase.dart';
 import 'package:empire/feature/checkout/domain/usecase/submit_checkout_usecase.dart';
-import 'package:empire/feature/checkout/domain/enities/coupon.dart';
-
-abstract class CheckoutState extends Equatable {
-  @override
-  List<Object?> get props => [];
-}
-
-class CheckoutInitial extends CheckoutState {}
-
-class CheckoutLoading extends CheckoutState {}
-
-class CheckoutLoaded extends CheckoutState {
-  final CheckoutData data;
-  final List<Address> addresses;
-  final List<ShippingMethod> shippingMethods;
-  final List<PaymentMethod> paymentMethods;
-
-  CheckoutLoaded({
-    required this.data,
-    required this.addresses,
-    required this.shippingMethods,
-    required this.paymentMethods,
-  });
-
-  CheckoutLoaded copyWith({
-    CheckoutData? data,
-  }) {
-    return CheckoutLoaded(
-      data: data ?? this.data,
-      addresses: addresses,
-      shippingMethods: shippingMethods,
-      paymentMethods: paymentMethods,
-    );
-  }
-
-  @override
-  List<Object?> get props => [data, addresses, shippingMethods, paymentMethods];
-}
-
-class CheckoutSuccess extends CheckoutState {
-  final String orderId;
-
-  CheckoutSuccess(this.orderId);
-
-  @override
-  List<Object?> get props => [orderId];
-}
-
-class CheckoutFailure extends CheckoutState {
-  final String message;
-
-  CheckoutFailure(this.message);
-
-  @override
-  List<Object?> get props => [message];
-}
 
 abstract class CheckoutEvent extends Equatable {
   @override
@@ -131,7 +75,72 @@ class UpdateTip extends CheckoutEvent {
   List<Object?> get props => [tipCents];
 }
 
+class UpdateCartItems extends CheckoutEvent {
+  final List<CartItem> items;
+  final OrderBreakdown breakdown;
+
+  UpdateCartItems(this.items, this.breakdown);
+
+  @override
+  List<Object?> get props => [items, breakdown];
+}
+
 class SubmitCheckout extends CheckoutEvent {}
+
+abstract class CheckoutState extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
+
+class CheckoutInitial extends CheckoutState {}
+
+class CheckoutLoading extends CheckoutState {}
+
+class CheckoutLoaded extends CheckoutState {
+  final CheckoutData data;
+  final List<Address> addresses;
+  final List<ShippingMethod> shippingMethods;
+  final List<PaymentMethod> paymentMethods;
+
+  CheckoutLoaded({
+    required this.data,
+    required this.addresses,
+    required this.shippingMethods,
+    required this.paymentMethods,
+  });
+
+  CheckoutLoaded copyWith({
+    CheckoutData? data,
+  }) {
+    return CheckoutLoaded(
+      data: data ?? this.data,
+      addresses: addresses,
+      shippingMethods: shippingMethods,
+      paymentMethods: paymentMethods,
+    );
+  }
+
+  @override
+  List<Object?> get props => [data, addresses, shippingMethods, paymentMethods];
+}
+
+class CheckoutSuccess extends CheckoutState {
+  final String orderId;
+
+  CheckoutSuccess(this.orderId);
+
+  @override
+  List<Object?> get props => [orderId];
+}
+
+class CheckoutFailure extends CheckoutState {
+  final String message;
+
+  CheckoutFailure(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
 
 class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
   final GetAddressesUseCase getAddressesUseCase;
@@ -139,6 +148,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
   final GetPaymentMethodsUseCase getPaymentMethodsUseCase;
   final ApplyCouponUseCase applyCouponUseCase;
   final SubmitCheckoutUseCase submitCheckoutUseCase;
+
   final CalculateBreakdownUseCase calculateBreakdownUseCase;
 
   CheckoutBloc({
@@ -153,6 +163,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     on<SelectAddress>(_onSelectAddress);
     on<SelectShippingMethod>(_onSelectShipping);
     on<SelectPaymentMethod>(_onSelectPayment);
+    on<UpdateCartItems>(onUpdateCartItems);
     on<ApplyCoupon>(_onApplyCoupon);
     on<UpdateTip>(_onUpdateTip);
     on<SubmitCheckout>(_onSubmit);
@@ -223,6 +234,18 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     emit(current.copyWith(
       data: newData.copyWith(breakdown: newBreakdown),
     ));
+  }
+
+  void onUpdateCartItems(UpdateCartItems event, Emitter<CheckoutState> emit) {
+    final current = state;
+    if (current is! CheckoutLoaded) return;
+
+    final newData = current.data.copyWith(
+      items: event.items,
+      breakdown: event.breakdown,
+    );  
+
+    emit(current.copyWith(data: newData));
   }
 
   void _onSelectShipping(

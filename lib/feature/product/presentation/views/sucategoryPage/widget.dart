@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/noresult%20.dart';
 import 'package:empire/feature/cart/domain/entities/variant_snapshot.dart';
+
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
 
 import 'package:empire/feature/favorite/presentation/bloc/favorite.dart';
@@ -17,114 +18,6 @@ import 'package:empire/feature/product/presentation/views/search/seacrh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
-
-Container subcategory(
-    SubCategoryLoadedState state, String? isSlected, String mainCatgeory) {
-  return Container(
-    width: 93,
-    color: Colors.grey[50],
-    child: ListView.builder(
-      shrinkWrap: true,
-      itemCount: state.categories.length,
-      itemBuilder: (context, index) {
-        final category = state.categories[index];
-        return GestureDetector(
-          onTap: () {
-            isSlected = category.uid;
-            context.read<ProductcalingBloc>().add(ProductCallingEvent(
-                mainCategoryId: mainCatgeory,
-                subCategoryId: isSlected!,
-                subcategoryname: category.category));
-          },
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 2),
-            decoration: BoxDecoration(
-              color:
-                  category.uid == isSlected ? Colors.white : Colors.transparent,
-              border: category.uid == isSlected
-                  ? const Border(
-                      left: BorderSide(color: Colors.green, width: 3))
-                  : null,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      color: ColoRs.homecardcolor,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(0.0),
-                      child: ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(0)),
-                        child: Image.network(
-                          height: 50,
-                          width: 70,
-                          fit: BoxFit.fill,
-                          state.categories[index].imageUrl,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) {
-                              return child;
-                            } else {
-                              return Shimmer(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Colors.black,
-                                    Colors.white,
-                                  ],
-                                ),
-                                child: child,
-                              );
-                            }
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.surfaceVariant,
-                              child: Icon(
-                                Icons.image,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                                size: 40,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    category.category,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: category.uid == isSlected
-                          ? FontWeight.w900
-                          : FontWeight.w700,
-                      color: category.uid == isSlected
-                          ? Colors.black
-                          : Colors.grey[600],
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    ),
-  );
-}
 
 SizedBox products(BuildContext context, Productfetched state,
     String mainCategoryId, String subCategoryId) {
@@ -158,7 +51,7 @@ SizedBox products(BuildContext context, Productfetched state,
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 0.40,
+                childAspectRatio: 0.47,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
               ),
@@ -188,14 +81,15 @@ class ProductCard extends StatefulWidget {
 class _ProductCardState extends State<ProductCard> {
   String? selectedVariantName;
   Variant? selectedVariant;
-  @override
-  void initState() {
-    super.initState();
-    if (widget.product.variantDetails.isNotEmpty) {
-      selectedVariant = widget.product.variantDetails.first;
-      selectedVariantName = selectedVariant!.name;
-    }
-  }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   if (widget.product.variantDetails.isNotEmpty) {
+  //     selectedVariant = widget.product.variantDetails.first;
+  //     selectedVariantName = selectedVariant!.name;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -463,6 +357,7 @@ class _ProductCardState extends State<ProductCard> {
                   // ),
                   if (widget.product.variantDetails.isNotEmpty)
                     DropdownButton<String>(
+                      hint: const Text('Varient'),
                       value: selectedVariantName,
                       onChanged: (value) {
                         setState(() {
@@ -477,17 +372,38 @@ class _ProductCardState extends State<ProductCard> {
                           .toList(),
                     ),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
                     onPressed: () {
                       if (selectedVariantName != null &&
                           widget.product.productDocId != null) {
+                        final varientSnapshot = VariantSnapshot(
+                            name: selectedVariantName!,
+                            price: int.tryParse(
+                                    selectedVariant!.salePrice.toString()) ??
+                                0,
+                            weightGrams: int.tryParse(
+                                    widget.product.weight.toString()) ??
+                                0,
+                            sku: widget.product.sku,
+                            stock: widget.product.quantities);
                         context.read<CartBloc>().add(AddToCart(
-                              widget.product.productDocId!,
-                              selectedVariantName!,
-                              1,
-                            ));
+                            widget.product.productDocId!,
+                            selectedVariantName!,
+                            1,
+                            snapshot: varientSnapshot));
 
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Added to cart')));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('please select the varients')));
                       }
                     },
                     child: const Text('Add to Cart'),
@@ -656,6 +572,114 @@ class SubCategory extends StatelessWidget {
       },
     );
   }
+}
+
+Container subcategory(
+    SubCategoryLoadedState state, String? isSlected, String mainCatgeory) {
+  return Container(
+    width: 93,
+    color: Colors.grey[50],
+    child: ListView.builder(
+      shrinkWrap: true,
+      itemCount: state.categories.length,
+      itemBuilder: (context, index) {
+        final category = state.categories[index];
+        return GestureDetector(
+          onTap: () {
+            isSlected = category.uid;
+            context.read<ProductcalingBloc>().add(ProductCallingEvent(
+                mainCategoryId: mainCatgeory,
+                subCategoryId: isSlected!,
+                subcategoryname: category.category));
+          },
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 2),
+            decoration: BoxDecoration(
+              color:
+                  category.uid == isSlected ? Colors.white : Colors.transparent,
+              border: category.uid == isSlected
+                  ? const Border(
+                      left: BorderSide(color: Colors.green, width: 3))
+                  : null,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      color: ColoRs.homecardcolor,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: ClipRRect(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(0)),
+                        child: Image.network(
+                          height: 50,
+                          width: 70,
+                          fit: BoxFit.fill,
+                          state.categories[index].imageUrl,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            } else {
+                              return Shimmer(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Colors.black,
+                                    Colors.white,
+                                  ],
+                                ),
+                                child: child,
+                              );
+                            }
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surfaceVariant,
+                              child: Icon(
+                                Icons.image,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                                size: 40,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    category.category,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: category.uid == isSlected
+                          ? FontWeight.w900
+                          : FontWeight.w700,
+                      color: category.uid == isSlected
+                          ? Colors.black
+                          : Colors.grey[600],
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    ),
+  );
 }
 
 class ErrorInfo extends StatelessWidget {

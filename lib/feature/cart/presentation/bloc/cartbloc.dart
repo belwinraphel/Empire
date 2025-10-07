@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
 import 'package:empire/feature/cart/domain/entities/order_breakdown.dart';
 import 'package:empire/feature/cart/domain/entities/variant_snapshot.dart';
@@ -145,13 +143,17 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             snapshot: event.snapshot,
           ));
         }
-        // emit(CartLoaded(
-        //     items: newItems,
-        //     breakdown: calculateBreakdownUseCase(items: newItems)));
+
+        emit(CartLoaded(
+            items: newItems,
+            breakdown: calculateBreakdownUseCase(items: newItems)));
       }
+
       final result = await addToCartUseCase(
           event.productId, event.variantName, event.quantity);
-      result.fold((failure) => add(_CartError(failure.message)), (_) => null);
+      result.fold((failure) => add(_CartError(failure.message)), (_) {
+        add(LoadCart());
+      });
     });
 
     on<UpdateQuantity>((event, emit) async {
@@ -162,16 +164,25 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             item.variantName == event.variantName);
         if (index != -1) {
           List<CartItem> newItems = List.from(current.items);
-          newItems[index] =
-              newItems[index].copyWith(quantity: event.newQuantity);
+
+          if (event.newQuantity <= 0) {
+            newItems.removeAt(index);
+          } else {
+            newItems[index] =
+                newItems[index].copyWith(quantity: event.newQuantity);
+          }
+
           emit(CartLoaded(
               items: newItems,
               breakdown: calculateBreakdownUseCase(items: newItems)));
         }
       }
+
       final result = await updateQuantityUseCase(
           event.productId, event.variantName, event.newQuantity);
-      result.fold((failure) => add(_CartError(failure.message)), (_) => null);
+      result.fold((failure) => add(_CartError(failure.message)), (_) {
+        add(LoadCart());
+      });
     });
 
     on<RemoveFromCart>((event, emit) async {
@@ -181,27 +192,25 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             .where((item) => !(item.productId == event.productId &&
                 item.variantName == event.variantName))
             .toList();
+
         emit(CartLoaded(
             items: newItems,
             breakdown: calculateBreakdownUseCase(items: newItems)));
       }
+
       final result =
           await removeFromCartUseCase(event.productId, event.variantName);
-      result.fold((failure) => add(_CartError(failure.message)), (_) => null);
+      result.fold((failure) => add(_CartError(failure.message)), (_) {
+        add(LoadCart());
+      });
     });
 
     on<ClearCart>((event, emit) async {
       emit(CartLoaded(
-          items: [], breakdown: calculateBreakdownUseCase(items: [])));
+          items: const [], breakdown: calculateBreakdownUseCase(items: [])));
       final result = await clearCartUseCase();
       result.fold((failure) => add(_CartError(failure.message)), (_) => null);
     });
-
-    // on<CartUpdated>((event, emit) {
-    //   emit(CartLoaded(
-    //       items: event.items,
-    //       breakdown: calculateBreakdownUseCase(items: event.items)));
-    // });
 
     on<_CartError>((event, emit) {
       emit(CartError(event.message));

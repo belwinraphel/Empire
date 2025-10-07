@@ -70,11 +70,7 @@ class CartFirestoreDataSource {
         ((data['weight'] as num? ?? 0.0).toDouble() * 1000).round();
     final String sku = data['sku'] ?? '';
     final int stock = variantMap['quantity'] ?? 0;
-    print(variantName);
-    print(variantMap['image']);
-    print(price);
-    print(sku);
-    print(stock);
+
     return VariantSnapshot(
       name: variantName,
       imageUrl: variantMap['image'],

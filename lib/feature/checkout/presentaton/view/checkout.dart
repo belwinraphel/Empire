@@ -5,8 +5,6 @@ import 'package:empire/feature/checkout/presentaton/bloc/checkoutbloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Modern checkout page widget following Material 3 design principles
-/// Features responsive design with clean UI matching e-commerce standards
 class CheckoutPage extends StatelessWidget {
   const CheckoutPage({super.key});
 
@@ -45,7 +43,6 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  /// Builds the app bar with back button, title, and share action
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.white,
@@ -87,38 +84,44 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  /// Builds the main checkout body with scrollable content
   Widget _buildCheckoutBody(BuildContext context, CheckoutLoaded state) {
-    return Column(
-      children: [
-        // Scrollable content
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildDeliveryInfoCard(state),
-                const SizedBox(height: 20),
-                _buildBeforeCheckoutSection(),
-                const SizedBox(height: 20),
-                _buildGiftOrderingCard(),
-                const SizedBox(height: 12),
-                _buildFreeDeliveryCard(),
-                const SizedBox(height: 12),
-                _buildDeliveryAddressCard(state),
-                const SizedBox(height: 100), // Space for bottom bar
-              ],
+    return BlocListener<CartBloc, CartState>(
+      listener: (context, cartState) {
+        if (cartState is CartLoaded) {
+          context.read<CheckoutBloc>().add(
+                UpdateCartItems(cartState.items, cartState.breakdown),
+              );
+        }
+      },
+      child: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildDeliveryInfoCard(state),
+                  const SizedBox(height: 20),
+                  _buildBeforeCheckoutSection(),
+                  const SizedBox(height: 20),
+                  _buildGiftOrderingCard(),
+                  const SizedBox(height: 12),
+                  _buildFreeDeliveryCard(),
+                  const SizedBox(height: 12),
+                  _buildDeliveryAddressCard(state),
+                  const SizedBox(height: 100),
+                ],
+              ),
             ),
           ),
-        ),
-        // Fixed bottom action bar
-        _buildBottomActionBar(context, state),
-      ],
+          // Fixed bottom action bar
+          _buildBottomActionBar(context, state),
+        ],
+      ),
     );
   }
 
-  /// Delivery information card with product details and timing
   Widget _buildDeliveryInfoCard(CheckoutLoaded cartState) {
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -269,7 +272,6 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  /// "Before you checkout" section with horizontal product categories
   Widget _buildBeforeCheckoutSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,7 +309,6 @@ class CheckoutPage extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        // Horizontal scrollable categories
         SizedBox(
           height: 140,
           child: ListView(
@@ -328,7 +329,6 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  /// Individual category card for horizontal scroll
   Widget _buildCategoryCard(String title, String subtitle, List<String> emojis,
       [String? badge]) {
     return Container(
@@ -348,7 +348,6 @@ class CheckoutPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Product images/emojis
           Row(
             children: [
               ...emojis.take(3).map((emoji) => Container(
@@ -409,7 +408,6 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  /// Gift ordering card
   Widget _buildGiftOrderingCard() {
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -469,7 +467,6 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  /// Free delivery card
   Widget _buildFreeDeliveryCard() {
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -523,7 +520,6 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  /// Delivery address card
   Widget _buildDeliveryAddressCard(CheckoutLoaded state) {
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -576,7 +572,6 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  /// Bottom action bar with payment method and place order button
   Widget _buildBottomActionBar(BuildContext context, CheckoutLoaded state) {
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -628,7 +623,6 @@ class CheckoutPage extends StatelessWidget {
 
             const SizedBox(width: 16),
 
-            // Place order button
             Container(
               decoration: BoxDecoration(
                 color: Colors.green[600],
@@ -650,8 +644,8 @@ class CheckoutPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text(
-                              '₹142',
+                            Text(
+                              '₹${state.data.breakdown.subtotal}',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -693,7 +687,6 @@ class CheckoutPage extends StatelessWidget {
   }
 }
 
-/// Custom painter for decorative wave separator
 class WavePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {

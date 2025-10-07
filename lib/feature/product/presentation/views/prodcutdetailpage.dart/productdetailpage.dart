@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:empire/core/utilis/color.dart';
+import 'package:empire/feature/favorite/presentation/bloc/favorite.dart';
 import 'package:empire/feature/product/domain/enities/product_entities.dart';
 import 'package:empire/feature/product/presentation/views/prodcutdetailpage.dart/widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final ProductEntity product;
@@ -248,7 +250,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           if (widget.product.variantDetails.isNotEmpty) ...[
                             const Titlesnew(nametitle: 'Variants'),
                             const SizedBox(height: 16),
-                            buildVariantsSection(widget.product.variantDetails),
+                            buildVariantsSection(widget.product.variantDetails,widget.product),
                           ],
                           const SizedBox(height: 40),
                         ],
@@ -258,8 +260,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
               ),
             ),
-
-            
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -275,29 +275,64 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
               child: Row(
                 children: [
-                  
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isFavorite = !isFavorite;
-                      });
-                    },
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]!),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : Colors.grey[600],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
+                  BlocBuilder<FavoritesBloc, FavoritesState>(
+                    builder: (context, state) {
+                      bool isFavorite = false;
 
-                 
+                      if (state is FavoritesLoaded) {
+                        isFavorite = state.favoriteProductIds
+                            .contains(widget.product.productDocId);
+                      }
+
+                      Widget favoriteIcon = Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey[300]!),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite ? Colors.red : Colors.grey[600],
+                        ),
+                      );
+
+                      return Positioned(
+                        top: 8,
+                        right: 8,
+                        child: GestureDetector(
+                          onTap: () {
+                            context.read<FavoritesBloc>().add(
+                                  ToggleFavorite(
+                                      productId: widget.product.productDocId!),
+                                );
+                          },
+                          child: favoriteIcon,
+                        ),
+                      );
+                    },
+                  ),
+                  //////////
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     setState(() {
+                  //       isFavorite = !isFavorite;
+                  //     });
+                  //   },
+                  //   child: Container(
+                  //     width: 50,
+                  //     height: 50,
+                  //     decoration: BoxDecoration(
+                  //       border: Border.all(color: Colors.grey[300]!),
+                  //       borderRadius: BorderRadius.circular(12),
+                  //     ),
+                  //     child: Icon(
+                  //       isFavorite ? Icons.favorite : Icons.favorite_border,
+                  //       color: isFavorite ? Colors.red : Colors.grey[600],
+                  //     ),
+                  //   ),
+                  // ),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Container(
                       height: 50,
@@ -315,36 +350,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                         child: const Text(
                           'Add to cart',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-
-                  
-                  Expanded(
-                    child: Container(
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Proceeding to checkout!')),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Buy now',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,

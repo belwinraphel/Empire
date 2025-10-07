@@ -1,4 +1,3 @@
-
 import 'package:empire/feature/product/presentation/bloc/product_bloc/get_subcategory.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/product_bloc.dart';
 
@@ -38,9 +37,12 @@ class SubCategoryPage extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SubCategory(isSlected: isSlected, mainCtageoruId: mainCtageoruId),
+            SubCategory(
+              mainCtageoruId: mainCtageoruId!,
+              isSlected: isSlected,
+            ),
             ProductSection(
-                mainCtageoruId: mainCtageoruId, subcategoyId: subcategoyId),
+                mainCtageoruId: mainCtageoruId!, subcategoyId: subcategoyId!)
           ],
         ),
       ),
