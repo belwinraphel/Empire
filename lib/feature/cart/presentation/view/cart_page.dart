@@ -1,3 +1,4 @@
+import 'package:empire/core/utilis/color.dart';
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
 import 'package:empire/feature/checkout/presentaton/view/checkout.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,11 @@ class CartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     context.read<CartBloc>().add(LoadCart());
     return Scaffold(
-      appBar: AppBar(title: const Text('Cart')),
+      appBar: AppBar(
+        backgroundColor: ColoRs.background,
+        centerTitle: true,
+        title: const Text('Favorite Page'),
+      ),
       body: BlocBuilder<CartBloc, CartState>(
         builder: (context, state) {
           if (state is CartLoading) {
@@ -68,7 +73,7 @@ class CartPage extends StatelessWidget {
                         ? () {
                             Navigator.push(context, MaterialPageRoute(
                               builder: (context) {
-                                return CheckoutPage();
+                                return const CheckoutPage();
                               },
                             ));
                           }

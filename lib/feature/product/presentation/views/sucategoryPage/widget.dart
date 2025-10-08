@@ -13,7 +13,7 @@ import 'package:empire/feature/product/presentation/bloc/product_bloc/get_subcat
 import 'package:empire/feature/product/presentation/bloc/product_bloc/product_bloc.dart';
 import 'package:empire/feature/product/presentation/views/homepage/widget.dart';
 import 'package:empire/feature/product/presentation/views/prodcutdetailpage.dart/productdetailpage.dart';
-import 'package:empire/feature/product/presentation/views/search/seacrh.dart';
+import 'package:empire/feature/product/presentation/views/search/search.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

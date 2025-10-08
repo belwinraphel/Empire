@@ -6,7 +6,7 @@ import 'package:empire/core/utilis/widget.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/get_category_bloc.dart';
 import 'package:empire/feature/product/presentation/views/CategoryPage/categorypage.dart';
-import 'package:empire/feature/product/presentation/views/search/seacrh.dart';
+import 'package:empire/feature/product/presentation/views/search/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';

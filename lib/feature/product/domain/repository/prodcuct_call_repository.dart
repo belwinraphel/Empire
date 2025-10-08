@@ -17,7 +17,11 @@ abstract class ProdcuctsRepository {
     Future<Either<Failures, List<ProductEntity>>> searchAndFilterProducts(
     String? searchQuery,
     List<String>? brandFilters,
+   
+
     double? minPrice,
     double? maxPrice,
+     List<String>? category,
+    List<String>? subcategory,
   );
 }

@@ -18,7 +18,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final List<Widget> pages = [
     HomePage(),
-    const Favouritepage(),
+    const FavouritePage(),
     const CategoryPage(),
     CartPage(),
     const SettingsPage(),

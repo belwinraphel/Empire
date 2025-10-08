@@ -17,6 +17,8 @@ abstract class ProductsDataSource {
     List<String>? brandFilters,
     double? minPrice,
     double? maxPrice,
+    List<String>? category,
+    List<String>? subcategory,
   );
 }
 
@@ -31,7 +33,6 @@ class ProducsDataSourceimpli extends ProductsDataSource {
       String subcategoryname) async {
     try {
       Query query = firestore.collection('products');
-      
 
       final snapShot = await query.get();
 
@@ -48,6 +49,13 @@ class ProducsDataSourceimpli extends ProductsDataSource {
         return Right(filtered);
       }
 
+      // for brand filter
+      //  List<ProductEntity> filteredByProduct = products;
+      //   filteredByProduct = filteredByProduct
+      //       .where((product) => product.brand == brand)
+      //       .toList();
+      //   return right(filteredByProduct);
+
       return Right(products);
     } catch (e) {
       return Left(Failures.server(e.toString()));
@@ -60,13 +68,16 @@ class ProducsDataSourceimpli extends ProductsDataSource {
     List<String>? brandFilters,
     double? minPrice,
     double? maxPrice,
+     List<String>? category,
+    List<String>? subcategory,
   ) async {
     try {
       Query query = firestore.collection('products');
- 
 
-      if (minPrice != null) query = query.where('price', isGreaterThanOrEqualTo: minPrice);
-      if (maxPrice != null) query = query.where('price', isLessThanOrEqualTo: maxPrice);
+      if (minPrice != null)
+        query = query.where('price', isGreaterThanOrEqualTo: minPrice);
+      if (maxPrice != null)
+        query = query.where('price', isLessThanOrEqualTo: maxPrice);
 
       final snapShot = await query.get();
 
@@ -76,7 +87,6 @@ class ProducsDataSourceimpli extends ProductsDataSource {
 
       var products = await compute(parseProducts, docs);
 
-      // Brand filtering on client side
       if (brandFilters != null && brandFilters.isNotEmpty) {
         products = products
             .where((product) =>
@@ -84,12 +94,13 @@ class ProducsDataSourceimpli extends ProductsDataSource {
             .toList();
       }
 
-      // Search filtering on client side
       if (searchQuery != null && searchQuery.isNotEmpty) {
         final queryLower = searchQuery.toLowerCase();
         products = products
             .where((p) => p.name.toLowerCase().contains(queryLower))
             .toList();
+      } else {
+        Right(products);
       }
 
       return Right(products);

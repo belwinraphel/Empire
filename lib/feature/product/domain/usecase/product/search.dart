@@ -11,7 +11,9 @@ class SearchUsecase {
     List<String>? brandFilters,
     double? minPrice,
     double? maxPrice,
+      List<String>? category,
+    List<String>? subcategory,
   ){
-    return repository.searchAndFilterProducts(searchQuery, brandFilters, minPrice, maxPrice);
+    return repository.searchAndFilterProducts(searchQuery, brandFilters, minPrice, maxPrice,category,subcategory);
   }
 }

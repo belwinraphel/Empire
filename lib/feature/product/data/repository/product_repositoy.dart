@@ -11,11 +11,9 @@ class ProductsRepositoyImpi extends ProdcuctsRepository {
 
   @override
   Future<Either<Failures, List<ProductEntity>>> getProducts(
-    String mainCategoryId,
-    String subcategoryId,
-    String subcategoryname
-  ) {
-    return producDataSource.gettingProduct(mainCategoryId, subcategoryId,subcategoryname);
+      String mainCategoryId, String subcategoryId, String subcategoryname) {
+    return producDataSource.gettingProduct(
+        mainCategoryId, subcategoryId, subcategoryname);
   }
 
   @override
@@ -25,13 +23,23 @@ class ProductsRepositoyImpi extends ProdcuctsRepository {
   ) {
     return producDataSource.getProductBrand(mainCategory, subCategory);
   }
-    @override
-      Future<Either<Failures, List<ProductEntity>>> searchAndFilterProducts(
+
+  @override
+  Future<Either<Failures, List<ProductEntity>>> searchAndFilterProducts(
     String? searchQuery,
     List<String>? brandFilters,
     double? minPrice,
     double? maxPrice,
-  ){
-    return producDataSource.searchAndFilterProducts(searchQuery, brandFilters, minPrice, maxPrice);
+    List<String>? category,
+    List<String>? subcategory,
+  ) {
+    return producDataSource.searchAndFilterProducts(
+      searchQuery,
+      brandFilters,
+      minPrice,
+      maxPrice,
+      category,subcategory
+      
+    );
   }
 }

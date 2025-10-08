@@ -5,7 +5,7 @@ import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/centralizedstate/category.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/get_category_bloc.dart';
 import 'package:empire/feature/product/presentation/views/CategoryPage/widget.dart';
-import 'package:empire/feature/product/presentation/views/search/seacrh.dart';
+import 'package:empire/feature/product/presentation/views/search/search.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -247,6 +247,7 @@ class CategoryPage extends StatelessWidget {
     );
   }
 }
+
 class CategorySection extends StatelessWidget {
   const CategorySection({super.key});
 
@@ -264,19 +265,17 @@ class CategorySection extends StatelessWidget {
               itemCount: state.categories.length,
               itemBuilder: (context, index) {
                 final category = state.categories[index];
-                
-        
+
                 final subCategoryData = state.subCategoryMap[category.uid];
 
-           
                 return CategoryItems(
-                  category: category, 
+                  category: category,
                   subCategoryData: subCategoryData,
                 );
               },
             );
           }
-          
+
           return const Center(child: CircularProgressIndicator());
         },
       ),

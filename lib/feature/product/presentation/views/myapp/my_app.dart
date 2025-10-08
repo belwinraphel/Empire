@@ -27,6 +27,7 @@ import 'package:empire/feature/auth/presentation/bloc/auth/registerpage.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/savepassowrd.dart';
 import 'package:empire/feature/auth/presentation/views/loginpage/home_page.dart';
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
+import 'package:empire/feature/favorite/domain/repository/favotiterepository.dart';
 import 'package:empire/feature/favorite/domain/usecase/add_favorites_usecase.dart';
 import 'package:empire/feature/favorite/domain/usecase/get_favourite_usecase.dart';
 import 'package:empire/feature/favorite/domain/usecase/remove_favorites_usecase.dart';
@@ -104,12 +105,13 @@ class MyApp extends StatelessWidget {
         /////cartbloc/////////
         BlocProvider(
           create: (context) => sl<CartBloc>(),
-        ),
+        ),  
 
         BlocProvider(
             create: (_) => ProductcalingBloc(sl<ProductcallingUsecase>())),
         BlocProvider(
             create: (context) => FavoritesBloc(
+                  repository: sl<FavoritesRepository>(),
                   getFavoritesStreamUseCase: sl<GetFavoritesStreamUseCase>(),
                   addFavoriteUseCase: sl<AddFavoriteUseCase>(),
                   removeFavoriteUseCase: sl<RemoveFavoriteUseCase>(),
