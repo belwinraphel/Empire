@@ -265,9 +265,9 @@ class CategorySection extends StatelessWidget {
               itemCount: state.categories.length,
               itemBuilder: (context, index) {
                 final category = state.categories[index];
-
+        
                 final subCategoryData = state.subCategoryMap[category.uid];
-
+             
                 return CategoryItems(
                   category: category,
                   subCategoryData: subCategoryData,

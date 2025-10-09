@@ -65,6 +65,26 @@ class UpdatePriceRange extends ProductEvent {
   List<Object?> get props => [minPrice, maxPrice, category, subcategory];
 }
 
+class UpdateCategoryFilter extends ProductEvent {
+  final String categoryId;
+
+  const UpdateCategoryFilter(this.categoryId);
+
+  @override
+  List<Object?> get props => [categoryId];
+}
+
+class UpdateSubcategoryFilter extends ProductEvent {
+  final String subcategoryId;
+
+  const UpdateSubcategoryFilter(this.subcategoryId);
+
+  @override
+  List<Object?> get props => [subcategoryId];
+}
+
+class ClearFilters extends ProductEvent {}
+
 class LoadBrands extends ProductEvent {}
 
 abstract class ProductState extends Equatable {
@@ -126,6 +146,9 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<UpdateSearchQuery>(_onUpdateSearchQuery);
     on<UpdateBrandFilters>(_onUpdateBrandFilters);
     on<UpdatePriceRange>(_onUpdatePriceRange);
+    on<UpdateCategoryFilter>(_onUpdateCategoryFilter); // Add
+    on<UpdateSubcategoryFilter>(onUpdateSubcategoryFilter); // Add
+    on<ClearFilters>(_onClearFilters);
   }
 
   Future<void> _onLoadProducts(
@@ -156,6 +179,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       state is ProductLoaded ? (state as ProductLoaded).category : null,
       state is ProductLoaded ? (state as ProductLoaded).subcategory : null,
     );
+    print(state is ProductLoaded
+        ? (state as ProductLoaded).subcategory
+        : null.toString() + "updatebloc");
+    print(state is ProductLoaded
+        ? (state as ProductLoaded).category
+        : null.toString() + "updatebloc");
     result.fold(
       (failure) => emit(ProductError(failure.message)),
       (products) => emit(ProductLoaded(
@@ -226,7 +255,90 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
             : null,
         minPrice: event.minPrice,
         maxPrice: event.maxPrice,
+        category: state is ProductLoaded
+            ? (state as ProductLoaded).category
+            : event.category,
+        subcategory: state is ProductLoaded
+            ? (state as ProductLoaded).subcategory
+            : event.subcategory,
       )),
+    );
+  }
+
+  Future<void> _onUpdateCategoryFilter(
+      UpdateCategoryFilter event, Emitter<ProductState> emit) async {
+    emit(ProductLoading());
+
+    final currentState = state is ProductLoaded ? state as ProductLoaded : null;
+
+    final result = await dataSource.searchAndFilterProducts(
+      currentState?.searchQuery,
+      currentState?.brandFilters,
+      currentState?.minPrice,
+      currentState?.maxPrice,
+      [event.categoryId],
+      null,
+    );
+
+    result.fold(
+      (failure) => emit(ProductError(failure.message)),
+      (products) => emit(ProductLoaded(
+        products: products,
+        searchQuery: currentState?.searchQuery,
+        brandFilters: currentState?.brandFilters,
+        minPrice: currentState?.minPrice,
+        maxPrice: currentState?.maxPrice,
+        category: [event.categoryId],
+        subcategory: null,
+      )),
+    );
+  }
+
+  Future<void> onUpdateSubcategoryFilter(
+      UpdateSubcategoryFilter event, Emitter<ProductState> emit) async {
+    emit(ProductLoading());
+
+    final currentState = state is ProductLoaded ? state as ProductLoaded : null;
+
+    final result = await dataSource.searchAndFilterProducts(
+      currentState?.searchQuery,
+      currentState?.brandFilters,
+      currentState?.minPrice,
+      currentState?.maxPrice,
+      currentState?.category,
+      [event.subcategoryId],
+    );
+
+    result.fold(
+      (failure) => emit(ProductError(failure.message)),
+      (products) => emit(ProductLoaded(
+        products: products,
+        searchQuery: currentState?.searchQuery,
+        brandFilters: currentState?.brandFilters,
+        minPrice: currentState?.minPrice,
+        maxPrice: currentState?.maxPrice,
+        category: currentState?.category,
+        subcategory: [event.subcategoryId],
+      )),
+    );
+  }
+
+  Future<void> _onClearFilters(
+      ClearFilters event, Emitter<ProductState> emit) async {
+    emit(ProductLoading());
+
+    final result = await dataSource.searchAndFilterProducts(
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+    );
+
+    result.fold(
+      (failure) => emit(ProductError(failure.message)),
+      (products) => emit(ProductLoaded(products: products)),
     );
   }
 }

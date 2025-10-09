@@ -78,6 +78,7 @@ class CategorsyBloc extends Bloc<CategorysEvent, CategorysState> {
             final subCategoryResults = await Future.wait(subCategoryFutures);
 
             final Map<String, SubCategoryData> subCategoryMap = {};
+
             for (int i = 0; i < mainCategories.length; i++) {
               final categoryId = mainCategories[i].uid;
               final result = subCategoryResults[i];
@@ -93,7 +94,7 @@ class CategorsyBloc extends Bloc<CategorysEvent, CategorysState> {
                 },
               );
             }
-
+           
             emit(CategorysLoadedState(
               categories: mainCategories,
               subCategoryMap: subCategoryMap,

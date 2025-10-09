@@ -68,7 +68,7 @@ class ProducsDataSourceimpli extends ProductsDataSource {
     List<String>? brandFilters,
     double? minPrice,
     double? maxPrice,
-     List<String>? category,
+    List<String>? category,
     List<String>? subcategory,
   ) async {
     try {
@@ -91,6 +91,18 @@ class ProducsDataSourceimpli extends ProductsDataSource {
         products = products
             .where((product) =>
                 brandFilters.any((brand) => product.filterTags.contains(brand)))
+            .toList();
+      }
+      if (category != null && category.isNotEmpty) {
+        products = products
+            .where((product) => category
+                .any((category) => product.mainCategoryName.contains(category)))
+            .toList();
+      }
+      if (subcategory != null && subcategory.isNotEmpty) {
+        products = products
+            .where((product) => subcategory.any(
+                (subcategory) => product.subcategoryName.contains(subcategory)))
             .toList();
       }
 
