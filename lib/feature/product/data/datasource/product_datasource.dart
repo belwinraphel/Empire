@@ -79,6 +79,9 @@ class ProducsDataSourceimpli extends ProductsDataSource {
       if (maxPrice != null)
         query = query.where('price', isLessThanOrEqualTo: maxPrice);
 
+      if (category != null && category.isNotEmpty) {
+        query = query.where('mainCategoryName', whereIn: category);
+      }
       final snapShot = await query.get();
 
       final docs = snapShot.docs.map((doc) {

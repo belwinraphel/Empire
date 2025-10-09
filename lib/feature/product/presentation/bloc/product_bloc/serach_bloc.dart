@@ -146,8 +146,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<UpdateSearchQuery>(_onUpdateSearchQuery);
     on<UpdateBrandFilters>(_onUpdateBrandFilters);
     on<UpdatePriceRange>(_onUpdatePriceRange);
-    on<UpdateCategoryFilter>(_onUpdateCategoryFilter); // Add
-    on<UpdateSubcategoryFilter>(onUpdateSubcategoryFilter); // Add
+    on<UpdateCategoryFilter>(_onUpdateCategoryFilter); 
+    on<UpdateSubcategoryFilter>(onUpdateSubcategoryFilter); 
     on<ClearFilters>(_onClearFilters);
   }
 
@@ -179,12 +179,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       state is ProductLoaded ? (state as ProductLoaded).category : null,
       state is ProductLoaded ? (state as ProductLoaded).subcategory : null,
     );
-    print(state is ProductLoaded
-        ? (state as ProductLoaded).subcategory
-        : null.toString() + "updatebloc");
-    print(state is ProductLoaded
-        ? (state as ProductLoaded).category
-        : null.toString() + "updatebloc");
+   
     result.fold(
       (failure) => emit(ProductError(failure.message)),
       (products) => emit(ProductLoaded(

@@ -26,13 +26,13 @@ class HomePage extends StatelessWidget {
             child: Container(
               height: MediaQuery.of(context).size.height,
               color: ColoRs.white,
-              child: SingleChildScrollView(
+              child: const SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SearchSection(),
-                    const ModernCarousel(),
-                    const Category(),
+                    SearchSection(),
+                    ModernCarousel(),
+                    Category(),
                     // MostUsed(images: images, issmallScreen: issmallScreen),
                   ],
                 ),
