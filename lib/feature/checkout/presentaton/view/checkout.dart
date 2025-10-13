@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:empire/core/di/service_locator.dart';
+import 'package:empire/core/utilis/color.dart';
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
 import 'package:empire/feature/checkout/presentaton/bloc/checkoutbloc.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,7 @@ class CheckoutPage extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
           onPressed: () {
-            // Handle share action
+           
           },
         ),
         const Padding(
@@ -115,7 +116,6 @@ class CheckoutPage extends StatelessWidget {
               ),
             ),
           ),
-          // Fixed bottom action bar
           _buildBottomActionBar(context, state),
         ],
       ),
@@ -132,16 +132,17 @@ class CheckoutPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
-              Icon(Icons.access_time, color: Colors.green[600], size: 20),
-              const SizedBox(width: 8),
+              Icon(Icons.access_time,
+                  color: ColoRs.checkoutButtoncolor, size: 20),
+              SizedBox(width: 8),
               Text(
                 'Delivery in 8 minutes',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.green[600],
+                  color: ColoRs.checkoutButtoncolor,
                 ),
               ),
             ],
@@ -160,109 +161,138 @@ class CheckoutPage extends StatelessWidget {
               itemCount: cartState.data.items.length,
               itemBuilder: (context, index) {
                 return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            cartState.data.items[index].snapshot?.imageUrl ??
-                                '',
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.fill,
-                        placeholder: (context, url) =>
-                            const CircularProgressIndicator(),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 60.0,
+                          height: 60.0,
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final pixelRatio =
+                                  MediaQuery.devicePixelRatioOf(context);
 
-                    // Product info
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            cartState.data.items[index].snapshot?.name ?? '',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '${cartState.data.items[index].snapshot?.weightGrams} gm ',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                              final imageWidth =
+                                  (constraints.maxWidth * pixelRatio).toInt();
 
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.green[600],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.remove,
-                                color: Colors.white, size: 16),
-                            onPressed: () {
-                              context.read<CartBloc>().add(UpdateQuantity(
-                                  cartState.data.items[index].productId,
-                                  cartState.data.items[index].variantName,
-                                  cartState.data.items[index].quantity - 1));
+                              final imageUrl = cartState
+                                  .data.items[index].snapshot?.imageUrl;
+                              if (imageUrl == null || imageUrl.isEmpty) {
+                                return const Icon(Icons.image_not_supported);
+                              }
+
+                              final uri = Uri.parse(imageUrl);
+                              final newUri = uri.replace(queryParameters: {
+                                ...uri.queryParameters,
+                                'w': imageWidth.toString(),
+                              });
+
+                              return ClipRRect(
+                                borderRadius: BorderRadiusGeometry.circular(5),
+                                child: CachedNetworkImage(
+                                  imageUrl: newUri.toString(),
+                                  fit: BoxFit.fill,
+                                  placeholder: (context, url) => Container(
+                                    color: Colors.grey[200],
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
+                                ),
+                              );
                             },
-                            constraints: const BoxConstraints(
-                                minWidth: 32, minHeight: 32),
-                            padding: EdgeInsets.zero,
                           ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              cartState.data.items[index].quantity.toString(),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              cartState.data.items[index].snapshot?.name ?? '',
                               style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${cartState.data.items[index].snapshot?.weightGrams} gm ',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
+                          height: 29,
+                          decoration: BoxDecoration(
+                            color: ColoRs.checkoutButtoncolor,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.remove,
+                                    color: Colors.white,
+                                    size: 19,
+                                  ),
+                                  onPressed: () {
+                                    context.read<CartBloc>().add(UpdateQuantity(
+                                        cartState.data.items[index].productId,
+                                        cartState.data.items[index].variantName,
+                                        cartState.data.items[index].quantity -
+                                            1));
+                                  },
+                                  // constraints: const BoxConstraints(
+                                  //     minWidth: 32, minHeight: 32),
+                                  // padding: EdgeInsets.zero,
+                                ),
+                                Text(
+                                  cartState.data.items[index].quantity
+                                      .toString(),
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 19,
+                                  ),
+                                  onPressed: () {
+                                    context.read<CartBloc>().add(UpdateQuantity(
+                                        cartState.data.items[index].productId,
+                                        cartState.data.items[index].variantName,
+                                        cartState.data.items[index].quantity +
+                                            1));
+                                  },
+                                  // constraints: const BoxConstraints(
+                                  //     minWidth: 32, minHeight: 32),
+                                  // padding: EdgeInsets.zero,
+                                ),
+                              ],
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.add,
-                                color: Colors.white, size: 16),
-                            onPressed: () {
-                              context.read<CartBloc>().add(UpdateQuantity(
-                                  cartState.data.items[index].productId,
-                                  cartState.data.items[index].variantName,
-                                  cartState.data.items[index].quantity + 1));
-                            },
-                            constraints: const BoxConstraints(
-                                minWidth: 32, minHeight: 32),
-                            padding: EdgeInsets.zero,
+                        ),
+                        Text(
+                          '₹${cartState.data.items[index].snapshot?.price}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                           ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    Text(
-                      '₹${cartState.data.items[index].snapshot?.price}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 );
@@ -366,7 +396,7 @@ class CheckoutPage extends StatelessWidget {
           ),
           const Spacer(),
 
-          // Title and subtitle
+   
           Text(
             title,
             style: const TextStyle(
@@ -386,7 +416,7 @@ class CheckoutPage extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          // See all button
+         
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 6),
@@ -560,10 +590,10 @@ class CheckoutPage extends StatelessWidget {
               ],
             ),
           ),
-          Text(
+          const Text(
             'Change',
             style: TextStyle(
-              color: Colors.green[600],
+              color: ColoRs.checkoutButtoncolor,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -588,7 +618,6 @@ class CheckoutPage extends StatelessWidget {
       child: SafeArea(
         child: Row(
           children: [
-            // Payment method section
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -611,7 +640,7 @@ class CheckoutPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   const Text(
-                    'PhonePe UPI',
+                    ' ',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -620,12 +649,10 @@ class CheckoutPage extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(width: 16),
-
             Container(
               decoration: BoxDecoration(
-                color: Colors.green[600],
+                color: ColoRs.checkoutButtoncolor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Material(
@@ -646,7 +673,7 @@ class CheckoutPage extends StatelessWidget {
                           children: [
                             Text(
                               '₹${state.data.breakdown.subtotal}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,

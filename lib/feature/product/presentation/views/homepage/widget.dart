@@ -280,10 +280,6 @@ class SearchSection extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox10(),
-          const Divider(
-            thickness: 1,
-          ),
         ],
       ),
     );
@@ -503,6 +499,7 @@ class Category extends StatelessWidget {
     );
   }
 }
+
 class MostUsed extends StatelessWidget {
   const MostUsed({
     super.key,
@@ -542,8 +539,7 @@ class MostUsed extends StatelessWidget {
                       height: issmallScreen ? 110 : 100,
                       width: issmallScreen ? 120 : 110,
                       child: GridView.builder(
-                        physics:
-                            const NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: images.length,
                         padding: const EdgeInsets.all(0),
@@ -562,37 +558,28 @@ class MostUsed extends StatelessWidget {
                               decoration: const BoxDecoration(
                                   color: ColoRs.homecardcolor,
                                   borderRadius:
-                                      BorderRadius.all(
-                                          Radius.circular(10))),
+                                      BorderRadius.all(Radius.circular(10))),
                             );
                           }
                           return Container(
                             decoration: const BoxDecoration(
                                 color: ColoRs.homecardcolor,
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular(10))),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.all(3.0),
+                              padding: const EdgeInsets.all(3.0),
                               child: Card(
                                 elevation: 4,
                                 child: Container(
                                   height: 30,
                                   width: 40,
-                                  decoration:
-                                      const BoxDecoration(
-                                          color: ColoRs
-                                              .homecardcolor,
-                                          borderRadius:
-                                              BorderRadius.all(
-                                                  Radius
-                                                      .circular(
-                                                          10))),
+                                  decoration: const BoxDecoration(
+                                      color: ColoRs.homecardcolor,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10))),
                                   child: Center(
                                       child: Image.asset(
-                                          images[index]
-                                                  ['image'] ??
-                                              '')),
+                                          images[index]['image'] ?? '')),
                                 ),
                               ),
                             ),

@@ -112,9 +112,7 @@ class AuthRemoteDataSource {
       //     print('Password setup failed: ${e.message}');
       //   }
       // }
-    } catch (e) {
-  
-    }
+    } catch (e) {}
   }
 
   Future<User?> login(String email, String password) async {
@@ -123,9 +121,10 @@ class AuthRemoteDataSource {
         email: email,
         password: password,
       );
-
+  
       return user.user;
     } catch (e) {
+   
       throw FirebaseAuthException(code: 'auth/Login', message: e.toString());
     }
   }

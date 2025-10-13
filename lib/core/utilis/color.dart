@@ -8,4 +8,6 @@ class ColoRs {
   static const discount = Color(0xffF9EEA6);
   static const black = Color.fromARGB(255, 38, 37, 30);
   static const homecardcolor = Color(0xffe4f2f3);
+
+  static const checkoutButtoncolor = Color.fromARGB(255, 67, 160, 71);
 }

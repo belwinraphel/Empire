@@ -16,6 +16,7 @@ import 'package:empire/feature/product/presentation/views/prodcutdetailpage.dart
 import 'package:empire/feature/product/presentation/views/search/search.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -46,23 +47,42 @@ SizedBox products(BuildContext context, Productfetched state,
           ),
         ),
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.47,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
+          child: LayoutBuilder(builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            int crossAxisCount;
+            double aspectRatio;
+
+            if (width > 1200) {
+              crossAxisCount = 4;
+              aspectRatio = 0.7;
+            } else if (width > 800) {
+              crossAxisCount = 3;
+              aspectRatio = 0.65;
+            } else if (width > 300) {
+              crossAxisCount = 2;
+              aspectRatio = 0.47;
+            } else {
+              crossAxisCount = 2;
+              aspectRatio = 0.50;
+            }
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  childAspectRatio: aspectRatio,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                itemCount: state.products.length,
+                itemBuilder: (context, index) {
+                  return ProductCard(
+                    product: state.products[index],
+                  );
+                },
               ),
-              itemCount: state.products.length,
-              itemBuilder: (context, index) {
-                return ProductCard(
-                  product: state.products[index],
-                );
-              },
-            ),
-          ),
+            );
+          }),
         ),
       ],
     ),
@@ -397,9 +417,6 @@ class _ProductCardState extends State<ProductCard> {
                             selectedVariantName!,
                             1,
                             snapshot: varientSnapshot));
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Added to cart')));
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -524,18 +541,41 @@ class ProductSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProductcalingBloc, Productstate>(
-      builder: (context, state) {
-        if (state is ProductError) {
-          return Center(child: Text(state.messange));
-        } else if (state is Productfetched) {
-          if (state.products.isEmpty) {
-            return const NoResultsScreen();
+    return BlocConsumer<CartBloc, CartState>(
+      listener: (context, state) {
+        if (state is CartLoaded) {
+          if (state.errorMessage != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.errorMessage!),
+                backgroundColor: Colors.red,
+              ),
+            );
           } else {
-            return products(context, state, mainCtageoruId!, subcategoyId!);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Product added to cart!'),
+                backgroundColor: Colors.green,
+              ),
+            );
           }
         }
-        return const CircularProgressIndicator();
+      },
+      builder: (context, state) {
+        return BlocBuilder<ProductcalingBloc, Productstate>(
+          builder: (context, state) {
+            if (state is ProductError) {
+              return Center(child: Text(state.messange));
+            } else if (state is Productfetched) {
+              if (state.products.isEmpty) {
+                return const NoResultsScreen();
+              } else {
+                return products(context, state, mainCtageoruId!, subcategoyId!);
+              }
+            }
+            return const CircularProgressIndicator();
+          },
+        );
       },
     );
   }

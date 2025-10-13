@@ -139,7 +139,6 @@ class Loginpage extends StatelessWidget {
                     const SizedBox(
                       height: 40,
                     ),
-
                     BlocConsumer<AuthBloc, GoogleLoginPageState>(
                       listener: (context, state) {
                         if (state is GoogleLoginSuceesstate) {
@@ -227,6 +226,8 @@ class Loginpage extends StatelessWidget {
                               issmallScreen: issmallScreen,
                               onPressed: () {
                                 if (formKey.currentState!.validate()) {
+                                  print(usernamecController.text);
+                                  print(passwordController.text);
                                   context.read<LoginBloc>().add(LogPresed(
                                       usernamecController.text,
                                       passwordController.text));

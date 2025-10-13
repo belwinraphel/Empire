@@ -190,11 +190,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   selected: isSelected,
                   onSelected: (selected) {
                     setState(() {
-                      if (selected) {
-                        selectedCategory!.add(category.category);
+                      if (selectedCategory!.contains(category.category)) {
+                        selectedCategory!.remove(category.category);
                       } else {
-                        selectedCategory = null;
-                        selectedSubcategory = null;
+                        selectedCategory!.add(category.category);
                       }
                     });
                   },
@@ -254,10 +253,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 selected: isSelected,
                 onSelected: (selected) {
                   setState(() {
-                    if (selected) {
-                      selectedSubcategory!.add(subcategory.category);
+                    if (selectedSubcategory!.contains(subcategory.category)) {
+                      selectedSubcategory!.remove(subcategory.category);
                     } else {
-                      selectedSubcategory = null;
+                      selectedSubcategory!.add(subcategory.category);
                     }
                   });
                 },
@@ -440,8 +439,8 @@ class ActiveFilters extends StatelessWidget {
   }
 }
 
-class prodcutList extends StatelessWidget {
-  const prodcutList({
+class ProdcutList extends StatelessWidget {
+  const ProdcutList({
     super.key,
   });
 
@@ -521,7 +520,6 @@ class searchSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
-     
         decoration: const InputDecoration(
           filled: true,
           fillColor: ColoRs.white,

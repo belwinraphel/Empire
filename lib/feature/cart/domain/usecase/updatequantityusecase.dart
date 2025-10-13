@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:empire/core/utilis/failure.dart';
+import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
 import 'package:empire/feature/cart/domain/repository/cart_repository.dart';
 
 class UpdateQuantityUseCase {
@@ -7,8 +8,8 @@ class UpdateQuantityUseCase {
 
   UpdateQuantityUseCase(this.repository);
 
-  Future<Either<Failures, void>> call(
+  Future<Either<Failures, List<CartItem>>> call(
       String productId, String variantName, int newQuantity) {
-    return repository.updateQuantity(productId, variantName, newQuantity);
+    return repository.updateCartItem(productId, variantName, newQuantity);
   }
 }

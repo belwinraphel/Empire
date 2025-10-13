@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:empire/core/utilis/failure.dart';
 import 'package:empire/feature/product/domain/enities/listproducts.dart';
@@ -42,10 +44,11 @@ class ProducsDataSourceimpli extends ProductsDataSource {
 
       final products = await compute(parseProducts, docs);
 
-      if (subcategoryname != null && subcategoryname.isNotEmpty) {
+      if (subcategoryname.isNotEmpty) {
         final filtered = products
             .where((p) => p.subcategoryName == subcategoryname)
             .toList();
+
         return Right(filtered);
       }
 

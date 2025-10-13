@@ -21,7 +21,7 @@ class CheckoutFirestoreDataSource {
 
     final doc = await firestore.collection('user').doc(userId).get();
     final addresses = doc.data()?['addresses'] as List<dynamic>? ?? [];
-    print(addresses);
+ 
     return addresses.map((a) => Address.fromMap(a)).toList();
   }
 

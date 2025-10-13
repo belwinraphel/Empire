@@ -63,7 +63,7 @@ class ProductSearchScreen extends StatelessWidget {
               // Active Filters Indicator
               ActiveFilters(),
               // Product List
-              prodcutList(),
+              ProdcutList(),
             ],
           ),
         );

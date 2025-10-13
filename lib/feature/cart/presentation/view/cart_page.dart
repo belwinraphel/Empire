@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
 import 'package:empire/feature/checkout/presentaton/view/checkout.dart';
@@ -12,14 +13,24 @@ class CartPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: ColoRs.background,
         centerTitle: true,
-        title: const Text('Favorite Page'),
+        title: const Text('Cart Page'),
       ),
-      body: BlocBuilder<CartBloc, CartState>(
+      body: BlocConsumer<CartBloc, CartState>(
+        listener: (context, state) {
+          if (state is CartLoaded && state.errorMessage != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.errorMessage!),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
         builder: (context, state) {
           if (state is CartLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (state is CartError) return Center(child: Text(state.message));
+
           final loaded = state as CartLoaded;
           return ListView.builder(
             itemCount: loaded.items.length,
@@ -27,9 +38,39 @@ class CartPage extends StatelessWidget {
               final item = loaded.items[index];
 
               return ListTile(
-                leading: item.snapshot != null
-                    ? Image.network(item.snapshot!.imageUrl ?? '')
-                    : const SizedBox(),
+                leading: SizedBox(
+                  width: 56.0,
+                  height: 56.0,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final pixelRatio = MediaQuery.devicePixelRatioOf(context);
+
+                      final imageWidth =
+                          (constraints.maxWidth * pixelRatio).toInt();
+
+                      final imageUrl = item.snapshot?.imageUrl;
+                      if (imageUrl == null || imageUrl.isEmpty) {
+                        return const Icon(Icons.image_not_supported);
+                      }
+
+                      final uri = Uri.parse(imageUrl);
+                      final newUri = uri.replace(queryParameters: {
+                        ...uri.queryParameters,
+                        'w': imageWidth.toString(),
+                      });
+
+                      return CachedNetworkImage(
+                        imageUrl: newUri.toString(),
+                        fit: BoxFit.fill,
+                        placeholder: (context, url) => Container(
+                          color: Colors.grey[200],
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                      );
+                    },
+                  ),
+                ),
                 title: Text(item.snapshot?.name ?? 'Loading...'),
                 subtitle: Text(
                     'Qty: ${item.quantity} - \$${(item.snapshot?.price ?? 0)}'),

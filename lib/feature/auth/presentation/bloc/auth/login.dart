@@ -4,8 +4,6 @@ import 'package:empire/feature/auth/domain/repositories/local_auth.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/login_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/save_login_status_usecase.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
- 
-
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -36,16 +34,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthRepository repository;
   final AuthLocalDataSource localrepository;
   final ProfileBloc profileBloc;
-  LoginBloc(this.login, this.saveLoginStatus, this.repository,
-      this.profileBloc, this.localrepository)
+  LoginBloc(this.login, this.saveLoginStatus, this.repository, this.profileBloc,
+      this.localrepository)
       : super(InitialLogin()) {
     on<LogPresed>((event, emit) async {
       emit(LoginLoading());
       try {
         dynamic savedDeviceId;
         final deviceId = await DeviceInfoService.getDeviceId();
-        await login(event.email, event.password)
-            .then((use) async {
+        await login(event.email, event.password).then((use) async {
           savedDeviceId = await repository.getStoredDeviceId(use!.uid);
           if (savedDeviceId == null) {
             await repository.storeDeviceId(use.uid, deviceId!);

@@ -12,7 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class CartState extends Equatable {
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class CartLoading extends CartState {}
@@ -20,11 +20,23 @@ class CartLoading extends CartState {}
 class CartLoaded extends CartState {
   final List<CartItem> items;
   final OrderBreakdown breakdown;
+  final String? errorMessage;
 
-  CartLoaded({required this.items, required this.breakdown});
+  CartLoaded({required this.items, required this.breakdown, this.errorMessage});
+  CartLoaded copyWith({
+    List<CartItem>? items,
+    OrderBreakdown? breakdown,
+    String? errorMessage,
+  }) {
+    return CartLoaded(
+      items: items ?? this.items,
+      breakdown: breakdown ?? this.breakdown,
+      errorMessage: errorMessage,
+    );
+  }
 
   @override
-  List<Object> get props => [items, breakdown];
+  List<Object?> get props => [items, breakdown, errorMessage];
 }
 
 class CartError extends CartState {
@@ -78,6 +90,15 @@ class RemoveFromCart extends CartEvent {
 
 class ClearCart extends CartEvent {}
 
+class CartItemUpdating extends CartEvent {
+  final List<CartItem> items;
+
+  CartItemUpdating(this.items);
+
+  @override
+  List<Object> get props => [items];
+}
+
 class CartUpdated extends CartEvent {
   final List<CartItem> items;
 
@@ -126,63 +147,48 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       }
     });
     on<AddToCart>((event, emit) async {
-      if (state is CartLoaded) {
-        final current = state as CartLoaded;
-        final index = current.items.indexWhere((item) =>
-            item.productId == event.productId &&
-            item.variantName == event.variantName);
-        List<CartItem> newItems = List.from(current.items);
-        if (index != -1) {
-          newItems[index] = newItems[index]
-              .copyWith(quantity: newItems[index].quantity + event.quantity);
-        } else {
-          newItems.add(CartItem(
-            productId: event.productId,
-            variantName: event.variantName,
-            quantity: event.quantity,
-            snapshot: event.snapshot,
-          ));
-        }
-
-        emit(CartLoaded(
-            items: newItems,
-            breakdown: calculateBreakdownUseCase(items: newItems)));
+      final currentState = state;
+      if (currentState is CartLoaded) {
+        emit(CartLoading());
       }
 
       final result = await addToCartUseCase(
           event.productId, event.variantName, event.quantity);
-      result.fold((failure) => add(_CartError(failure.message)), (_) {
-        add(LoadCart());
-      });
+
+      result.fold(
+        (failure) {
+          if (currentState is CartLoaded) {
+            emit(currentState.copyWith(errorMessage: failure.message));
+          } else  {
+            emit(CartError(failure.message));
+          }
+        },
+        (cart) => 
+        emit(CartLoaded(
+            items: cart, breakdown: calculateBreakdownUseCase(items: cart))),
+      );
     });
 
     on<UpdateQuantity>((event, emit) async {
-      if (state is CartLoaded) {
-        final current = state as CartLoaded;
-        final index = current.items.indexWhere((item) =>
-            item.productId == event.productId &&
-            item.variantName == event.variantName);
-        if (index != -1) {
-          List<CartItem> newItems = List.from(current.items);
-
-          if (event.newQuantity <= 0) {
-            newItems.removeAt(index);
-          } else {
-            newItems[index] =
-                newItems[index].copyWith(quantity: event.newQuantity);
-          }
-
-          emit(CartLoaded(
-              items: newItems,
-              breakdown: calculateBreakdownUseCase(items: newItems)));
-        }
+      final currentState = state;
+      if (currentState is CartLoaded) {
+        emit(CartLoaded(
+            items: currentState.items,
+            breakdown: calculateBreakdownUseCase(items: currentState.items)));
       }
-
       final result = await updateQuantityUseCase(
           event.productId, event.variantName, event.newQuantity);
-      result.fold((failure) => add(_CartError(failure.message)), (_) {
-        add(LoadCart());
-      });
+      result.fold(
+        (failure) {
+          if (currentState is CartLoaded) {
+            emit(currentState.copyWith(errorMessage: failure.message));
+          }
+        },
+        (cart) {
+          emit(CartLoaded(
+              items: cart, breakdown: calculateBreakdownUseCase(items: cart)));
+        },
+      );
     });
 
     on<RemoveFromCart>((event, emit) async {
