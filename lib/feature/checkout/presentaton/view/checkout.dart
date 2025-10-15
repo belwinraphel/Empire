@@ -1,8 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dartz/dartz.dart';
 import 'package:empire/core/di/service_locator.dart';
 import 'package:empire/core/utilis/color.dart';
+import 'package:empire/feature/address/presentation/bloc/address.dart';
+import 'package:empire/feature/address/presentation/view/addres_screen.dart';
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
 import 'package:empire/feature/checkout/presentaton/bloc/checkoutbloc.dart';
+import 'package:empire/feature/payment/presentation/view/payment_checkout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -64,9 +68,7 @@ class CheckoutPage extends StatelessWidget {
       actions: [
         IconButton(
           icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
-          onPressed: () {
-           
-          },
+          onPressed: () {},
         ),
         const Padding(
           padding: EdgeInsets.only(right: 16.0),
@@ -93,6 +95,14 @@ class CheckoutPage extends StatelessWidget {
                 UpdateCartItems(cartState.items, cartState.breakdown),
               );
         }
+        if (cartState is CartLoaded && cartState.errorMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(cartState.errorMessage!),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       },
       child: Column(
         children: [
@@ -110,7 +120,7 @@ class CheckoutPage extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildFreeDeliveryCard(),
                   const SizedBox(height: 12),
-                  _buildDeliveryAddressCard(state),
+                  _buildDeliveryAddressCard(state, context),
                   const SizedBox(height: 100),
                 ],
               ),
@@ -306,7 +316,6 @@ class CheckoutPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Section header
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -338,7 +347,6 @@ class CheckoutPage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-
         SizedBox(
           height: 140,
           child: ListView(
@@ -395,8 +403,6 @@ class CheckoutPage extends StatelessWidget {
             ],
           ),
           const Spacer(),
-
-   
           Text(
             title,
             style: const TextStyle(
@@ -415,8 +421,6 @@ class CheckoutPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-
-         
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 6),
@@ -550,7 +554,7 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDeliveryAddressCard(CheckoutLoaded state) {
+  Widget _buildDeliveryAddressCard(CheckoutLoaded state, BuildContext contex) {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -569,25 +573,60 @@ class CheckoutPage extends StatelessWidget {
           Icon(Icons.home, color: Colors.grey[600], size: 24),
           const SizedBox(width: 12),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Delivering to Home',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Akruti Vega, 502 B - Wing Saiwadi, Vijay Nagar...',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(contex, MaterialPageRoute(
+                  builder: (context) {
+                    return const AddressSelectionScreen();
+                  },
+                ));
+              },
+              child: BlocBuilder<AddressBloc, AddressState>(
+                builder: (context, state) {
+                  if (state is AddressLoaded) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Delivering to ${state.addresses.first.label}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          state.addresses.first.fullAddress,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Delivering to Home',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'xxxxxx -----, 502 B - Wing Saiwadi, ---Nagar...',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
           const Text(
@@ -659,8 +698,16 @@ class CheckoutPage extends StatelessWidget {
                 color: Colors.transparent,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
-                  onTap: () =>
-                      context.read<CheckoutBloc>().add(SubmitCheckout()),
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (context) {
+                        return PaymentCheckout(
+                            cartItems: state.data.items,
+                            totalAmount:
+                                state.data.breakdown.subtotal.toDouble());
+                      },
+                    ));
+                  },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 16),

@@ -226,8 +226,7 @@ class Loginpage extends StatelessWidget {
                               issmallScreen: issmallScreen,
                               onPressed: () {
                                 if (formKey.currentState!.validate()) {
-                                  print(usernamecController.text);
-                                  print(passwordController.text);
+                             
                                   context.read<LoginBloc>().add(LogPresed(
                                       usernamecController.text,
                                       passwordController.text));

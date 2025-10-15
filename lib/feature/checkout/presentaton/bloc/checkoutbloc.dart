@@ -1,11 +1,12 @@
 import 'dart:async';
+import 'package:empire/feature/address/domain/entity/address.dart';
 import 'package:uuid/uuid.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
 import 'package:empire/feature/cart/domain/entities/order_breakdown.dart';
 import 'package:empire/feature/cart/domain/usecase/breakdown_usecase.dart';
-import 'package:empire/feature/checkout/domain/enities/addres.dart';
+
 import 'package:empire/feature/checkout/domain/enities/checkout.dart';
 import 'package:empire/feature/checkout/domain/enities/payment.dart';
 import 'package:empire/feature/checkout/domain/enities/shippingmethod.dart';
@@ -31,7 +32,7 @@ class InitializeCheckout extends CheckoutEvent {
 }
 
 class SelectAddress extends CheckoutEvent {
-  final Address address;
+  final MainAddress address;
 
   SelectAddress(this.address);
 
@@ -98,14 +99,14 @@ class CheckoutLoading extends CheckoutState {}
 
 class CheckoutLoaded extends CheckoutState {
   final CheckoutData data;
-  final List<Address> addresses;
-  final List<ShippingMethod> shippingMethods;
+  final List<MainAddress> addresses;
+  // final List<ShippingMethod> shippingMethods;
   final List<PaymentMethod> paymentMethods;
 
   CheckoutLoaded({
     required this.data,
     required this.addresses,
-    required this.shippingMethods,
+    // required this.shippingMethods,
     required this.paymentMethods,
   });
 
@@ -115,13 +116,13 @@ class CheckoutLoaded extends CheckoutState {
     return CheckoutLoaded(
       data: data ?? this.data,
       addresses: addresses,
-      shippingMethods: shippingMethods,
+      // shippingMethods: shippingMethods,
       paymentMethods: paymentMethods,
     );
   }
 
   @override
-  List<Object?> get props => [data, addresses, shippingMethods, paymentMethods];
+  List<Object?> get props => [data, addresses,  paymentMethods];
 }
 
 class CheckoutSuccess extends CheckoutState {
@@ -143,19 +144,19 @@ class CheckoutFailure extends CheckoutState {
 }
 
 class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
-  final GetAddressesUseCase getAddressesUseCase;
-  final GetShippingMethodsUseCase getShippingMethodsUseCase;
+  // final GetAddressesUseCase getAddressesUseCase;
+  // final GetShippingMethodsUseCase getShippingMethodsUseCase;
   final GetPaymentMethodsUseCase getPaymentMethodsUseCase;
-  final ApplyCouponUseCase applyCouponUseCase;
+  // final ApplyCouponUseCase applyCouponUseCase;
   final SubmitCheckoutUseCase submitCheckoutUseCase;
 
   final CalculateBreakdownUseCase calculateBreakdownUseCase;
 
   CheckoutBloc({
-    required this.getAddressesUseCase,
-    required this.getShippingMethodsUseCase,
+    // required this.getAddressesUseCase,
+    // required this.getShippingMethodsUseCase,
     required this.getPaymentMethodsUseCase,
-    required this.applyCouponUseCase,
+    // required this.applyCouponUseCase,
     required this.submitCheckoutUseCase,
     required this.calculateBreakdownUseCase,
   }) : super(CheckoutInitial()) {
@@ -164,8 +165,8 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     on<SelectShippingMethod>(_onSelectShipping);
     on<SelectPaymentMethod>(_onSelectPayment);
     on<UpdateCartItems>(onUpdateCartItems);
-    on<ApplyCoupon>(_onApplyCoupon);
-    on<UpdateTip>(_onUpdateTip);
+    // on<ApplyCoupon>(_onApplyCoupon);
+    // on<UpdateTip>(_onUpdateTip);
     on<SubmitCheckout>(_onSubmit);
   }
 
@@ -176,27 +177,27 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     emit(CheckoutLoading());
 
     try {
-      final addresses = await getAddressesUseCase();
-      final shippingMethods = await getShippingMethodsUseCase(event.items);
+      // final addresses = await getAddressesUseCase();
+      // final shippingMethods = await getShippingMethodsUseCase(event.items);
       final paymentMethods = await getPaymentMethodsUseCase();
 
-      final addrList = addresses.fold(
-        (failure) {
-          emit(CheckoutFailure(failure.message));
-          return null;
-        },
-        (list) => list,
-      );
-      if (addrList == null) return;
+      // final addrList = addresses.fold(
+      //   (failure) {
+      //     emit(CheckoutFailure(failure.message));
+      //     return null;
+      //   },
+      //   (list) => list,
+      // );
+      // if (addrList == null) return;
 
-      final shipList = shippingMethods.fold(
-        (failure) {
-          emit(CheckoutFailure(failure.message));
-          return null;
-        },
-        (list) => list,
-      );
-      if (shipList == null) return;
+      // final shipList = shippingMethods.fold(
+      //   (failure) {
+      //     emit(CheckoutFailure(failure.message));
+      //     return null;
+      //   },
+      //   (list) => list,
+      // );
+      // if (shipList == null) return;
 
       final payList = paymentMethods.fold(
         (failure) {
@@ -215,8 +216,9 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
 
       emit(CheckoutLoaded(
         data: data,
-        addresses: addrList,
-        shippingMethods: shipList,
+        // addresses: addrList,
+        addresses: [],
+        // shippingMethods: shipList,
         paymentMethods: payList,
       ));
     } catch (e) {
@@ -243,7 +245,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     final newData = current.data.copyWith(
       items: event.items,
       breakdown: event.breakdown,
-    );  
+    );
 
     emit(current.copyWith(data: newData));
   }
@@ -275,40 +277,40 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     ));
   }
 
-  Future<void> _onApplyCoupon(
-    ApplyCoupon event,
-    Emitter<CheckoutState> emit,
-  ) async {
-    final current = state;
-    if (current is! CheckoutLoaded) return;
+  // Future<void> _onApplyCoupon(
+  //   ApplyCoupon event,
+  //   Emitter<CheckoutState> emit,
+  // ) async {
+  //   final current = state;
+  //   if (current is! CheckoutLoaded) return;
 
-    emit(CheckoutLoading());
+  //   emit(CheckoutLoading());
 
-    final result = await applyCouponUseCase(event.code, current.data.items);
+  //   final result = await applyCouponUseCase(event.code, current.data.items);
 
-    result.fold(
-      (failure) => emit(CheckoutFailure(failure.message)),
-      (coupon) {
-        final newData = current.data.copyWith(coupon: coupon);
-        final newBreakdown = _calculateBreakdown(newData);
-        emit(current.copyWith(
-          data: newData.copyWith(breakdown: newBreakdown),
-        ));
-      },
-    );
-  }
+  //   result.fold(
+  //     (failure) => emit(CheckoutFailure(failure.message)),
+  //     (coupon) {
+  //       final newData = current.data.copyWith(coupon: coupon);
+  //       final newBreakdown = _calculateBreakdown(newData);
+  //       emit(current.copyWith(
+  //         data: newData.copyWith(breakdown: newBreakdown),
+  //       ));
+  //     },
+  //   );
+  // }
 
-  void _onUpdateTip(UpdateTip event, Emitter<CheckoutState> emit) {
-    final current = state;
-    if (current is! CheckoutLoaded) return;
+  // void _onUpdateTip(UpdateTip event, Emitter<CheckoutState> emit) {
+  //   final current = state;
+  //   if (current is! CheckoutLoaded) return;
 
-    final newData = current.data.copyWith(tipCents: event.tipCents);
-    final newBreakdown = _calculateBreakdown(newData);
+  //   final newData = current.data.copyWith(tipCents: event.tipCents);
+  //   final newBreakdown = _calculateBreakdown(newData);
 
-    emit(current.copyWith(
-      data: newData.copyWith(breakdown: newBreakdown),
-    ));
-  }
+  //   emit(current.copyWith(
+  //     data: newData.copyWith(breakdown: newBreakdown),
+  //   ));
+  // }
 
   Future<void> _onSubmit(
     SubmitCheckout event,
@@ -330,11 +332,11 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     final result = await submitCheckoutUseCase(
       items: current.data.items,
       address: current.data.address!,
-      shippingMethod: current.data.shippingMethod!,
+      // shippingMethod: current.data.shippingMethod!,
       paymentMethod: current.data.paymentMethod!,
-      coupon: current.data.coupon,
-      tipCents: current.data.tipCents,
-      walletAppliedCents: current.data.breakdown.subtotal,
+      // coupon: current.data.coupon,
+      // tipCents: current.data.tipCents,
+      // walletAppliedCents: current.data.breakdown.subtotal,
       idempotencyKey: key,
     );
 
@@ -347,11 +349,11 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
   OrderBreakdown _calculateBreakdown(CheckoutData data) {
     return calculateBreakdownUseCase(
       items: data.items,
-      orderDiscountCents: data.coupon?.discountCents ?? 0,
-      shippingFlatCents: data.shippingMethod?.costCents ?? 0,
-      shippingPerKgCents: data.shippingMethod?.perKgCents ?? 0,
-      tipCents: data.tipCents,
-      walletBalanceCents: data.walletBalanceCents,
+      // orderDiscountCents: data.coupon?.discountCents ?? 0,
+      // shippingFlatCents: data.shippin      gMethod?.costCents ?? 0,
+      // shippingPerKgCents: data.shippingMethod?.perKgCents ?? 0,
+      // tipCents: data.tipCents,
+      // walletBalanceCents: data.walletBalanceCents,
     );
   }
 }

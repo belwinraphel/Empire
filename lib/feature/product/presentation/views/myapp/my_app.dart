@@ -1,4 +1,7 @@
 import 'package:empire/core/di/service_locator.dart';
+import 'package:empire/feature/address/data/datasource/address_datasorce.dart';
+import 'package:empire/feature/address/data/repository/addres_repo_impli.dart';
+import 'package:empire/feature/address/presentation/bloc/address.dart';
 import 'package:empire/feature/auth/domain/data/datasource/auth_repo.dart';
 import 'package:empire/feature/auth/domain/repositories/auth_repository.dart';
 import 'package:empire/feature/auth/domain/repositories/local_auth.dart';
@@ -51,7 +54,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        /////auth//////////
+        
         BlocProvider<AuthBloc>(
             create: (_) =>
                 AuthBloc(sl<SigningWithGoogle>(), sl<SaveLoginStatus>())),
@@ -86,7 +89,9 @@ class MyApp extends StatelessWidget {
                   sl<AuthRemoteDataSource>(),
                   sl<SaveLoginStatus>(),
                 )),
-
+        BlocProvider(
+            create: (context) => AddressBloc(
+                AddressRepositoryImpl(LocalAddressDataSource(sl(), sl())))),
         //////category////////////
 
         BlocProvider(
@@ -105,7 +110,7 @@ class MyApp extends StatelessWidget {
         /////cartbloc/////////
         BlocProvider(
           create: (context) => sl<CartBloc>(),
-        ),  
+        ),
 
         BlocProvider(
             create: (_) => ProductcalingBloc(sl<ProductcallingUsecase>())),
@@ -118,6 +123,14 @@ class MyApp extends StatelessWidget {
                 )..add(LoadFavorites())),
       ],
       child: MaterialApp(
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF18A957),  
+            brightness: Brightness.light,
+          ),
+          useMaterial3: true,
+          fontFamily: 'SF Pro Text',  
+        ),
         debugShowCheckedModeBanner: false,
         home: BlocBuilder<AuthBlocStatus, LoginStatusState>(
           builder: (context, state) {

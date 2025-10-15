@@ -198,7 +198,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     });
                   },
                   backgroundColor: Colors.white,
-                  selectedColor: Colors.blue,
+                  selectedColor: ColoRs.buttoncolor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                     side: BorderSide(
@@ -270,11 +270,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 ),
                 backgroundColor: Colors.white,
                 selectedColor:
-                    isSelected == true ? Colors.blue : Colors.grey[300],
+                    isSelected == true ? ColoRs.buttoncolor : Colors.grey[300],
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                   side: BorderSide(
-                    color: isSelected == true ? Colors.blue : Colors.grey[300]!,
+                    color: isSelected == true
+                        ? ColoRs.buttoncolor
+                        : Colors.grey[300]!,
                   ),
                 ),
               );
@@ -327,7 +329,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 applyFilters(context);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
+                backgroundColor: ColoRs.buttoncolor,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               child: const Text(
@@ -420,7 +422,7 @@ class ActiveFilters extends StatelessWidget {
                   'Filters active',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.blue[700],
+                    color: ColoRs.buttoncolor,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

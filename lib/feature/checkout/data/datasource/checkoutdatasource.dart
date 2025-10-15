@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:empire/feature/address/domain/entity/address.dart';
 import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
-import 'package:empire/feature/checkout/domain/enities/addres.dart';
+ 
 import 'package:empire/feature/checkout/domain/enities/coupon.dart';
 import 'package:empire/feature/checkout/domain/enities/payment.dart';
 import 'package:empire/feature/checkout/domain/enities/shippingmethod.dart';
@@ -13,17 +14,17 @@ class CheckoutFirestoreDataSource {
 
   CheckoutFirestoreDataSource(this.firestore, this.auth);
 
-  Future<List<Address>> getAddresses() async {
-    final user = auth.currentUser;
-    if (user == null) {
-      return [];
-    }
+  // Future<List<MainAddress>> getAddresses() async {
+  //   final user = auth.currentUser;
+  //   if (user == null) {
+  //     return [];
+  //   }
 
-    final doc = await firestore.collection('user').doc(userId).get();
-    final addresses = doc.data()?['addresses'] as List<dynamic>? ?? [];
+  //   final doc = await firestore.collection('user').doc(userId).get();
+  //   final addresses = doc.data()?['addresses'] as List<dynamic>? ?? [];
  
-    return addresses.map((a) => Address.fromMap(a)).toList();
-  }
+  //   return addresses.map((a) => MainAddress.fromJson(a)).toList();
+  // }
 
   Future<List<ShippingMethod>> getShippingMethods(List<CartItem> items) async {
     return [
@@ -43,17 +44,17 @@ class CheckoutFirestoreDataSource {
     ];
   }
 
-  Future<Coupon> applyCoupon(String code, List<CartItem> items) async {
-    if (code == 'DISCOUNT10') {
-      return const Coupon(code: 'DISCOUNT10', discountCents: 1000);
-    }
-    throw Exception('Invalid coupon');
-  }
+  // Future<Coupon> applyCoupon(String code, List<CartItem> items) async {
+  //   if (code == 'DISCOUNT10') {
+  //     return const Coupon(code: 'DISCOUNT10', discountCents: 1000);
+  //   }
+  //   throw Exception('Invalid coupon');
+  // }
 
   Future<String> submitCheckout({
     required List<CartItem> items,
-    required Address address,
-    required ShippingMethod shippingMethod,
+    required MainAddress address,
+    // required ShippingMethod shippingMethod,
     required PaymentMethod paymentMethod,
     Coupon? coupon,
     int tipCents = 0,
@@ -71,8 +72,8 @@ class CheckoutFirestoreDataSource {
     final orderData = {
       'userId': userId,
       'items': items.map((i) => i.toMap()).toList(),
-      'address': address.toMap(),
-      'shippingMethod': shippingMethod.toMap(),
+      'address': address,
+      // 'shippingMethod': shippingMethod.toMap(),
       'paymentMethod': paymentMethod.toMap(),
       'coupon': coupon?.toMap(),
       'tipCents': tipCents,

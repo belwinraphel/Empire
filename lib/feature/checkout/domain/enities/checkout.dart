@@ -1,3 +1,4 @@
+import 'package:empire/feature/address/domain/entity/address.dart';
 import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
 import 'package:empire/feature/cart/domain/entities/order_breakdown.dart';
 import 'package:empire/feature/checkout/domain/enities/addres.dart';
@@ -10,7 +11,7 @@ import 'package:equatable/equatable.dart';
 
 class CheckoutData extends Equatable {
   final List<CartItem> items;
-  final Address? address;
+  final MainAddress? address;
   final ShippingMethod? shippingMethod;
   final PaymentMethod? paymentMethod;
   final Coupon? coupon;
@@ -31,7 +32,7 @@ class CheckoutData extends Equatable {
 
   CheckoutData copyWith({
     List<CartItem>? items,
-    Address? address,
+    MainAddress? address,
     ShippingMethod? shippingMethod,
     PaymentMethod? paymentMethod,
     Coupon? coupon,

@@ -45,10 +45,9 @@ import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
 import 'package:empire/feature/checkout/data/datasource/checkoutdatasource.dart';
 import 'package:empire/feature/checkout/data/repository/checkoutrepositoryimpli.dart';
 import 'package:empire/feature/checkout/domain/repository/chekout.dart';
-import 'package:empire/feature/checkout/domain/usecase/applycoupon_usecase.dart';
-import 'package:empire/feature/checkout/domain/usecase/get_address_usecase.dart';
+
 import 'package:empire/feature/checkout/domain/usecase/getpaymentmethod_usecase.dart';
-import 'package:empire/feature/checkout/domain/usecase/getshippingmethod_usecase.dart';
+
 import 'package:empire/feature/checkout/domain/usecase/submit_checkout_usecase.dart';
 import 'package:empire/feature/checkout/presentaton/bloc/checkoutbloc.dart';
 import 'package:empire/feature/favorite/data/datasource/favoritedatavaseimple.dart';
@@ -57,6 +56,12 @@ import 'package:empire/feature/favorite/domain/repository/favotiterepository.dar
 import 'package:empire/feature/favorite/domain/usecase/add_favorites_usecase.dart';
 import 'package:empire/feature/favorite/domain/usecase/get_favourite_usecase.dart';
 import 'package:empire/feature/favorite/domain/usecase/remove_favorites_usecase.dart';
+import 'package:empire/feature/payment/data/datasource/checkout_datasource.dart';
+
+import 'package:empire/feature/payment/data/repository/checkout_repository.dart';
+import 'package:empire/feature/payment/domain/repository/checkout_repository.dart';
+import 'package:empire/feature/payment/domain/usecase/checkout_usecase.dart';
+import 'package:empire/feature/payment/presentation/bloc/paymentbloc.dart';
 import 'package:empire/feature/product/data/datasource/category_data_source.dart';
 import 'package:empire/feature/product/data/datasource/category_data_source_impli.dart';
 import 'package:empire/feature/product/data/datasource/product_datasource.dart';
@@ -70,6 +75,8 @@ import 'package:empire/feature/product/domain/usecase/productcaliing_usecase.dar
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -239,29 +246,70 @@ Future<void> init() async {
   );
 
   sl.registerSingleton<CheckoutRepository>(sl<CheckoutRepositoryImpl>());
-  sl.registerLazySingleton<GetAddressesUseCase>(
-    () => GetAddressesUseCase(sl()),
-  );
-  sl.registerLazySingleton<GetShippingMethodsUseCase>(
-    () => GetShippingMethodsUseCase(sl()),
-  );
+  // sl.registerLazySingleton<GetAddressesUseCase>(
+  //   () => GetAddressesUseCase(sl()),
+  // );
+  // sl.registerLazySingleton<GetShippingMethodsUseCase>(
+  //   () => GetShippingMethodsUseCase(sl()),
+  // );
   sl.registerLazySingleton<GetPaymentMethodsUseCase>(
     () => GetPaymentMethodsUseCase(sl()),
   );
-  sl.registerLazySingleton<ApplyCouponUseCase>(
-    () => ApplyCouponUseCase(sl()),
-  );
+  // sl.registerLazySingleton<ApplyCouponUseCase>(
+  //   () => ApplyCouponUseCase(sl()),
+  // );
   sl.registerLazySingleton<SubmitCheckoutUseCase>(
     () => SubmitCheckoutUseCase(sl()),
   );
   sl.registerFactory<CheckoutBloc>(
     () => CheckoutBloc(
-      getAddressesUseCase: sl(),
-      getShippingMethodsUseCase: sl(),
+      // getAddressesUseCase: sl(),
+      // getShippingMethodsUseCase: sl(),
       getPaymentMethodsUseCase: sl(),
-      applyCouponUseCase: sl(),
+      // applyCouponUseCase: sl(),
       submitCheckoutUseCase: sl(),
       calculateBreakdownUseCase: sl(),
+    ),
+  );
+  ///////////payment
+
+  sl.registerLazySingleton<http.Client>(() => http.Client());
+  // Data sources
+  sl.registerLazySingleton<CheckoutPaymentRemoteDataSource>(
+    () => CheckoutRemoteDataSourceImpl(
+      firestore: sl(),
+      auth: sl(),
+      client: sl(),
+    ),
+  );
+
+  // Repository
+  sl.registerLazySingleton<CheckoutPatmentRepository>(
+    () => CheckoutpaymentRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  // Use cases
+  sl.registerLazySingleton(() => ValidateCartItems(sl()));
+  sl.registerLazySingleton(() => CreateOrder(sl()));
+  sl.registerLazySingleton(() => CreatePaymentIntent(sl()));
+  sl.registerLazySingleton(() => ProcessPayment(sl()));
+  sl.registerLazySingleton(() => UpdateOrderStatus(sl()));
+  sl.registerLazySingleton(() => HandleSuccessfulPayment(sl()));
+  sl.registerLazySingleton(() => HandleFailedPayment(sl()));
+  sl.registerLazySingleton(() => CanRetryPayment(sl()));
+  sl.registerLazySingleton(() => GetOrder(sl()));
+
+  // Bloc
+  sl.registerFactory(
+    () => CheckoutPayBloc(
+      validateCartItems: sl(),
+      createOrder: sl(),
+      createPaymentIntent: sl(),
+      processPayment: sl(),
+      handleSuccessfulPayment: sl(),
+      handleFailedPayment: sl(),
+      canRetryPayment: sl(),
+      getOrder: sl(),
     ),
   );
 }
