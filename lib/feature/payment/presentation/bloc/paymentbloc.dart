@@ -1,8 +1,3 @@
- 
-
- 
- 
-
 import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
 import 'package:empire/feature/payment/domain/entity/checkout_entity.dart';
 import 'package:empire/feature/payment/domain/usecase/checkout_usecase.dart';
@@ -53,7 +48,6 @@ class RetryPaymentEvent extends CheckoutEvent {
 }
 
 class ResetCheckoutEvent extends CheckoutEvent {}
- 
 
 abstract class CheckoutState extends Equatable {
   const CheckoutState();
@@ -122,7 +116,6 @@ class CheckoutError extends CheckoutState {
   @override
   List<Object> get props => [message];
 }
- 
 
 class CheckoutPayBloc extends Bloc<CheckoutEvent, CheckoutState> {
   final ValidateCartItems validateCartItems;
@@ -185,7 +178,7 @@ class CheckoutPayBloc extends Bloc<CheckoutEvent, CheckoutState> {
   ) async {
     emit(const CheckoutLoading(message: 'Processing payment...'));
 
- 
+    ////createpaymentIntent
     final paymentIntentResult = await createPaymentIntent(
       event.order.totalAmount,
       event.order.currency,
@@ -197,11 +190,12 @@ class CheckoutPayBloc extends Bloc<CheckoutEvent, CheckoutState> {
         emit(CheckoutError(failure.message));
       },
       (paymentIntent) async {
+        /////payment
         emit(PaymentReady(
           order: event.order,
           paymentIntent: paymentIntent,
         ));
- 
+
         await _executePayment(event.order, paymentIntent, emit);
       },
     );
@@ -213,7 +207,6 @@ class CheckoutPayBloc extends Bloc<CheckoutEvent, CheckoutState> {
     Emitter<CheckoutState> emit,
   ) async {
     try {
-    
       await Future.delayed(const Duration(seconds: 2));
 
       final isSuccess = DateTime.now().millisecond % 10 < 8;
@@ -250,7 +243,8 @@ class CheckoutPayBloc extends Bloc<CheckoutEvent, CheckoutState> {
       (failure) async => emit(CheckoutError(failure.message)),
       (canRetry) async {
         if (!canRetry) {
-          emit(const CheckoutError('Maximum payment retries exceeded. Please create a new order.'));
+          emit(const CheckoutError(
+              'Maximum payment retries exceeded. Please create a new order.'));
           return;
         }
 

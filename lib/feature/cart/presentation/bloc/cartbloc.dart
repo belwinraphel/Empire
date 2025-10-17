@@ -58,13 +58,14 @@ class LoadCart extends CartEvent {}
 class AddToCart extends CartEvent {
   final String productId;
   final String variantName;
+  final String productname;
   final int quantity;
   final VariantSnapshot? snapshot;
 
-  AddToCart(this.productId, this.variantName, this.quantity, {this.snapshot});
+  AddToCart(this.productId, this.variantName, this.quantity,this.productname, {this.snapshot});
 
   @override
-  List<Object?> get props => [productId, variantName, quantity, snapshot];
+  List<Object?> get props => [productId, variantName, quantity, snapshot,productname];
 }
 
 class UpdateQuantity extends CartEvent {
@@ -159,12 +160,11 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         (failure) {
           if (currentState is CartLoaded) {
             emit(currentState.copyWith(errorMessage: failure.message));
-          } else  {
+          } else {
             emit(CartError(failure.message));
           }
         },
-        (cart) => 
-        emit(CartLoaded(
+        (cart) => emit(CartLoaded(
             items: cart, breakdown: calculateBreakdownUseCase(items: cart))),
       );
     });
@@ -196,7 +196,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         final current = state as CartLoaded;
         final newItems = current.items
             .where((item) => !(item.productId == event.productId &&
-                item.variantName == event.variantName))
+                item.varientName == event.variantName))
             .toList();
 
         emit(CartLoaded(

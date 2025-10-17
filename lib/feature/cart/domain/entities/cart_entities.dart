@@ -1,16 +1,17 @@
 import 'package:empire/feature/cart/domain/entities/variant_snapshot.dart';
 import 'package:equatable/equatable.dart';
 
- 
 class CartItem extends Equatable {
   final String productId;
-  final String variantName;
+  final String productName;
+    final String varientName;
   final int quantity;
-  final VariantSnapshot? snapshot; 
+  final VariantSnapshot? snapshot;
 
   const CartItem({
     required this.productId,
-    required this.variantName,
+    required this.productName,
+     required this.varientName,
     required this.quantity,
     this.snapshot,
   });
@@ -18,16 +19,19 @@ class CartItem extends Equatable {
   factory CartItem.fromMap(Map<String, dynamic> map) {
     return CartItem(
       productId: map['productId'] ?? '',
-      variantName: map['variantName'] ?? '',
+      productName: map['productName'] ?? '',
+        varientName: map['vareintName'] ?? '',
       quantity: map['quantity'] ?? 0,
-      snapshot: map.containsKey('snapshot') ? VariantSnapshot.fromMap(map['snapshot'] ?? {}) : null,
+      snapshot: map.containsKey('snapshot')
+          ? VariantSnapshot.fromMap(map['snapshot'] ?? {})
+          : null,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'productId': productId,
-      'variantName': variantName,
+      'productName': productName,
       'quantity': quantity,
       if (snapshot != null) 'snapshot': snapshot!.toMap(),
     };
@@ -36,12 +40,13 @@ class CartItem extends Equatable {
   CartItem copyWith({int? quantity, VariantSnapshot? snapshot}) {
     return CartItem(
       productId: productId,
-      variantName: variantName,
+      varientName: varientName,
+      productName: productName,
       quantity: quantity ?? this.quantity,
       snapshot: snapshot ?? this.snapshot,
     );
   }
 
   @override
-  List<Object?> get props => [productId, variantName, quantity, snapshot];
+  List<Object?> get props => [productId, productName, quantity, snapshot,varientName];
 }

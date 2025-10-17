@@ -19,6 +19,7 @@ class PaymentCheckout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+ 
     return BlocProvider(
       create: (context) =>
           sl<CheckoutPayBloc>()..add(ValidateCartEvent(cartItems)),
@@ -64,10 +65,12 @@ class CheckoutView extends StatelessWidget {
                         _buildErrorWidget(state, context),
                       if (state is CartValidated)
                         _buildOrderSummary(state, context),
-                      if (state is PaymentReady) _buildPaymentProcessing(state),
+                      if (state is PaymentReady)
+                      _buildPaymentProcessing(state),
                       if (state is PaymentFailed)
                         _buildRetryOptions(state, context),
-                      if (state is CheckoutLoading) _buildLoadingState(state),
+                      if (state is CheckoutLoading)
+                       _buildLoadingState(state),
                       const Spacer(),
                       _buildOrderDetails(),
                     ],
@@ -187,7 +190,7 @@ class CheckoutView extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('${item.variantName} x${item.quantity}'),
+                          Text('${item.varientName} x${item.quantity}'),
                           // Text('\$${state.validatedItems.toStringAsFixed(2)}'),
                         ],
                       ),
@@ -332,7 +335,7 @@ class CheckoutView extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             ...cartItems
-                .map((item) => Text('• ${item.variantName} x${item.quantity}')),
+                .map((item) => Text('• ${item.varientName} x${item.quantity}')),
           ],
         ),
       ),

@@ -31,7 +31,7 @@ SizedBox products(BuildContext context, Productfetched state,
           decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
           ),
-          child: SingleChildScrollView(
+          child: const SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
@@ -403,7 +403,7 @@ class _ProductCardState extends State<ProductCard> {
                       if (selectedVariantName != null &&
                           widget.product.productDocId != null) {
                         final varientSnapshot = VariantSnapshot(
-                            name: selectedVariantName!,
+                            name: widget.product.name,
                             price: int.tryParse(
                                     selectedVariant!.salePrice.toString()) ??
                                 0,
@@ -414,8 +414,9 @@ class _ProductCardState extends State<ProductCard> {
                             stock: widget.product.quantities);
                         context.read<CartBloc>().add(AddToCart(
                             widget.product.productDocId!,
+                            
                             selectedVariantName!,
-                            1,
+                            1,widget.product.name,
                             snapshot: varientSnapshot));
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -489,7 +490,7 @@ AppBar appbar(BuildContext context, String titlle) {
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(
             builder: (context) {
-              return ProductSearchScreen();
+              return const ProductSearchScreen();
             },
           ));
         },

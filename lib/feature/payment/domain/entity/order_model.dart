@@ -35,7 +35,8 @@ class OrderModel extends OrderEntity {
         items: (json['items'] as List)
             .map((item) => CartItem(
                   productId: item['productId'],
-                  variantName: item['variantName'],
+                  productName: item['productName'],
+                  varientName: item['variantName'],
                   quantity: item['quantity'],
                 ))
             .toList(),
@@ -54,7 +55,8 @@ class OrderModel extends OrderEntity {
         'items': items
             .map((item) => {
                   'productId': item.productId,
-                  'name': item.variantName,
+                  'name': item.productName,
+                  'varientname': item.snapshot!.name,
                   'quantity': item.quantity,
                 })
             .toList(),

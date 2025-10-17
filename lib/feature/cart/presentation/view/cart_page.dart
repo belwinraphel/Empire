@@ -80,19 +80,19 @@ class CartPage extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.remove),
                       onPressed: () => context.read<CartBloc>().add(
-                          UpdateQuantity(item.productId, item.variantName,
+                          UpdateQuantity(item.productId, item.varientName,
                               item.quantity - 1)),
                     ),
                     IconButton(
                       icon: const Icon(Icons.add),
                       onPressed: () => context.read<CartBloc>().add(
-                          UpdateQuantity(item.productId, item.variantName,
+                          UpdateQuantity(item.productId, item.varientName,
                               item.quantity + 1)),
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () => context.read<CartBloc>().add(
-                          RemoveFromCart(item.productId, item.variantName)),
+                          RemoveFromCart(item.productId, item.varientName)),
                     ),
                   ],
                 ),

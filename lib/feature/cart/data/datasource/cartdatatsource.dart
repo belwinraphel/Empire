@@ -104,7 +104,8 @@ class CartFirestoreDataSource {
             // to ensure consistency.
             final newItem = CartItem(
               productId: productId,
-              variantName: variantName,
+              productName: productData['name'],
+              varientName: variantName,
               quantity: quantity,
               snapshot: VariantSnapshot(
                 imageUrl: variantData?['image'],

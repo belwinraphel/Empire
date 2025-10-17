@@ -1,5 +1,8 @@
+import 'package:empire/core/di/service_locator.dart';
+import 'package:empire/core/utilis/color.dart';
 import 'package:empire/feature/address/presentation/bloc/address.dart';
-import 'package:empire/feature/address/presentation/view/widget.dart';
+import 'package:empire/feature/address/presentation/bloc/map_bloc.dart';
+import 'package:empire/feature/address/presentation/view/map_widget.dart';
 
 import 'package:flutter/material.dart';
 
@@ -19,9 +22,12 @@ class AddressView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  
     return Scaffold(
-      appBar: AppBar(title: const Text('Address Management')),
+      backgroundColor: ColoRs.addresBackgroundcolor,
+      appBar: AppBar(
+        title: const Text('Address Management'),
+        backgroundColor: ColoRs.addresBackgroundcolor,
+      ),
       body: BlocBuilder<AddressBloc, AddressState>(
         builder: (context, state) {
           if (state is AddressLoading) {
@@ -56,25 +62,64 @@ class AddressView extends StatelessWidget {
                   ),
                 ],
                 Expanded(
-                  child: ListView.builder(
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) {
+                      return SizedBox(
+                        height: MediaQuery.sizeOf(context).height * 0.01,
+                      );
+                    },
+                    padding: const EdgeInsets.all(14),
                     itemCount: state.addresses.length,
                     itemBuilder: (context, index) {
                       final address = state.addresses[index];
-                      return ListTile(
-                        leading: const Icon(Icons.location_on),
-                        title: Text(address.label),
-                        subtitle: Text(address.fullAddress),
-                        trailing: isSlected == state.addresses[index].id
-                            ? const Icon(Icons.check, color: Colors.green)
-                            : IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () => context
-                                    .read<AddressBloc>()
-                                    .add(DeleteAddress(address.id)),
+                      return Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [ColoRs.white, ColoRs.white],
+                            end: Alignment(0.0, -5),
+                            begin: Alignment(0.0, -5),
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  color: ColoRs.white,
+                                  borderRadius: BorderRadius.circular(10)),
+                              width: MediaQuery.sizeOf(context).width * 0.10,
+                              child: const Icon(
+                                Icons.home,
+                                color: ColoRs.background,
                               ),
-                        onTap: () => context.read<AddressBloc>().add(
-                            SelectAddress(state.addresses[index],
-                                state.addresses[index].id)),
+                            ),
+                            SizedBox(
+                              width: MediaQuery.sizeOf(context).width * 0.03,
+                            ),
+                            SizedBox(
+                              width: MediaQuery.sizeOf(context).width * 0.74,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    address.label,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                  Text(
+                                    address.fullAddress,
+                                    style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w300),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       );
                     },
                   ),
@@ -82,13 +127,23 @@ class AddressView extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: ColoRs.buttoncolor),
                     onPressed: () {
-                      Navigator.of(context).pushReplacement(
+                      Navigator.push(
+                        context,
                         MaterialPageRoute(
-                            builder: (_) => const MapConfirmPage()),
+                          builder: (context) => BlocProvider(
+                            create: (context) => sl<MapBloc>(),
+                            child: const MapConfirmPage(),
+                          ),
+                        ),
                       );
                     },
-                    child: const Text('Add New Address'),
+                    child: const Text(
+                      'Add New Address',
+                      style: TextStyle(color: ColoRs.white),
+                    ),
                   ),
                 ),
               ],

@@ -160,7 +160,7 @@ Widget buildVariantsSection(List<Variant> variants, ProductEntity product) {
                                       sku: product.sku,
                                       stock: product.quantities);
                                   context.read<CartBloc>().add(AddToCart(
-                                      product.productDocId!, variant.name, 1,
+                                      product.productDocId!, variant.name, 1,product.name,
                                       snapshot: varientSnapshot));
 
                                   ScaffoldMessenger.of(context).showSnackBar(

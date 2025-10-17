@@ -1,4 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:empire/feature/address/data/repository/map_repo_impl.dart';
+import 'package:empire/feature/address/domain/repository/map_repositor.dart';
+import 'package:empire/feature/address/domain/usecase/Checklocationpermission.dart';
+import 'package:empire/feature/address/domain/usecase/GetAddress.dart';
+import 'package:empire/feature/address/domain/usecase/Getcurrentcase.dart';
+import 'package:empire/feature/address/presentation/bloc/map_bloc.dart';
 
 import 'package:empire/feature/auth/domain/data/datasource/auth_repo.dart';
 import 'package:empire/feature/auth/domain/data/datasource/checking_login_status.dart';
@@ -312,4 +318,19 @@ Future<void> init() async {
       getOrder: sl(),
     ),
   );
+
+  ////////map
+   sl.registerLazySingleton<MapRepository>(() => MapRepositoryImpl());
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetCurrentPosition(sl()));
+  sl.registerLazySingleton(() => GetAddressFromCoordinates(sl()));
+  sl.registerLazySingleton(() => CheckLocationPermission(sl()));
+
+  // BLoC
+  sl.registerFactory(() => MapBloc(
+        getCurrentPosition: sl(),
+        getAddressFromCoordinates: sl(),
+        checkLocationPermission: sl(),
+      ));
 }
