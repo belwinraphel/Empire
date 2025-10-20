@@ -105,7 +105,7 @@ Future<void> init() async {
 
   sl.registerLazySingleton<LoginStatus>(() => LoginStatusImpl(sl()));
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
-
+///CheckLoginStatusUsecase
   sl.registerLazySingleton<CheckLoginStatusUsecase>(
       () => CheckLoginStatusUsecase(sl<LoginStatus>()));
   sl.registerLazySingleton(() => SaveLoginStatus(sl()));
@@ -119,7 +119,7 @@ Future<void> init() async {
   ////////register/////////////////////
 
   final firestore = FirebaseFirestore.instance;
-
+  
   sl.registerLazySingleton(() => UserFirebaseSource(firestore));
   sl.registerLazySingleton<RegisterRepository>(
       () => RegisterRepositoryimpli(sl()));

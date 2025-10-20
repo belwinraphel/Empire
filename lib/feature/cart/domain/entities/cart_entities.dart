@@ -4,14 +4,14 @@ import 'package:equatable/equatable.dart';
 class CartItem extends Equatable {
   final String productId;
   final String productName;
-    final String varientName;
+  final String varientName;
   final int quantity;
   final VariantSnapshot? snapshot;
 
   const CartItem({
     required this.productId,
     required this.productName,
-     required this.varientName,
+    required this.varientName,
     required this.quantity,
     this.snapshot,
   });
@@ -20,7 +20,7 @@ class CartItem extends Equatable {
     return CartItem(
       productId: map['productId'] ?? '',
       productName: map['productName'] ?? '',
-        varientName: map['vareintName'] ?? '',
+      varientName: map['snapshot']['name'],
       quantity: map['quantity'] ?? 0,
       snapshot: map.containsKey('snapshot')
           ? VariantSnapshot.fromMap(map['snapshot'] ?? {})
@@ -48,5 +48,6 @@ class CartItem extends Equatable {
   }
 
   @override
-  List<Object?> get props => [productId, productName, quantity, snapshot,varientName];
+  List<Object?> get props =>
+      [productId, productName, quantity, snapshot, varientName];
 }

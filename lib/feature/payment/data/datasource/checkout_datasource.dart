@@ -83,7 +83,7 @@ class CheckoutRemoteDataSourceImpl implements CheckoutPaymentRemoteDataSource {
   @override
   Future<String> createOrder(OrderModel order) async {
     logger.d('order');
-    logger.i(order.items);
+
     try {
       await firestore
           .collection('orders')
@@ -143,8 +143,7 @@ class CheckoutRemoteDataSourceImpl implements CheckoutPaymentRemoteDataSource {
           'payment_method_id': paymentMethodId,
         }),
       );
-      print(response.body);
-      print(response.statusCode);
+
       if (response.statusCode != 200) {
         throw const Failures.paymentFailure('Payment processing failed');
       }
@@ -164,7 +163,7 @@ class CheckoutRemoteDataSourceImpl implements CheckoutPaymentRemoteDataSource {
         'updatedAt': FieldValue.serverTimestamp(),
       });
     } on FirebaseException catch (e) {
-      logger.e('updateOrderStatus');
+      logger.e('updateOrderStatus failed');
       throw Failures.paymentFailure(
           e.message ?? 'Failed to update order status');
     }
@@ -184,38 +183,40 @@ class CheckoutRemoteDataSourceImpl implements CheckoutPaymentRemoteDataSource {
       final items = orderData['items'] as List;
 
       for (final item in items) {
-        final productId = item['productId'];
-        final quantity = item['quantity'];
-
         final productDoc =
-            await firestore.collection('products').doc(productId).get();
+            await firestore.collection('products').doc(item['productId']).get();
+
+        if (!productDoc.exists) {
+          throw Failures.outofstock('Product ${item.varientName} not found');
+        }
+
         final productData = productDoc.data()!;
 
         final variantData =
             (productData['variantDetails'] as List<dynamic>?)?.firstWhere(
           (v) {
-            return v['name'] == item.snapshot!.name;
+            return v['name'] == item['varientname'];
           },
           orElse: () => null,
         );
 
         if (variantData == null) {
           throw Failures.outofstock(
-              'Variant "${item.varientName}" not found for this product.');
+              'Variant "${item['varientname']}" not found for this product.'); 
         }
 
-        if (variantData['quantity'] < item.quantity) {
+        if (variantData['quantity'] < item['quantity']) {
           throw Failures.outofstock(
-            'Insufficient stock for ${item.varientName}. Available: ${variantData['quantity']}, Requested: ${item.quantity}',
+            'Insufficient stock for ${item['name'] + item['varientname']}. Available: ${variantData['quantity']}, Requested: ${item['quantity']}',
           );
         }
-
-        await firestore.collection('products').doc(productId).update({
-          'stock': item.quantity - quantity,
+        await firestore.collection('products').doc(item['productId']).update({
+          'stock': variantData['quantity'] - item['quantity'],
           'updatedAt': FieldValue.serverTimestamp(),
         });
       }
     } on FirebaseException catch (e) {
+      logger.d('Revert order status if stock update fails');
       // Revert order status if stock update fails
       await updateOrderStatus(orderId, 'failed', 'succeeded');
       throw Failures.paymentFailure(
@@ -225,7 +226,7 @@ class CheckoutRemoteDataSourceImpl implements CheckoutPaymentRemoteDataSource {
 
   @override
   Future<void> handleFailedPayment(String orderId) async {
-    logger.d('handleFailedPayment');
+    logger.d('handleFailedPayment started');
     await updateOrderStatus(orderId, 'failed', 'failed');
   }
 

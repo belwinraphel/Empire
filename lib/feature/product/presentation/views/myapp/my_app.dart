@@ -54,7 +54,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        
         BlocProvider<AuthBloc>(
             create: (_) =>
                 AuthBloc(sl<SigningWithGoogle>(), sl<SaveLoginStatus>())),
@@ -125,11 +124,11 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF18A957),  
+            seedColor: const Color(0xFF18A957),
             brightness: Brightness.light,
           ),
           useMaterial3: true,
-          fontFamily: 'SF Pro Text',  
+          fontFamily: 'SF Pro Text',
         ),
         debugShowCheckedModeBanner: false,
         home: BlocBuilder<AuthBlocStatus, LoginStatusState>(
