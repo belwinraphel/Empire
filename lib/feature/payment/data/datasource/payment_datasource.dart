@@ -95,7 +95,6 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
 
       return validatedItems;
     } on SocketException {
-      // Specifically catch no-internet errors
       throw const Failures.network('Please check your internet connection.');
     } on FirebaseException catch (e, s) {
       logger.e('Firebase error during cart validation',
@@ -103,7 +102,7 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
       throw Failures.server(e.message ?? 'A database error occurred');
     } catch (e, s) {
       logger.e('Unknown error during cart validation', error: e, stackTrace: s);
-      // This will now catch your custom Failures.outofstock as well
+
       if (e is Failures) rethrow;
       throw Failures.server('An unexpected error occurred: $e');
     }
@@ -111,13 +110,17 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
 
   @override
   Future<String> createOrder(OrderModel order) async {
+    final user = auth.currentUser;
+    if (user == null) {
+      return '';
+    }
     logger.d('create order');
- 
+
     try {
       await firestore
           .collection('orders')
           .doc(order.orderId)
-          .set(order.toJson());
+          .set(order.toJson(user.uid));
       return order.orderId;
     } on SocketException {
       throw const Failures.network('Please check your internet connection.');
@@ -187,7 +190,7 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
     logger.d('Processing payment with PaymentSheet...');
     if (paymentIntentDetails.clientSecret.isEmpty) {
       logger.w('Client secret is empty, cannot process payment.');
-      // Throwing an error here is better than silently returning.
+
       throw const Failures.paymentFailure(
           'Cannot process payment: Client secret is missing.');
     }
@@ -204,7 +207,7 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
     } on StripeException catch (e, s) {
       logger.e('Stripe error during payment processing: ${e.error.message}',
           error: e, stackTrace: s);
-      // Check if the user cancelled the payment sheet
+
       if (e.error.code == FailureCode.Canceled) {
         throw const Failures.cancelled('Payment was cancelled by the user.');
       }
@@ -256,9 +259,6 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
       String orderId, String paymentIntentId) async {
     logger.d('Handling successful payment for order: $orderId');
 
-    // **KEY IMPROVEMENT: Use a Firestore Transaction**
-    // This ensures that all database writes succeed together, or none of them do.
-    // This prevents data inconsistency (e.g., order is 'completed' but stock isn't updated).
     try {
       await firestore.runTransaction((transaction) async {
         final orderRef =
@@ -272,7 +272,6 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
         final items = List<Map<String, dynamic>>.from(
             orderDoc.data()![FirestoreKeys.items] ?? []);
 
-        // 1. Fetch all product documents first
         final productDocs = <DocumentSnapshot>[];
         for (final item in items) {
           final productRef = firestore
@@ -282,7 +281,6 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
           productDocs.add(productDoc);
         }
 
-        // 2. Validate stock and prepare updates in memory
         for (int i = 0; i < items.length; i++) {
           final item = items[i];
           final productDoc = productDocs[i];
@@ -312,16 +310,13 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
                 'Insufficient stock for ${item[FirestoreKeys.varientname]}. Available: $currentStock, Requested: $requestedQty');
           }
 
-          // Decrease stock for the specific variant
           variants[variantIndex][FirestoreKeys.quantity] =
               currentStock - requestedQty;
 
-          // Update the product document with the modified variants list
           transaction.update(
               productDoc.reference, {FirestoreKeys.variantDetails: variants});
         }
 
-        // 3. If all stock checks passed, update the order status
         transaction.update(orderRef, {
           FirestoreKeys.status: 'completed',
           FirestoreKeys.paymentStatus: 'succeeded',
@@ -330,7 +325,6 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
       });
       logger.i('Successfully completed transaction for order: $orderId');
     } on Failures catch (e) {
-      // Catch our custom failures (e.g., outofstock) and rethrow them
       logger.w(
           'Payment succeeded but transaction failed for order $orderId: ${e.message}');
       await updateOrderStatus(

@@ -62,6 +62,13 @@ import 'package:empire/feature/favorite/domain/repository/favotiterepository.dar
 import 'package:empire/feature/favorite/domain/usecase/add_favorites_usecase.dart';
 import 'package:empire/feature/favorite/domain/usecase/get_favourite_usecase.dart';
 import 'package:empire/feature/favorite/domain/usecase/remove_favorites_usecase.dart';
+import 'package:empire/feature/order/data/datasource/orderdatasource.dart';
+import 'package:empire/feature/order/data/repository/order_repository_impli.dart';
+import 'package:empire/feature/order/domain/repository/order_repository.dart';
+import 'package:empire/feature/order/domain/usecase/order_usecase.dart';
+import 'package:empire/feature/order/domain/usecase/update_order_status_usecase.dart';
+import 'package:empire/feature/order/domain/usecase/wacthorder_usecase.dart';
+import 'package:empire/feature/order/presentation/Bloc/order_bloc.dart';
 import 'package:empire/feature/payment/data/datasource/payment_datasource.dart';
 
 import 'package:empire/feature/payment/data/repository/Payment_repository.dart';
@@ -299,7 +306,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => CreateOrder(sl()));
   sl.registerLazySingleton(() => CreatePaymentIntent(sl()));
   sl.registerLazySingleton(() => ProcessPayment(sl()));
-  sl.registerLazySingleton(() => UpdateOrderStatus(sl()));
+  sl.registerLazySingleton<UpdateOrderStatus>(() => UpdateOrderStatus(sl()));
   sl.registerLazySingleton(() => HandleSuccessfulPayment(sl()));
   sl.registerLazySingleton(() => HandleFailedPayment(sl()));
   sl.registerLazySingleton(() => CanRetryPayment(sl()));
@@ -333,4 +340,28 @@ Future<void> init() async {
         getAddressFromCoordinates: sl(),
         checkLocationPermission: sl(),
       ));
+
+
+  ///order
+  sl.registerLazySingleton<GetOrdersUseCase>(() => GetOrdersUseCase(sl()));
+  sl.registerLazySingleton<WatchOrdersUseCase>(() => WatchOrdersUseCase(sl()));
+  sl.registerLazySingleton<updateOrderstatus>(
+    () => updateOrderstatus(sl()),
+  );
+  sl.registerLazySingleton<OrderRepository>(
+    () => OrderRepositoryImpl(remoteDataSource: sl(), logger: sl()),
+  );
+  sl.registerLazySingleton<OrderRemoteDataSource>(
+    () => OrderRemoteDataSourceImpl(
+      firestore: sl<FirebaseFirestore>(),
+      logger: sl<Logger>(), auth: sl(),
+    ),
+  );
+  sl.registerFactory<OrdersBloc>(
+    () => OrdersBloc(
+      getOrdersUseCase: sl(),
+      watchOrdersUseCase: sl(),
+      updateOrderstatusUseCase: sl<updateOrderstatus>(),
+    ),
+  );
 }

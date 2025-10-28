@@ -49,9 +49,9 @@ class OrderModel extends OrderEntity {
         retryCount: json['retryCount'] ?? 0,
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson(String userid) => {
         'orderId': orderId,
-        'userId': userId,
+        'userId': userid,
         'items': items
             .map((item) => {
                   'productId': item.productId,

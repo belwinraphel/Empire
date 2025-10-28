@@ -2,6 +2,7 @@ import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/logout_bloc.dart';
 import 'package:empire/feature/auth/presentation/views/loginpage/home_page.dart';
 import 'package:empire/feature/auth/presentation/views/updatProfile/update_profile.dart';
+import 'package:empire/feature/order/presentation/view/order_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,7 +39,6 @@ class _SettingsPageState extends State<SettingsPage> {
         backgroundColor: const Color(0xFFF9FAFB),
         body: Column(
           children: [
- 
             SizedBox(
               height: statusBarHeight,
               child: Padding(
@@ -147,10 +147,32 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    GestureDetector(
-                        onTap: () {},
-                        child:
-                            _buildListItem('Country', false, listItemFontSize)),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        'Order',
+                        style: TextStyle(
+                          fontSize: listItemFontSize,
+                          fontFamily: Fonts.ralewaySemibold,
+                          color: const Color(0xFF374151),
+                        ),
+                      ),
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: Color(0xFF9CA3AF),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) {
+                            return const MyOrdersScreen();
+                          },
+                        ));
+                      },
+                    ),
+                    const Divider(
+                      thickness: 1,
+                      color: Color.fromARGB(255, 232, 234, 236),
+                    ),
                     _buildListItem('Currency', false, listItemFontSize),
                     _buildListItem(
                         'Terms and Conditions', false, listItemFontSize),

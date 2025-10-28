@@ -12,7 +12,7 @@ abstract class FavoritesRemoteDataSource {
 }
 
 class FavoritesRemoteDataSourceImpl implements FavoritesRemoteDataSource {
-  final FirebaseAuth _auth;
+    final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
 
   FavoritesRemoteDataSourceImpl({

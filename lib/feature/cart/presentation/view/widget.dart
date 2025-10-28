@@ -3,6 +3,7 @@ import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/core/utilis/widgets.dart';
 import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
+import 'package:empire/feature/checkout/presentaton/view/checkout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -63,7 +64,7 @@ class CartItemCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 100,
+            width: 120,
             height: 100,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
@@ -76,19 +77,19 @@ class CartItemCard extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(3.0),
                     child: SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: OptimizedNetworkImage(
-                          imageUrl: item.snapshot!.imageUrl,
-                          errorWidget: const Icon(Icons.error),
-                          borderRadius: 7,
-                          fit: BoxFit.cover,
-                          placeholder: Container(
-                            color: ColoRs.addresBackgroundcolor,
-                          ),
-                          widthQueryParam: 'resize_width',
+                      width: 100,
+                      height: 100,
+                      child: OptimizedNetworkImage(
+                        imageUrl: item.snapshot!.imageUrl,
+                        errorWidget: const Icon(Icons.error),
+                        borderRadius: 7,
+                        fit: BoxFit.fill,
+                        placeholder: Container(
+                          color: ColoRs.addresBackgroundcolor,
                         ),
-                        ),
+                        widthQueryParam: 'resize_width',
+                      ),
+                    ),
                   ),
                 ),
                 Positioned(
@@ -347,6 +348,59 @@ class Cart extends StatelessWidget {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class CheckoutSection extends StatelessWidget {
+  final CartLoaded state;
+  const CheckoutSection({
+    required this.state,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: BottomAppBar(
+        height: 70,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Total: \$${state.breakdown.subtotal}',
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+                fontFamily: Fonts.ralewayExtraBold,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              onPressed: state.items.isNotEmpty
+                  ? () {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
+                          return const CheckoutPage();
+                        },
+                      ));
+                    }
+                  : null,
+              child: const Text(
+                'Checkout',
+                style: TextStyle(color: ColoRs.white),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
