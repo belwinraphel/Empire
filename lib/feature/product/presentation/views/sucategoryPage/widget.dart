@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/noresult%20.dart';
+import 'package:empire/core/utilis/widgets.dart';
 import 'package:empire/feature/cart/domain/entities/variant_snapshot.dart';
 
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
@@ -151,20 +152,14 @@ class _ProductCardState extends State<ProductCard> {
                     ),
                     color: Colors.grey[100],
                   ),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      topRight: Radius.circular(12),
-                    ),
-                    child: CachedNetworkImage(
-                      imageUrl: widget.product.images.first,
-                      fit: BoxFit.fill,
-                      placeholder: (context, url) {
-                        return const Center(child: CircularProgressIndicator());
-                      },
-                      errorWidget: (context, error, stackTrace) =>
-                          const Icon(Icons.error),
-                    ),
+                  child: OptimizedNetworkImage(
+                    imageUrl: widget.product.images.first,
+                    errorWidget: const Icon(Icons.error),
+                    borderRadius: 12,
+                    fit: BoxFit.fill,
+                    placeholder:
+                        const Center(child: CircularProgressIndicator()),
+                    widthQueryParam: 'resize_width',
                   ),
                 ),
                 BlocBuilder<FavoritesBloc, FavoritesState>(
@@ -414,9 +409,9 @@ class _ProductCardState extends State<ProductCard> {
                             stock: widget.product.quantities);
                         context.read<CartBloc>().add(AddToCart(
                             widget.product.productDocId!,
-                            
                             selectedVariantName!,
-                            1,widget.product.name,
+                            1,
+                            widget.product.name,
                             snapshot: varientSnapshot));
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -654,48 +649,58 @@ Container subcategory(
                       borderRadius: BorderRadius.circular(14),
                       color: ColoRs.homecardcolor,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(0.0),
-                      child: ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(0)),
-                        child: Image.network(
-                          height: 50,
-                          width: 70,
-                          fit: BoxFit.fill,
-                          state.categories[index].imageUrl,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) {
-                              return child;
-                            } else {
-                              return Shimmer(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Colors.black,
-                                    Colors.white,
-                                  ],
-                                ),
-                                child: child,
-                              );
-                            }
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.surfaceVariant,
-                              child: Icon(
-                                Icons.image,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                                size: 40,
-                              ),
-                            );
-                          },
-                        ),
+                    child: OptimizedNetworkImage(
+                      height: 50,
+                      width: 70,
+                      imageUrl: state.categories[index].imageUrl,
+                      errorWidget: const Icon(Icons.error),
+                      borderRadius: 7,
+                      fit: BoxFit.fill,
+                      placeholder: Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: const SizedBox(height: 80, width: 85),
                       ),
+                      widthQueryParam: 'resize_width',
                     ),
+                    //  Padding(
+                    //   padding: const EdgeInsets.all(0.0),
+                    //   child: Image.network(
+                    //     height: 50,
+                    //     width: 70,
+                    //     fit: BoxFit.fill,
+                    //     state.categories[index].imageUrl,
+                    //     loadingBuilder: (context, child, loadingProgress) {
+                    //       if (loadingProgress == null) {
+                    //         return child;
+                    //       } else {
+                    //         return Shimmer(
+                    //           gradient: const LinearGradient(
+                    //             colors: [
+                    //               Colors.black,
+                    //               Colors.white,
+                    //             ],
+                    //           ),
+                    //           child: child,
+                    //         );
+                    //       }
+                    //     },
+                    //     errorBuilder: (context, error, stackTrace) {
+                    //       return Container(
+                    //         color: Theme.of(
+                    //           context,
+                    //         ).colorScheme.surfaceVariant,
+                    //         child: Icon(
+                    //           Icons.image,
+                    //           color: Theme.of(
+                    //             context,
+                    //           ).colorScheme.onSurfaceVariant,
+                    //           size: 40,
+                    //         ),
+                    //       );
+                    //     },
+                    //   ),
+                    // ),
                   ),
                   const SizedBox(height: 8),
                   Text(

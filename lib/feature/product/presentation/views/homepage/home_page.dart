@@ -17,8 +17,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      final issmallScreen = constraints.maxWidth < 600;
-
       return Builder(builder: (context) {
         return Scaffold(
           backgroundColor: ColoRs.background,

@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/fonts.dart';
-import 'package:empire/core/utilis/widget.dart';
+
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/get_category_bloc.dart';
 import 'package:empire/feature/product/presentation/views/CategoryPage/categorypage.dart';
@@ -141,7 +141,7 @@ class SearchSection extends StatelessWidget {
                                   height: 51,
                                   width: 55,
                                   imageUrl: state.user.photourl!,
-                                  fit: BoxFit.fill,
+                                  fit: BoxFit.cover,
                                   placeholder: (context, url) {
                                     return const CircularProgressIndicator();
                                   },

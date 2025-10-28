@@ -2,13 +2,13 @@ import 'package:dartz/dartz.dart';
 import 'package:empire/core/utilis/failure.dart';
 import 'package:empire/core/utilis/typedef.dart';
 import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
-import 'package:empire/feature/payment/data/datasource/checkout_datasource.dart';
-import 'package:empire/feature/payment/domain/entity/checkout_entity.dart';
+import 'package:empire/feature/payment/data/datasource/payment_datasource.dart';
+import 'package:empire/feature/payment/domain/entity/Payment_entity.dart';
 import 'package:empire/feature/payment/domain/entity/order_model.dart';
-import 'package:empire/feature/payment/domain/repository/checkout_repository.dart';
+import 'package:empire/feature/payment/domain/repository/Payment_repository.dart';
 
-class CheckoutpaymentRepositoryImpl implements CheckoutPatmentRepository {
-  final CheckoutPaymentRemoteDataSource remoteDataSource;
+class CheckoutpaymentRepositoryImpl implements PaymentRepository {
+  final PaymentRemoteDataSource remoteDataSource;
 
   CheckoutpaymentRepositoryImpl({required this.remoteDataSource});
 
@@ -50,9 +50,9 @@ class CheckoutpaymentRepositoryImpl implements CheckoutPatmentRepository {
   }
 
   @override
-  ResultFuture<void> processPayment(String paymentIntentId, String paymentMethodId) async {
+  ResultFuture<void> processPayment(String paymentIntentId,  PaymentIntentEntity paymentIntentDetails) async {
     try {
-      await remoteDataSource.processPayment(paymentIntentId, paymentMethodId);
+      await remoteDataSource.processPayment(paymentIntentId,   paymentIntentDetails);
       return const Right(null);
     } on Failures catch (e) {
       return Left(e);

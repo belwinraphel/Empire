@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:empire/core/utilis/commonvalidator.dart';
 import 'package:empire/core/utilis/fonts.dart';
-import 'package:empire/core/utilis/widget.dart';
+ import 'package:empire/core/utilis/widgets.dart';
 
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_image.dart';

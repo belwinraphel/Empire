@@ -2,11 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dartz/dartz.dart';
 import 'package:empire/core/di/service_locator.dart';
 import 'package:empire/core/utilis/color.dart';
+import 'package:empire/core/utilis/widgets.dart';
 import 'package:empire/feature/address/presentation/bloc/address.dart';
 import 'package:empire/feature/address/presentation/view/addres_screen.dart';
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
 import 'package:empire/feature/checkout/presentaton/bloc/checkoutbloc.dart';
-import 'package:empire/feature/payment/presentation/view/payment_checkout.dart';
+import 'package:empire/feature/payment/presentation/view/payment_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -178,39 +179,15 @@ class CheckoutPage extends StatelessWidget {
                         SizedBox(
                           width: 60.0,
                           height: 60.0,
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              final pixelRatio =
-                                  MediaQuery.devicePixelRatioOf(context);
-
-                              final imageWidth =
-                                  (constraints.maxWidth * pixelRatio).toInt();
-
-                              final imageUrl = cartState
-                                  .data.items[index].snapshot?.imageUrl;
-                              if (imageUrl == null || imageUrl.isEmpty) {
-                                return const Icon(Icons.image_not_supported);
-                              }
-
-                              final uri = Uri.parse(imageUrl);
-                              final newUri = uri.replace(queryParameters: {
-                                ...uri.queryParameters,
-                                'w': imageWidth.toString(),
-                              });
-
-                              return ClipRRect(
-                                borderRadius: BorderRadiusGeometry.circular(5),
-                                child: CachedNetworkImage(
-                                  imageUrl: newUri.toString(),
-                                  fit: BoxFit.fill,
-                                  placeholder: (context, url) => Container(
-                                    color: Colors.grey[200],
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
-                                ),
-                              );
-                            },
+                          child: OptimizedNetworkImage(
+                            imageUrl:
+                                cartState.data.items[index].snapshot!.imageUrl,
+                            errorWidget: const Icon(Icons.error),
+                            borderRadius: 5,
+                            fit: BoxFit.fill,
+                            placeholder: const Center(
+                                child: CircularProgressIndicator()),
+                            widthQueryParam: 'resize_width',
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -302,6 +279,7 @@ class CheckoutPage extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
+                        const SizedBox20(),
                       ],
                     ),
                   ],
@@ -577,7 +555,7 @@ class CheckoutPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(contex, MaterialPageRoute(
                   builder: (context) {
-                    return AddressSelectionScreen();
+                    return const AddressSelectionScreen();
                   },
                 ));
               },
@@ -701,7 +679,7 @@ class CheckoutPage extends StatelessWidget {
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(
                       builder: (context) {
-                        return PaymentCheckout(
+                        return Payment(
                             cartItems: state.data.items,
                             totalAmount:
                                 state.data.breakdown.subtotal.toDouble());

@@ -1,6 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/fonts.dart';
+import 'package:empire/core/utilis/widgets.dart';
 import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
 import 'package:flutter/material.dart';
@@ -76,42 +76,19 @@ class CartItemCard extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(3.0),
                     child: SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final pixelRatio =
-                              MediaQuery.devicePixelRatioOf(context);
-
-                          final imageWidth =
-                              (constraints.maxWidth * pixelRatio).toInt();
-
-                          final imageUrl = item.snapshot?.imageUrl;
-                          if (imageUrl == null || imageUrl.isEmpty) {
-                            return const Icon(Icons.image_not_supported);
-                          }
-
-                          final uri = Uri.parse(imageUrl);
-                          final newUri = uri.replace(queryParameters: {
-                            ...uri.queryParameters,
-                            'w': imageWidth.toString(),
-                          });
-
-                          return ClipRRect(
-                            borderRadius: BorderRadius.circular(7),
-                            child: CachedNetworkImage(
-                              imageUrl: newUri.toString(),
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => Container(
-                                color: ColoRs.addresBackgroundcolor,
-                              ),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                        width: 100,
+                        height: 100,
+                        child: OptimizedNetworkImage(
+                          imageUrl: item.snapshot!.imageUrl,
+                          errorWidget: const Icon(Icons.error),
+                          borderRadius: 7,
+                          fit: BoxFit.cover,
+                          placeholder: Container(
+                            color: ColoRs.addresBackgroundcolor,
+                          ),
+                          widthQueryParam: 'resize_width',
+                        ),
+                        ),
                   ),
                 ),
                 Positioned(

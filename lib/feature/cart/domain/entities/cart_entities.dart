@@ -18,14 +18,11 @@ class CartItem extends Equatable {
 
   factory CartItem.fromMap(Map<String, dynamic> map) {
     return CartItem(
-      productId: map['productId'] ?? '',
-      productName: map['productName'] ?? '',
-      varientName: map['snapshot']['name'],
-      quantity: map['quantity'] ?? 0,
-      snapshot: map.containsKey('snapshot')
-          ? VariantSnapshot.fromMap(map['snapshot'] ?? {})
-          : null,
-    );
+        productId: map['productId'] ?? '',
+        productName: map['productName'] ?? '',
+        varientName: map['snapshot']['name'],
+        quantity: map['quantity'] ?? 0,
+        snapshot: VariantSnapshot.fromMap(map['snapshot']));
   }
 
   Map<String, dynamic> toMap() {
@@ -33,7 +30,7 @@ class CartItem extends Equatable {
       'productId': productId,
       'productName': productName,
       'quantity': quantity,
-      if (snapshot != null) 'snapshot': snapshot!.toMap(),
+      'snapshot': snapshot!.toMap(),
     };
   }
 

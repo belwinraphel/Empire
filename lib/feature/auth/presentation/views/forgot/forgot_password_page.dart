@@ -1,6 +1,7 @@
 import 'package:empire/core/utilis/commonvalidator.dart';
 import 'package:empire/core/utilis/fonts.dart';
-import 'package:empire/core/utilis/widget.dart';
+import 'package:empire/core/utilis/widgets.dart';
+ 
 import 'package:empire/feature/auth/presentation/bloc/auth/forgot_password.dart';
 import 'package:empire/feature/auth/presentation/views/loginpage/widget.dart';
 
@@ -33,7 +34,7 @@ class ForgotPasswordPage extends StatelessWidget {
           final isoading = state is ForgotPasswordLoading;
           return Scaffold(
             bottomNavigationBar: isoading
-                ? Center(child: const CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : GreenElevatedButton(
                     text: 'Submit',
                     onTap: () {

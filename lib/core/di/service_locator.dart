@@ -62,11 +62,11 @@ import 'package:empire/feature/favorite/domain/repository/favotiterepository.dar
 import 'package:empire/feature/favorite/domain/usecase/add_favorites_usecase.dart';
 import 'package:empire/feature/favorite/domain/usecase/get_favourite_usecase.dart';
 import 'package:empire/feature/favorite/domain/usecase/remove_favorites_usecase.dart';
-import 'package:empire/feature/payment/data/datasource/checkout_datasource.dart';
+import 'package:empire/feature/payment/data/datasource/payment_datasource.dart';
 
-import 'package:empire/feature/payment/data/repository/checkout_repository.dart';
-import 'package:empire/feature/payment/domain/repository/checkout_repository.dart';
-import 'package:empire/feature/payment/domain/usecase/checkout_usecase.dart';
+import 'package:empire/feature/payment/data/repository/Payment_repository.dart';
+import 'package:empire/feature/payment/domain/repository/Payment_repository.dart';
+import 'package:empire/feature/payment/domain/usecase/Payment_usecase.dart';
 import 'package:empire/feature/payment/presentation/bloc/paymentbloc.dart';
 import 'package:empire/feature/product/data/datasource/category_data_source.dart';
 import 'package:empire/feature/product/data/datasource/category_data_source_impli.dart';
@@ -281,8 +281,8 @@ Future<void> init() async {
 
   sl.registerLazySingleton<http.Client>(() => http.Client());
   // Data sources
-  sl.registerLazySingleton<CheckoutPaymentRemoteDataSource>(
-    () => CheckoutRemoteDataSourceImpl(
+  sl.registerLazySingleton<PaymentRemoteDataSource>(
+    () => PaymentRemoteDataSourceImpl(
       firestore: sl(),
       auth: sl(),
       client: sl(),
@@ -290,7 +290,7 @@ Future<void> init() async {
   );
 
   // Repository
-  sl.registerLazySingleton<CheckoutPatmentRepository>(
+  sl.registerLazySingleton<PaymentRepository>(
     () => CheckoutpaymentRepositoryImpl(remoteDataSource: sl()),
   );
 

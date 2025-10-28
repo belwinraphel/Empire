@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
-import 'package:empire/feature/payment/domain/entity/checkout_entity.dart';
+import 'package:empire/feature/payment/domain/entity/Payment_entity.dart';
 
 class OrderModel extends OrderEntity {
   const OrderModel({
@@ -58,6 +58,7 @@ class OrderModel extends OrderEntity {
                   'name': item.productName,
                   'varientname': item.snapshot!.name,
                   'quantity': item.quantity,
+                  'imageUrl': item.snapshot!.imageUrl,
                 })
             .toList(),
         'totalAmount': totalAmount,

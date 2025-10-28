@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:empire/core/utilis/color.dart';
 
 import 'package:empire/core/utilis/fonts.dart';
+import 'package:empire/core/utilis/widgets.dart';
 import 'package:empire/feature/product/domain/enities/category_entities.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/centralizedstate/category.dart';
 
@@ -129,29 +130,25 @@ class CategoryItems extends StatelessWidget {
                 child: Column(
                   children: [
                     Container(
-                      height: 90,
-                      width: 90,
-                      decoration: BoxDecoration(
-                        color: ColoRs.homecardcolor,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: CachedNetworkImage(
+                        height: 90,
+                        width: 90,
+                        decoration: BoxDecoration(
+                          color: ColoRs.homecardcolor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: OptimizedNetworkImage(
                           imageUrl: subCategory.imageUrl,
-                          height: 90,
-                          width: 90,
+                          errorWidget: const Icon(Icons.error),
+                          borderRadius: 7,
                           fit: BoxFit.fill,
-                          placeholder: (context, url) => Shimmer.fromColors(
+                          placeholder: Shimmer.fromColors(
                             baseColor: Colors.grey[300]!,
                             highlightColor: Colors.grey[100]!,
                             child: const SizedBox(height: 80, width: 85),
                           ),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
+                          widthQueryParam: 'resize_width',
                         ),
-                      ),
-                    ),
+                        ),
                     const SizedBox(height: 4),
                     Padding(
                       padding: const EdgeInsets.only(left: 5, right: 5),

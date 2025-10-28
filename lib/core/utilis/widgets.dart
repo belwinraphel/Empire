@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 
 class SizedBox10 extends StatelessWidget {
   const SizedBox10({super.key});
@@ -102,9 +104,11 @@ class GreenElevatedButton extends StatefulWidget {
   final Function() onTap;
   final double width;
   final double height;
+  final double padding;
   const GreenElevatedButton({
     super.key,
     this.width = 0.90,
+    this.padding = 0,
     required this.text,
     this.height = .05,
     required this.onTap,
@@ -118,23 +122,26 @@ class GreenElevatedButton extends StatefulWidget {
 class _GreenElevatedButtonState extends State<GreenElevatedButton> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 40,
-      width: responsiveWidth(context, widget.width),
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: widget.color,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
+    return Padding(
+      padding: EdgeInsets.all(widget.padding),
+      child: SizedBox(
+        height: 40,
+        width: responsiveWidth(context, widget.width),
+        child: ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: widget.color,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
           ),
-        ),
-        onPressed: widget.onTap,
-        label: Text(
-          widget.text,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontFamily: Fonts.raleway,
+          onPressed: widget.onTap,
+          label: Text(
+            widget.text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontFamily: Fonts.raleway,
+            ),
           ),
         ),
       ),
@@ -187,7 +194,98 @@ Future<String?> uploadImageToCloudinary(File imageFile) async {
     final data = jsonDecode(res.body);
     return data['secure_url'];
   } else {
-   
     return null;
+  }
+}
+
+class OptimizedNetworkImage extends StatelessWidget {
+  final String? imageUrl;
+
+  final double borderRadius;
+
+  final BoxFit fit;
+
+  final String widthQueryParam;
+  final double height;
+  final double width;
+
+  final Widget? placeholder;
+
+  final Widget? errorWidget;
+
+  const OptimizedNetworkImage({
+    super.key,
+    this.height = 0,
+    this.width = 0,
+    required this.imageUrl,
+    this.borderRadius = 0.0,
+    this.fit = BoxFit.cover,
+    this.widthQueryParam = 'w',
+    this.placeholder,
+    this.errorWidget,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final pixelRatio = MediaQuery.devicePixelRatioOf(context);
+
+        final int physicalWidth = (constraints.hasBoundedWidth)
+            ? (constraints.maxWidth * pixelRatio).toInt()
+            : 512;
+
+        String finalImageUrl = '';
+        if (imageUrl != null && imageUrl!.isNotEmpty) {
+          try {
+            final uri = Uri.parse(imageUrl!);
+            final newUri = uri.replace(queryParameters: {
+              ...uri.queryParameters,
+              widthQueryParam: physicalWidth.toString(),
+            });
+            finalImageUrl = newUri.toString();
+          } catch (e) {
+            print('OptimizedNetworkImage: Error parsing URL ($imageUrl): $e');
+          }
+        }
+
+        Widget imageContent;
+        if (finalImageUrl.isEmpty) {
+          imageContent = errorWidget ??
+              Container(
+                color: Colors.grey[200],
+                child:
+                    const Icon(Icons.image_not_supported, color: Colors.grey),
+              );
+        } else {
+          imageContent = CachedNetworkImage(
+            height: height,
+            width: width,
+            imageUrl: finalImageUrl,
+            fit: fit,
+            placeholder: (context, url) =>
+                placeholder ??
+                Container(
+                  color: Colors.grey[200],
+                ),
+            errorWidget: (context, url, error) =>
+                errorWidget ??
+                Container(
+                  color: Colors.grey[200],
+                  child: const Icon(Icons.error, color: Colors.red),
+                ),
+          );
+        }
+
+        if (borderRadius > 0) {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(borderRadius),
+            child: imageContent,
+          );
+        }
+
+        return imageContent;
+      },
+    );
   }
 }

@@ -1,10 +1,10 @@
 import 'package:empire/core/utilis/typedef.dart';
 import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
-import 'package:empire/feature/payment/domain/entity/checkout_entity.dart';
-import 'package:empire/feature/payment/domain/repository/checkout_repository.dart';
+import 'package:empire/feature/payment/domain/entity/Payment_entity.dart';
+import 'package:empire/feature/payment/domain/repository/Payment_repository.dart';
 
 class ValidateCartItems {
-  final CheckoutPatmentRepository repository;
+  final PaymentRepository repository;
 
   ValidateCartItems(this.repository);
 
@@ -14,7 +14,7 @@ class ValidateCartItems {
 } 
 
 class CreateOrder {
-  final CheckoutPatmentRepository repository;
+  final PaymentRepository repository;
 
   CreateOrder(this.repository);
 
@@ -24,7 +24,7 @@ class CreateOrder {
 }
 
 class CreatePaymentIntent {
-  final CheckoutPatmentRepository repository;
+  final PaymentRepository repository;
 
   CreatePaymentIntent(this.repository);
 
@@ -34,17 +34,17 @@ class CreatePaymentIntent {
 }
 
 class ProcessPayment {
-  final CheckoutPatmentRepository repository;
+  final PaymentRepository repository;
 
-  ProcessPayment(this.repository);
+  ProcessPayment(this.repository);  
 
-  ResultFuture<void> call(String paymentIntentId, String paymentMethodId) {
-    return repository.processPayment(paymentIntentId, paymentMethodId);
+  ResultFuture<void> call(String paymentIntentId,  PaymentIntentEntity paymentIntentDetails) {
+    return repository.processPayment(paymentIntentId,  paymentIntentDetails);
   }
 }
 
 class UpdateOrderStatus {
-  final CheckoutPatmentRepository repository;
+  final PaymentRepository repository;
 
   UpdateOrderStatus(this.repository);
 
@@ -54,7 +54,7 @@ class UpdateOrderStatus {
 }
 
 class HandleSuccessfulPayment {
-  final CheckoutPatmentRepository repository;
+  final PaymentRepository repository;
 
   HandleSuccessfulPayment(this.repository);
 
@@ -64,7 +64,7 @@ class HandleSuccessfulPayment {
 }
 
 class HandleFailedPayment {
-  final CheckoutPatmentRepository repository;
+  final PaymentRepository repository;
 
   HandleFailedPayment(this.repository);
 
@@ -74,7 +74,7 @@ class HandleFailedPayment {
 }
 
 class CanRetryPayment {
-  final CheckoutPatmentRepository repository;
+  final PaymentRepository repository;
 
   CanRetryPayment(this.repository);
 
@@ -84,7 +84,7 @@ class CanRetryPayment {
 }
 
 class GetOrder {
-  final CheckoutPatmentRepository repository;
+  final PaymentRepository repository;
 
   GetOrder(this.repository);
 

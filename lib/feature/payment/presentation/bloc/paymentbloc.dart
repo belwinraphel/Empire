@@ -1,6 +1,6 @@
 import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
-import 'package:empire/feature/payment/domain/entity/checkout_entity.dart';
-import 'package:empire/feature/payment/domain/usecase/checkout_usecase.dart';
+import 'package:empire/feature/payment/domain/entity/Payment_entity.dart';
+import 'package:empire/feature/payment/domain/usecase/Payment_usecase.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -27,6 +27,21 @@ class CreateOrderEvent extends CheckoutEvent {
 
   @override
   List<Object> get props => [order];
+}
+
+class CreatePaymentIntentEvent extends CheckoutEvent {
+  final OrderEntity order;
+  const CreatePaymentIntentEvent({required this.order});
+  @override
+  List<Object> get props => [order];
+}
+
+class ConfirmPaymentEvent extends CheckoutEvent {
+  final OrderEntity order;
+  final PaymentIntentEntity paymentIntent;
+  const ConfirmPaymentEvent({required this.order, required this.paymentIntent});
+  @override
+  List<Object> get props => [order, paymentIntent];
 }
 
 class ProcessPaymentEvent extends CheckoutEvent {
@@ -100,12 +115,17 @@ class PaymentSuccess extends CheckoutState {
 
 class PaymentFailed extends CheckoutState {
   final OrderEntity order;
+  final PaymentIntentEntity paymentIntent;
   final String errorMessage;
 
-  const PaymentFailed(this.order, this.errorMessage);
+  const PaymentFailed({
+    required this.order,
+    required this.paymentIntent,
+    required this.errorMessage,
+  });
 
   @override
-  List<Object> get props => [order, errorMessage];
+  List<Object> get props => [order, paymentIntent, errorMessage];
 }
 
 class CheckoutError extends CheckoutState {
@@ -139,7 +159,9 @@ class CheckoutPayBloc extends Bloc<CheckoutEvent, CheckoutState> {
   }) : super(CheckoutInitial()) {
     on<ValidateCartEvent>(_onValidateCart);
     on<CreateOrderEvent>(_onCreateOrder);
-    on<ProcessPaymentEvent>(_onProcessPayment);
+    // Updated event handlers
+    on<CreatePaymentIntentEvent>(_onCreatePaymentIntent);
+    on<ConfirmPaymentEvent>(_onConfirmPayment);
     on<RetryPaymentEvent>(_onRetryPayment);
     on<ResetCheckoutEvent>(_onResetCheckout);
   }
@@ -149,9 +171,7 @@ class CheckoutPayBloc extends Bloc<CheckoutEvent, CheckoutState> {
     Emitter<CheckoutState> emit,
   ) async {
     emit(const CheckoutLoading(message: 'Validating cart items...'));
-
     final result = await validateCartItems(event.cartItems);
-
     result.fold(
       (failure) => emit(CheckoutError(failure.message)),
       (validatedItems) => emit(CartValidated(validatedItems)),
@@ -163,81 +183,110 @@ class CheckoutPayBloc extends Bloc<CheckoutEvent, CheckoutState> {
     Emitter<CheckoutState> emit,
   ) async {
     emit(const CheckoutLoading(message: 'Creating order...'));
-
     final result = await createOrder(event.order);
-
     result.fold(
       (failure) => emit(CheckoutError(failure.message)),
-      (order) => add(ProcessPaymentEvent(order: order)),
+   
+      (order) => add(CreatePaymentIntentEvent(order: order)),
     );
   }
 
-  Future<void> _onProcessPayment(
-    ProcessPaymentEvent event,
+ 
+  Future<void> _onCreatePaymentIntent(
+    CreatePaymentIntentEvent event,
     Emitter<CheckoutState> emit,
   ) async {
-    emit(const CheckoutLoading(message: 'Processing payment...'));
+    emit(const CheckoutLoading(message: 'Preparing payment...'));
 
-    ////createpaymentIntent
     final paymentIntentResult = await createPaymentIntent(
       event.order.totalAmount,
       event.order.currency,
     );
 
-    await paymentIntentResult.fold(
+    paymentIntentResult.fold(
       (failure) async {
+       
         await handleFailedPayment(event.order.orderId);
         emit(CheckoutError(failure.message));
       },
-      (paymentIntent) async {
-        /////payment
+      (paymentIntent) {
+ 
         emit(PaymentReady(
           order: event.order,
           paymentIntent: paymentIntent,
         ));
-
-        await _executePayment(event.order, paymentIntent, emit);
       },
     );
   }
 
-  Future<void> _executePayment(
-    OrderEntity order,
-    PaymentIntentEntity paymentIntent,
+ 
+  Future<void> _onConfirmPayment(
+    ConfirmPaymentEvent event,
     Emitter<CheckoutState> emit,
   ) async {
+    emit(const CheckoutLoading(message: 'Processing payment...'));
+
     try {
-      await Future.delayed(const Duration(seconds: 2));
+ 
+      final resultPayment = await processPayment(
+        event.paymentIntent.paymentIntentId,
+        event.paymentIntent,
+      );
 
-      final isSuccess = DateTime.now().millisecond % 10 < 8;
+      await resultPayment.fold(
+        (paymentFailure) async {
+    
+          await handleFailedPayment(event.order.orderId);
+          emit(PaymentFailed(
+            order: event.order,
+            paymentIntent: event.paymentIntent,  
+            errorMessage: paymentFailure.message,
+          ));
+        },
+        (_) async {
+ 
+          emit(const CheckoutLoading(message: 'Finalizing order...'));
 
-      if (isSuccess) {
-        final result = await handleSuccessfulPayment(
-          order.orderId,
-          paymentIntent.paymentIntentId,
-        );
+        
+          final result = await handleSuccessfulPayment(
+            event.order.orderId,
+            event.paymentIntent.paymentIntentId,
+          );
 
-        result.fold(
-          (failure) => emit(CheckoutError(failure.message)),
-          (_) => emit(PaymentSuccess(order)),
-        );
-      } else {
-        await handleFailedPayment(order.orderId);
-        emit(PaymentFailed(order, 'Payment was declined'));
-      }
+          result.fold(
+            (finalizingFailure) {
+      
+              emit(CheckoutError(finalizingFailure.message));
+            },
+            (__) => emit(PaymentSuccess(event.order)),  
+          );
+        },
+      );
     } catch (e) {
-      await handleFailedPayment(order.orderId);
-      emit(PaymentFailed(order, 'Payment timeout: $e'));
+      await handleFailedPayment(event.order.orderId);
+      emit(PaymentFailed(
+        order: event.order,
+        paymentIntent: event.paymentIntent,
+        errorMessage: 'Payment processing failed: $e',
+      ));
     }
   }
 
+ 
   Future<void> _onRetryPayment(
     RetryPaymentEvent event,
     Emitter<CheckoutState> emit,
   ) async {
+   
+    if (state is! PaymentFailed) {
+      emit(const CheckoutError('No payment to retry.'));
+      return;
+    }
+
+    final currentState = state as PaymentFailed;
     emit(const CheckoutLoading(message: 'Checking retry eligibility...'));
 
-    final canRetryResult = await canRetryPayment(event.order.orderId);
+    final canRetryResult = await canRetryPayment(currentState.order.orderId);
 
     await canRetryResult.fold(
       (failure) async => emit(CheckoutError(failure.message)),
@@ -247,8 +296,11 @@ class CheckoutPayBloc extends Bloc<CheckoutEvent, CheckoutState> {
               'Maximum payment retries exceeded. Please create a new order.'));
           return;
         }
-
-        add(ProcessPaymentEvent(order: event.order));
+ 
+        add(ConfirmPaymentEvent(
+          order: currentState.order,
+          paymentIntent: currentState.paymentIntent,
+        ));
       },
     );
   }
