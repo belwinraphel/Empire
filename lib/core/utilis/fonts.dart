@@ -9,9 +9,11 @@ class Fonts {
   static const String celiasbold = 'celias-bold';
   static const String celiasregular = 'celias-regular';
   static const String celiasmediumbold = 'celias-medium';
+    static const String momoSignature = 'MomoSignature-regular';
 }
 
 double responsiveWidth(BuildContext context, double designWidth) {
   double screenWidth = MediaQuery.of(context).size.width;
   return (designWidth / 403) * screenWidth;
 }
+  

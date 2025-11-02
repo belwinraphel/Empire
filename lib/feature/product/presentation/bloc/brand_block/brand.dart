@@ -1,6 +1,6 @@
  
 import 'package:empire/feature/product/domain/enities/listproducts.dart';
-import 'package:empire/feature/product/domain/usecase/product/add_product_usecae.dart';
+ 
 import 'package:empire/feature/product/domain/usecase/productcaliing_usecase.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
@@ -57,8 +57,8 @@ class Error extends BrandState {
 
 class BrandBloc extends Bloc<BrandEvent, BrandState> {
   final ProductcallingUsecase productcaliingUsecase;
-  final AddProductUseCase addProduct;
-  BrandBloc(this.productcaliingUsecase, this.addProduct)
+ 
+  BrandBloc(this.productcaliingUsecase,  )
     : super(BrandLoading()) {
     on<BrandFetching>((event, emit) async {
       final result = await productcaliingUsecase.getProductBrand(
@@ -70,13 +70,6 @@ class BrandBloc extends Bloc<BrandEvent, BrandState> {
         (result) => emit(LoadedBrand(brands: result)),
       );
     });
-    on<BrandAdding>((event, emit) {
-      emit(BrandLoading());
-      addProduct.addingBrand(
-        event.mainCategoryId,
-        event.subCategoryId,
-        event.brand,
-      );
-    });
+    
   }
 }

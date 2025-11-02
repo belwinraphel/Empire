@@ -19,19 +19,22 @@ class HomePage extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       return Builder(builder: (context) {
         return Scaffold(
-          backgroundColor: ColoRs.background,
+          backgroundColor: ColoRs.checkoutButtoncolor,
           body: SafeArea(
             child: Container(
               height: MediaQuery.of(context).size.height,
               color: ColoRs.white,
-              child: const SingleChildScrollView(
+              child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SearchSection(),
-                    ModernCarousel(),
-                    Category(),
-                    // MostUsed(images: images, issmallScreen: issmallScreen),
+                    const SearchSection(),
+                    // const ModernCarousel(),
+                    const Category(),
+                    MostUsed(
+                      images: images,
+                      issmallScreen: true,
+                    ),
                   ],
                 ),
               ),

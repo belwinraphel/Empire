@@ -125,6 +125,10 @@ flutter:
     - family: celias-regular
       fonts:
         - asset: fonts/Celias.ttf
+    - family: MomoSignature-regular
+      fonts:
+        - asset: fonts/MomoSignature-Regular.ttf        
+        
 
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

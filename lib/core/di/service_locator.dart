@@ -84,6 +84,7 @@ import 'package:empire/feature/product/domain/repository/category_repository.dar
 import 'package:empire/feature/product/domain/repository/prodcuct_call_repository.dart';
 import 'package:empire/feature/product/domain/usecase/get_category_usecase.dart';
 import 'package:empire/feature/product/domain/usecase/getting_subcategory_usecase.dart';
+import 'package:empire/feature/product/domain/usecase/product/sucategory_product_usecase.dart';
 import 'package:empire/feature/product/domain/usecase/productcaliing_usecase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
@@ -181,6 +182,10 @@ Future<void> init() async {
   ///getsubcategory
   sl.registerLazySingleton(
     () => GettingSubcategoryUsecase(sl<CategoryRepository>()),
+  );
+  //GettingSubcateoryProductUsecase
+   sl.registerLazySingleton(
+    () => GettingSubcateoryProductUsecase(sl<ProdcuctsRepository>()),
   );
   //////category
   sl.registerSingleton<Logger>(Logger());

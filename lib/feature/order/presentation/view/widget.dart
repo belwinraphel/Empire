@@ -1,6 +1,13 @@
+import 'package:empire/core/utilis/color.dart';
+import 'package:empire/core/utilis/fonts.dart';
+import 'package:empire/core/utilis/widgets.dart';
+import 'package:empire/feature/order/domain/entity/oder_entity.dart';
+import 'package:empire/feature/order/presentation/Bloc/order_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 // TODO: add flutter_svg package to pubspec.yaml
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shimmer/shimmer.dart';
 
 class Emptyorder extends StatelessWidget {
   const Emptyorder({super.key});
@@ -29,7 +36,6 @@ class Emptyorder extends StatelessWidget {
               ErrorInfo(
                 title: "Empty order!",
                 description: "It seems like you haven't anything in order.",
-
                 btnText: "Discover Products",
                 press: () {},
               ),
@@ -81,7 +87,7 @@ class ErrorInfo extends StatelessWidget {
                   onPressed: press,
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 48),
-                    backgroundColor: Colors.black,
+                    backgroundColor: ColoRs.green,
                     foregroundColor: Colors.white,
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -120,3 +126,237 @@ const emptyCatyIllustration =
 <path d="M698.8 638.55C739.454 638.55 772.41 605.594 772.41 564.94C772.41 524.286 739.454 491.33 698.8 491.33C658.146 491.33 625.19 524.286 625.19 564.94C625.19 605.594 658.146 638.55 698.8 638.55Z" stroke="#0E0E0E" stroke-width="3" stroke-miterlimit="10"/>
 </svg>
 ''';
+
+class OrderCard extends StatelessWidget {
+  final OrderEntity order;
+  const OrderCard({super.key, required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<OrdersBloc, OrdersState>(
+      builder: (context, state) {
+        bool isExpanded = false;
+
+        if (state is OrdersLoaded) {
+          isExpanded = state.expandedOrders[order.orderId] ?? false;
+        }
+
+        return GestureDetector(
+          onTap: () {
+            context.read<OrdersBloc>().add(ToggleOrderExpansion(order.orderId));
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: ColoRs.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: ColoRs.white),
+            ),
+            child: Column(
+              children: [
+                OrderHeader(order: order),
+                if (isExpanded) _CartItemsList(order: order),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _CartItemsList extends StatelessWidget {
+  final OrderEntity order;
+  const _CartItemsList({required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      color: Colors.grey[100],
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: order.items.length,
+        itemBuilder: (context, index) {
+          final item = order.items[index];
+          return ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: item.imageUrl != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.network(
+                      item.imageUrl!,
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : const Icon(Icons.shopping_bag),
+            title: Text(item.productName ?? 'no name'),
+            subtitle: Text('Qty: ${item.quantity}'),
+            trailing: Text('₹${order.totalAmount}'),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class OrderHeader extends StatelessWidget {
+  final OrderEntity order;
+
+  OrderHeader({super.key, required this.order});
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'packed':
+      case 'shipped':
+      case 'delivered':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String? selectedValue;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.purple[300],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: order.items[0].imageUrl != null
+                ? OptimizedNetworkImage(
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.height * 0.30,
+                    imageUrl: order.items[0].imageUrl,
+                    errorWidget: const Icon(Icons.error),
+                    borderRadius: 7,
+                    fit: BoxFit.fill,
+                    placeholder: Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: const SizedBox(height: 80, width: 85),
+                    ),
+                    widthQueryParam: 'resize_width',
+                  )
+                : const Icon(Icons.error),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Order ID: ${order.orderId}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Total Cost ${order.totalAmount.toString()}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontFamily: Fonts.ralewaySemibold,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Text(
+                      order.currency,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${order.items.length} item',
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Text(
+                    order.status,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  order.status == 'completed'
+                      ? Icon(
+                          Icons.check_circle,
+                          color: _getStatusColor(order.status),
+                          size: 18,
+                        )
+                      : const SizedBox(),
+                ],
+              )
+              // : Container(
+              //     decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(10),
+              //       border: BoxBorder.all(width: 1),
+              //     ),
+              //     height: 40,
+              //     child: Center(
+              //       child: DropdownButton<String>(
+              //         value: selectedValue,
+              //         alignment: Alignment.center,
+              //         hint: const Text('Select an option'),
+              //         items: status.map((String value) {
+              //           return DropdownMenuItem<String>(
+              //             value: value,
+              //             child: Text(value),
+              //           );
+              //         }).toList(),
+              //         onChanged: (String? newValue) {
+              //           if (newValue != null) {
+              //             selectedValue = newValue;
+              //             context.read<OrdersBloc>().add(
+              //                   UpdateOrderstatus(
+              //                     orderId: order.orderId,
+              //                     newStatus: newValue,
+              //                   ),
+              //                 );
+              //           }
+              //         },
+              //         icon: const SizedBox.shrink(),
+              //         underline: const SizedBox.shrink(),
+              //         elevation: 0,
+              //         borderRadius: BorderRadius.circular(8),
+              //         dropdownColor: Colors.white,
+              //       ),
+              //     ),
+              //   ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

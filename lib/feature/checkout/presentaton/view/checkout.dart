@@ -7,6 +7,7 @@ import 'package:empire/feature/address/presentation/bloc/address.dart';
 import 'package:empire/feature/address/presentation/view/addres_screen.dart';
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
 import 'package:empire/feature/checkout/presentaton/bloc/checkoutbloc.dart';
+import 'package:empire/feature/favorite/presentation/view/favouritepage.dart';
 import 'package:empire/feature/payment/presentation/view/payment_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -115,12 +116,12 @@ class CheckoutPage extends StatelessWidget {
                 children: [
                   _buildDeliveryInfoCard(state),
                   const SizedBox(height: 20),
-                  _buildBeforeCheckoutSection(),
+                  _buildBeforeCheckoutSection(context),
                   const SizedBox(height: 20),
-                  _buildGiftOrderingCard(),
-                  const SizedBox(height: 12),
-                  _buildFreeDeliveryCard(),
-                  const SizedBox(height: 12),
+                  // _buildGiftOrderingCard(),
+                  // const SizedBox(height: 12),
+                  // _buildFreeDeliveryCard(),
+                  // const SizedBox(height: 12),
                   _buildDeliveryAddressCard(state, context),
                   const SizedBox(height: 100),
                 ],
@@ -290,7 +291,7 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBeforeCheckoutSection() {
+  Widget _buildBeforeCheckoutSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -330,8 +331,17 @@ class CheckoutPage extends StatelessWidget {
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              _buildCategoryCard(
-                  'Favourites', '5 products', ['🍇', '🍟', '🍫'], '+2'),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushReplacement(context, MaterialPageRoute(
+                    builder: (context) {
+                      return FavouritePage();
+                    },
+                  ));
+                },
+                child: _buildCategoryCard(
+                    'Favourites', '5 products', ['🍇', '🍟', '🍫'], '+2'),
+              ),
               const SizedBox(width: 12),
               _buildCategoryCard(
                   'Milk, Curd & Paneer', '3 products', ['🥛', '🥛', '🥛']),

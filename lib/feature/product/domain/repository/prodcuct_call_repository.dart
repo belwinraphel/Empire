@@ -9,6 +9,9 @@ abstract class ProdcuctsRepository {
     String subcategoryId,
     String subcategoryname
   );
+    Future<Either<Failures, List<ProductEntity>>> getSubcategoryProducts(
+    List<String> ?subcategoryList
+  );
 
   Future<Either<Failures, List<Brand>>> getProductBrand(
     String mainCategory,

@@ -34,12 +34,12 @@ class ProductsRepositoyImpi extends ProdcuctsRepository {
     List<String>? subcategory,
   ) {
     return producDataSource.searchAndFilterProducts(
-      searchQuery,
-      brandFilters,
-      minPrice,
-      maxPrice,
-      category,subcategory
-      
-    );
+        searchQuery, brandFilters, minPrice, maxPrice, category, subcategory);
+  }
+
+  @override
+  Future<Either<Failures, List<ProductEntity>>> getSubcategoryProducts(
+      List<String>? subcategoryList) {
+    return producDataSource.getSubcategoryProducts(subcategoryList);
   }
 }

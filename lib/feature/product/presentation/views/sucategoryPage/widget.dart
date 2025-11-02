@@ -1,23 +1,16 @@
-import 'package:cached_network_image/cached_network_image.dart';
-
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/noresult%20.dart';
 import 'package:empire/core/utilis/widgets.dart';
 import 'package:empire/feature/cart/domain/entities/variant_snapshot.dart';
-
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
-
 import 'package:empire/feature/favorite/presentation/bloc/favorite.dart';
-
 import 'package:empire/feature/product/domain/enities/product_entities.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/get_subcategory.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/product_bloc.dart';
 import 'package:empire/feature/product/presentation/views/homepage/widget.dart';
 import 'package:empire/feature/product/presentation/views/prodcutdetailpage.dart/productdetailpage.dart';
 import 'package:empire/feature/product/presentation/views/search/search.dart';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -29,20 +22,20 @@ SizedBox products(BuildContext context, Productfetched state,
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
+          decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: ColoRs.grey200)),
           ),
-          child: const SingleChildScrollView(
+          child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                // buildFilterButton("Filters", Icons.tune),
-                // const SizedBox(width: 12),
-                // buildFilterButton("Sort", Icons.sort),
-                // const SizedBox(width: 12),
-                // buildFilterButton("Brand", null),
-                // const SizedBox(width: 12),
-                // buildFilterButton("Atta Type", null),
+                buildFilterButton("Filters", Icons.tune),
+                const SizedBox(width: 12),
+                buildFilterButton("Sort", Icons.sort),
+                const SizedBox(width: 12),
+                buildFilterButton("Brand", null),
+                const SizedBox(width: 12),
+                buildFilterButton("Atta Type", null),
               ],
             ),
           ),
@@ -61,7 +54,7 @@ SizedBox products(BuildContext context, Productfetched state,
               aspectRatio = 0.65;
             } else if (width > 300) {
               crossAxisCount = 2;
-              aspectRatio = 0.47;
+              aspectRatio = 0.42;
             } else {
               crossAxisCount = 2;
               aspectRatio = 0.50;
@@ -126,7 +119,7 @@ class _ProductCardState extends State<ProductCard> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: ColoRs.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -145,12 +138,12 @@ class _ProductCardState extends State<ProductCard> {
                 Container(
                   height: 120,
                   width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(12),
                       topRight: Radius.circular(12),
                     ),
-                    color: Colors.grey[100],
+                    color: ColoRs.grey100,
                   ),
                   child: OptimizedNetworkImage(
                     imageUrl: widget.product.images.first,
@@ -173,7 +166,7 @@ class _ProductCardState extends State<ProductCard> {
 
                     Widget favoriteIcon = Icon(
                       isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? Colors.red : Colors.grey[400],
+                      color: isFavorite ? ColoRs.red : ColoRs.grey400,
                       size: 21,
                     );
 
@@ -199,13 +192,13 @@ class _ProductCardState extends State<ProductCard> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                     decoration: BoxDecoration(
-                      color: Colors.orange,
+                      color: ColoRs.orange,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: const Text(
                       'Bestseller',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: ColoRs.white,
                         fontSize: 10,
                         fontWeight: FontWeight.w500,
                       ),
@@ -262,7 +255,7 @@ class _ProductCardState extends State<ProductCard> {
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black87,
+                      color: ColoRs.black87,
                       height: 1.3,
                     ),
                     maxLines: 3,
@@ -280,7 +273,7 @@ class _ProductCardState extends State<ProductCard> {
                                   ? Icons.star_half
                                   : Icons.star_border,
                           size: 12,
-                          color: Colors.orange,
+                          color: ColoRs.orange,
                         );
                       }),
                       const SizedBox(width: 4),
@@ -388,7 +381,7 @@ class _ProductCardState extends State<ProductCard> {
                     ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: ColoRs.green,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -419,7 +412,10 @@ class _ProductCardState extends State<ProductCard> {
                                 content: Text('please select the varients')));
                       }
                     },
-                    child: const Text('Add to Cart'),
+                    child: const Text(
+                      'Add to Cart',
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ),
                 ],
               ),
@@ -435,21 +431,21 @@ Widget buildFilterButton(String text, IconData? icon) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     decoration: BoxDecoration(
-      border: Border.all(color: Colors.grey[300]!),
+      border: Border.all(color: ColoRs.grey300),
       borderRadius: BorderRadius.circular(8),
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         if (icon != null) ...[
-          Icon(icon, size: 16, color: Colors.grey[600]),
+          Icon(icon, size: 16, color: ColoRs.grey600),
           const SizedBox(width: 4),
         ],
         Text(
           text,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
-            color: Colors.grey[700],
+            color: ColoRs.grey700,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -505,8 +501,8 @@ Widget subcategoryShimmerLoading(BuildContext context) {
           return Column(
             children: [
               Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
+                baseColor: ColoRs.grey300,
+                highlightColor: ColoRs.grey100,
                 child: Container(
                   height: MediaQuery.of(context).size.width * 0.13,
                   width: MediaQuery.of(context).size.width * 0.13,
@@ -544,7 +540,7 @@ class ProductSection extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.errorMessage!),
-                backgroundColor: Colors.red,
+                backgroundColor: ColoRs.red,
               ),
             );
           } else {
@@ -614,7 +610,7 @@ Container subcategory(
     SubCategoryLoadedState state, String? isSlected, String mainCatgeory) {
   return Container(
     width: 93,
-    color: Colors.grey[50],
+    color: ColoRs.grey50,
     child: ListView.builder(
       shrinkWrap: true,
       itemCount: state.categories.length,
@@ -632,10 +628,10 @@ Container subcategory(
             margin: const EdgeInsets.symmetric(vertical: 2),
             decoration: BoxDecoration(
               color:
-                  category.uid == isSlected ? Colors.white : Colors.transparent,
+                  category.uid == isSlected ? ColoRs.white : Colors.transparent,
               border: category.uid == isSlected
                   ? const Border(
-                      left: BorderSide(color: Colors.green, width: 3))
+                      left: BorderSide(color: ColoRs.green, width: 3))
                   : null,
             ),
             child: Padding(
@@ -657,8 +653,8 @@ Container subcategory(
                       borderRadius: 7,
                       fit: BoxFit.fill,
                       placeholder: Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
+                        baseColor: ColoRs.grey300,
+                        highlightColor: ColoRs.grey100,
                         child: const SizedBox(height: 80, width: 85),
                       ),
                       widthQueryParam: 'resize_width',
@@ -711,8 +707,8 @@ Container subcategory(
                           ? FontWeight.w900
                           : FontWeight.w700,
                       color: category.uid == isSlected
-                          ? Colors.black
-                          : Colors.grey[600],
+                          ? ColoRs.black
+                          : ColoRs.grey600,
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 1,
@@ -771,8 +767,8 @@ class ErrorInfo extends StatelessWidget {
                 onPressed: press,
                 style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 48),
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
+                    backgroundColor: ColoRs.black,
+                    foregroundColor: ColoRs.white,
                     shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(8)))),
                 child: Text(btnText ?? "Retry".toUpperCase()),

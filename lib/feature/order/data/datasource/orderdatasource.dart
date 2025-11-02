@@ -33,7 +33,6 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       final snapshot = await firestore
           .collection('orders')
           .where('userId', isEqualTo: useid)
-          .orderBy('createdAt', descending: true)
           .get();
 
       return snapshot.docs
@@ -54,7 +53,6 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     return firestore
         .collection('orders')
         .where('userId', isEqualTo: useid)
-        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) =>

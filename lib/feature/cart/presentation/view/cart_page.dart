@@ -22,7 +22,7 @@ class CartPage extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(state.errorMessage!),
-                    backgroundColor: Colors.red,
+                    backgroundColor: ColoRs.red,
                   ),
                 );
               }

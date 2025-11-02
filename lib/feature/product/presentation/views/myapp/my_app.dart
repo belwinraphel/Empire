@@ -37,6 +37,7 @@ import 'package:empire/feature/favorite/domain/usecase/remove_favorites_usecase.
 import 'package:empire/feature/favorite/presentation/bloc/favorite.dart';
 import 'package:empire/feature/product/domain/usecase/get_category_usecase.dart';
 import 'package:empire/feature/product/domain/usecase/getting_subcategory_usecase.dart';
+import 'package:empire/feature/product/domain/usecase/product/sucategory_product_usecase.dart';
 import 'package:empire/feature/product/domain/usecase/productcaliing_usecase.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/centralizedstate/category.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/get_category_bloc.dart';
@@ -99,6 +100,8 @@ class MyApp extends StatelessWidget {
                 )..add(GetCategoryEvent())),
         BlocProvider(
             create: (_) => CategorsyBloc(
+                  gettingSubcateoryProductUsecase:
+                      sl<GettingSubcateoryProductUsecase>(),
                   categoryUsecase: sl<CategoryUsecase>(),
                   gettingSubcategoryUsecase: sl<GettingSubcategoryUsecase>(),
                 )..add(FetchAllCategoryData())),
@@ -122,14 +125,6 @@ class MyApp extends StatelessWidget {
                 )..add(LoadFavorites())),
       ],
       child: MaterialApp(
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF18A957),
-            brightness: Brightness.light,
-          ),
-          useMaterial3: true,
-          fontFamily: 'SF Pro Text',
-        ),
         debugShowCheckedModeBanner: false,
         home: BlocBuilder<AuthBlocStatus, LoginStatusState>(
           builder: (context, state) {

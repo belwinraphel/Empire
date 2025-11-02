@@ -159,7 +159,7 @@ class CheckoutPayBloc extends Bloc<CheckoutEvent, CheckoutState> {
   }) : super(CheckoutInitial()) {
     on<ValidateCartEvent>(_onValidateCart);
     on<CreateOrderEvent>(_onCreateOrder);
-    // Updated event handlers
+    
     on<CreatePaymentIntentEvent>(_onCreatePaymentIntent);
     on<ConfirmPaymentEvent>(_onConfirmPayment);
     on<RetryPaymentEvent>(_onRetryPayment);

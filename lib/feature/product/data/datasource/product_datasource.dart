@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dartz/dartz.dart';
 import 'package:empire/core/utilis/failure.dart';
 import 'package:empire/feature/product/domain/enities/listproducts.dart';
@@ -22,10 +20,13 @@ abstract class ProductsDataSource {
     List<String>? category,
     List<String>? subcategory,
   );
+  Future<Either<Failures, List<ProductEntity>>> getSubcategoryProducts(
+      List<String>? subcategoryList);
 }
 
 class ProducsDataSourceimpli extends ProductsDataSource {
   final FirebaseFirestore firestore;
+
   ProducsDataSourceimpli({FirebaseFirestore? firestoreInstance})
       : firestore = firestoreInstance ?? FirebaseFirestore.instance;
   @override
@@ -77,10 +78,12 @@ class ProducsDataSourceimpli extends ProductsDataSource {
     try {
       Query query = firestore.collection('products');
 
-      if (minPrice != null)
+      if (minPrice != null) {
         query = query.where('price', isGreaterThanOrEqualTo: minPrice);
-      if (maxPrice != null)
+      }
+      if (maxPrice != null) {
         query = query.where('price', isLessThanOrEqualTo: maxPrice);
+      }
 
       if (category != null && category.isNotEmpty) {
         query = query.where('mainCategoryName', whereIn: category);
@@ -146,6 +149,37 @@ class ProducsDataSourceimpli extends ProductsDataSource {
       return right(result);
     } catch (e) {
       return left(Failures.server(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failures, List<ProductEntity>>> getSubcategoryProducts(
+      List<String>? subcategoryList) async {
+    try {
+      Query query = firestore.collection('products');
+
+      if (subcategoryList != null && subcategoryList.isNotEmpty) {
+        query = query.where(
+          'subcategoryName',
+          whereIn: subcategoryList,
+        );
+      }
+
+      final snapShot = await query.get();
+
+      final docs = snapShot.docs.map((doc) {
+        return {'productDocId': doc.id, ...doc.data() as Map<String, dynamic>};
+      }).toList();
+
+      final products = await compute(parseProducts, docs);
+      print('ddddsdcdesdssssssš');
+      for (var element in products) {
+        print(element.subcategoryName);
+      }
+
+      return Right(products);
+    } catch (e) {
+      return Left(Failures.server(e.toString()));
     }
   }
 }

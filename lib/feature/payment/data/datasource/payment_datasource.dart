@@ -318,12 +318,35 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
         }
 
         transaction.update(orderRef, {
-          FirestoreKeys.status: 'completed',
+          FirestoreKeys.status: 'shipped',
           FirestoreKeys.paymentStatus: 'succeeded',
           FirestoreKeys.updatedAt: FieldValue.serverTimestamp(),
         });
       });
       logger.i('Successfully completed transaction for order: $orderId');
+      //delte cart
+      final user = auth.currentUser;
+      if (user != null) {
+        logger.d('Payment successful, deleting cart for user: ${user.uid}');
+
+        final cartCollectionRef = firestore.collection('carts');
+
+        final cartSnapshot = await cartCollectionRef.get();
+
+        if (cartSnapshot.docs.isNotEmpty) {
+          final batch = firestore.batch();
+          for (final doc in cartSnapshot.docs) {
+            batch.delete(doc.reference);
+          }
+          await batch.commit();
+          logger.i(
+              'Successfully deleted ${cartSnapshot.docs.length} items from cart.');
+        } else {
+          logger.i('Cart is already empty, no items to delete.');
+        }
+      } else {
+        logger.w('User is null, cannot delete cart after payment.');
+      }
     } on Failures catch (e) {
       logger.w(
           'Payment succeeded but transaction failed for order $orderId: ${e.message}');

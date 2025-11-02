@@ -5,6 +5,7 @@ import 'package:empire/feature/payment/domain/entity/Payment_entity.dart';
 import 'package:empire/feature/payment/presentation/bloc/paymentbloc.dart';
 import 'package:empire/feature/payment/presentation/view/widgets.dart/ordercard.dart';
 import 'package:empire/feature/payment/presentation/view/widgets.dart/paymentfailed_screen.dart';
+import 'package:empire/feature/product/presentation/views/mainscreen/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -153,7 +154,7 @@ class _CheckoutViewState extends State<CheckoutView> {
         ),
         Text(
           'Total: \$${state.order.totalAmount.toStringAsFixed(2)}',
-          style: TextStyle(fontFamily: Fonts.celiasbold, fontSize: 19),
+          style: const TextStyle(fontFamily: Fonts.celiasbold, fontSize: 19),
         ),
         const SizedBox(height: 16),
         ElevatedButton(
@@ -232,7 +233,10 @@ class _CheckoutViewState extends State<CheckoutView> {
               onPressed: () {
                 Navigator.of(dialogContext).pop();
 
-                Navigator.of(context).popUntil((route) => route.isFirst);
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const MainScreen()),
+                  (route) => false,
+                );
               },
             ),
           ],

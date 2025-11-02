@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:empire/core/utilis/commonvalidator.dart';
 import 'package:empire/core/utilis/fonts.dart';
- import 'package:empire/core/utilis/widgets.dart';
+import 'package:empire/core/utilis/widgets.dart';
 
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_image.dart';
 import 'package:empire/feature/auth/presentation/views/loginpage/widget.dart';
- 
+
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';

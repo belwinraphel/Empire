@@ -1,9 +1,17 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:empire/core/di/service_locator.dart';
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/fonts.dart';
+import 'package:empire/core/utilis/widgets.dart';
 
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
+import 'package:empire/feature/product/domain/usecase/get_category_usecase.dart';
+import 'package:empire/feature/product/domain/usecase/getting_subcategory_usecase.dart';
+import 'package:empire/feature/product/domain/usecase/product/sucategory_product_usecase.dart';
+import 'package:empire/feature/product/presentation/bloc/product_bloc/centralizedstate/category.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/get_category_bloc.dart';
 import 'package:empire/feature/product/presentation/views/CategoryPage/categorypage.dart';
 import 'package:empire/feature/product/presentation/views/search/search.dart';
@@ -96,14 +104,20 @@ class SearchSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.24,
+      height: MediaQuery.of(context).size.height * 0.35,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(50),
+              bottomRight: Radius.circular(50)),
           gradient: LinearGradient(
-        colors: [ColoRs.background, ColoRs.white],
-        end: Alignment(0.0, 1),
-        begin: Alignment(0.0, -1),
-      )),
+            colors: [
+              ColoRs.checkoutButtoncolor,
+              ColoRs.background,
+            ],
+            end: Alignment(1.0, 0.90),
+            begin: Alignment(1.0, -0.80),
+          )),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -115,9 +129,10 @@ class SearchSection extends StatelessWidget {
                   children: [
                     const SizedBox(height: 24),
                     const Text(
-                      'Welcome',
+                      'Empire in',
                       style: TextStyle(
                         fontSize: 16,
+                        fontFamily: Fonts.ralewayExtraBold,
                         color: Colors.black87,
                         fontWeight: FontWeight.w500,
                       ),
@@ -129,25 +144,24 @@ class SearchSection extends StatelessWidget {
                           state.user.name!,
                           style: const TextStyle(
                             fontSize: 28,
+                            fontFamily: Fonts.ralewayExtraBold,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
                           ),
                         ),
                         state.user.photourl == null
                             ? const Icon(Icons.person_pin)
                             : ClipRRect(
-                                borderRadius: BorderRadius.circular(26),
-                                child: CachedNetworkImage(
-                                  height: 51,
-                                  width: 55,
-                                  imageUrl: state.user.photourl!,
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) {
-                                    return const CircularProgressIndicator();
-                                  },
-                                  // color: isActive ? Colors.white : null,
-                                  errorWidget: (context, error, stackTrace) =>
-                                      const Icon(Icons.error),
+                                borderRadius: BorderRadiusGeometry.circular(30),
+                                child: OptimizedNetworkImage(
+                                  height: 65,
+                                  width: 65,
+                                  imageUrl: state.user.photourl,
+                                  errorWidget: const Icon(Icons.error),
+                                  borderRadius: 12,
+                                  fit: BoxFit.fill,
+                                  placeholder: const Center(
+                                      child: CircularProgressIndicator()),
+                                  widthQueryParam: 'resize_width',
                                 ),
                               ),
                       ],
@@ -253,7 +267,7 @@ class SearchSection extends StatelessWidget {
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(
                   builder: (context) {
-                    return ProductSearchScreen();
+                    return const ProductSearchScreen();
                   },
                 ));
               },
@@ -280,6 +294,34 @@ class SearchSection extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height * 0.10,
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  'Welcome',
+                  style: TextStyle(
+                    fontSize: 30,
+                    color: Color.fromARGB(255, 190, 28, 16),
+                    fontWeight: FontWeight.w400,
+                    fontFamily: Fonts.momoSignature,
+                  ),
+                ),
+                Text(
+                  'order not to available exciting offer',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: ColoRs.red,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: Fonts.raleway,
+                  ),
+                )
+              ],
+            ),
+          )
         ],
       ),
     );
@@ -514,84 +556,226 @@ class MostUsed extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Most Used',
-            style: TextStyle(
-              fontSize: 20,
-              fontFamily: Fonts.celiasbold,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 130,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: images.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 6.0),
-                    child: SizedBox(
-                      height: issmallScreen ? 110 : 100,
-                      width: issmallScreen ? 120 : 110,
-                      child: GridView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: images.length,
-                        padding: const EdgeInsets.all(0),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 4,
-                          crossAxisSpacing: 4,
-                          childAspectRatio: 1 / 1,
-                        ),
-                        itemBuilder: (context, index) {
-                          if (index == 3) {
-                            return Container(
-                              height: 30,
-                              width: 40,
-                              decoration: const BoxDecoration(
-                                  color: ColoRs.homecardcolor,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10))),
+      child: BlocProvider(
+        create: (context) => CategorsyBloc(
+            categoryUsecase: sl<CategoryUsecase>(),
+            gettingSubcateoryProductUsecase:
+                sl<GettingSubcateoryProductUsecase>(),
+            gettingSubcategoryUsecase: sl<GettingSubcategoryUsecase>())
+          ..add(FetchAllCategoryData()),
+        child: BlocBuilder<CategorsyBloc, CategorysState>(
+          builder: (context, state) {
+            if (state is CategorysLoadedState) {
+              if (state.allproduct != null) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Most Used',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: Fonts.celiasbold,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      child: ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          itemCount: state.allproduct!.length,
+                          itemBuilder: (context, index) {
+                            final mainCategory =
+                                state.allproduct!.keys.elementAt(index);
+
+                            final products = state.allproduct![mainCategory]!;
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 6.0),
+                                  child: SizedBox(
+                                    height: issmallScreen ? 160 : 100,
+                                    width: issmallScreen ? 120 : 110,
+                                    child: GridView.builder(
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount: products.length,
+                                      padding: const EdgeInsets.all(0),
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        mainAxisSpacing: 4,
+                                        crossAxisSpacing: 4,
+                                        childAspectRatio: 1 / 1,
+                                      ),
+                                      itemBuilder: (context, index) {
+                                        if (index == 3) {
+                                          return Container(
+                                            height: 30,
+                                            width: 40,
+                                            decoration: const BoxDecoration(
+                                                color: ColoRs.homecardcolor,
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10))),
+                                          );
+                                        }
+                                        return products[index].images.isEmpty
+                                            ? const Icon(Icons.error)
+                                            : Container(
+                                                decoration: const BoxDecoration(
+                                                    color: ColoRs.homecardcolor,
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                10))),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(3.0),
+                                                  child: Card(
+                                                    elevation: 4,
+                                                    child: Container(
+                                                      height: 30,
+                                                      width: 40,
+                                                      decoration: const BoxDecoration(
+                                                          color: ColoRs
+                                                              .homecardcolor,
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          10))),
+                                                      child: Center(
+                                                        child: products[index]
+                                                                .images
+                                                                .isEmpty
+                                                            ? const Icon(
+                                                                Icons.error)
+                                                            : OptimizedNetworkImage(
+                                                                height: 30,
+                                                                width: 40,
+                                                                imageUrl:
+                                                                    products[
+                                                                            index]
+                                                                        .images
+                                                                        .first,
+                                                                errorWidget:
+                                                                    const Icon(Icons
+                                                                        .error),
+                                                                borderRadius: 7,
+                                                                fit:
+                                                                    BoxFit.fill,
+                                                                placeholder:
+                                                                    Container(
+                                                                  color: ColoRs
+                                                                      .addresBackgroundcolor,
+                                                                ),
+                                                                widthQueryParam:
+                                                                    'resize_width',
+                                                              ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                Text(mainCategory)
+                              ],
                             );
-                          }
-                          return Container(
-                            decoration: const BoxDecoration(
-                                color: ColoRs.homecardcolor,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            child: Padding(
-                              padding: const EdgeInsets.all(3.0),
-                              child: Card(
-                                elevation: 4,
-                                child: Container(
-                                  height: 30,
-                                  width: 40,
+                          }),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                );
+              } else {
+                return const CircularProgressIndicator();
+              }
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Most Used',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontFamily: Fonts.celiasbold,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 130,
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: images.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 6.0),
+                          child: SizedBox(
+                            height: issmallScreen ? 110 : 100,
+                            width: issmallScreen ? 120 : 110,
+                            child: GridView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: images.length,
+                              padding: const EdgeInsets.all(0),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 4,
+                                crossAxisSpacing: 4,
+                                childAspectRatio: 1 / 1,
+                              ),
+                              itemBuilder: (context, index) {
+                                if (index == 3) {
+                                  return Container(
+                                    height: 30,
+                                    width: 40,
+                                    decoration: const BoxDecoration(
+                                        color: ColoRs.homecardcolor,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10))),
+                                  );
+                                }
+                                return Container(
                                   decoration: const BoxDecoration(
                                       color: ColoRs.homecardcolor,
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(10))),
-                                  child: Center(
-                                      child: Image.asset(
-                                          images[index]['image'] ?? '')),
-                                ),
-                              ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(3.0),
+                                    child: Card(
+                                      elevation: 4,
+                                      child: Container(
+                                        height: 30,
+                                        width: 40,
+                                        decoration: const BoxDecoration(
+                                            color: ColoRs.homecardcolor,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10))),
+                                        child: Center(
+                                            child: Image.asset(
+                                                images[index]['image'] ?? '')),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                }),
-          ),
-          const SizedBox(height: 20),
-        ],
+                          ),
+                        );
+                      }),
+                ),
+                const SizedBox(height: 20),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
