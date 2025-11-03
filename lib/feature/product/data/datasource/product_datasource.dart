@@ -172,10 +172,8 @@ class ProducsDataSourceimpli extends ProductsDataSource {
       }).toList();
 
       final products = await compute(parseProducts, docs);
-      print('ddddsdcdesdssssssš');
-      for (var element in products) {
-        print(element.subcategoryName);
-      }
+    
+       
 
       return Right(products);
     } catch (e) {

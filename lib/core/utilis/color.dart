@@ -11,6 +11,8 @@ class ColoRs {
   static const homecardcolor = Color(0xffe4f2f3);
   static const warning = Color.fromARGB(255, 244, 67, 54);
   static const checkoutButtoncolor = Color.fromARGB(255, 67, 160, 71);
+  static const g1 = Color(0xFFEADDAF);
+  static const g2 = Color(0xFFC0A05B);
   static const green = Color(0xFF18A957);
   static const dark = Color(0xFF2C2C2C);
   static const red = Colors.red;

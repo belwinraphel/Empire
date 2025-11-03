@@ -48,7 +48,6 @@ class ProductEntity extends Equatable {
     required this.filterTags,
     required this.variantDetails,
   });
-  
 
   factory ProductEntity.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -57,7 +56,7 @@ class ProductEntity extends Equatable {
       subcategoryId: data['subcategoryId'] ?? "",
       mainCategoryName: data['mainCategoryName'] ?? "",
       subcategoryName: data['subcategoryName'] ?? "",
-      productDocId: doc.id ?? '',
+      productDocId: doc.id,
       name: data['name'] ?? '',
       description: data['description'] ?? '',
       price: (data['price'] as num?)?.toDouble() ?? 0.0,
@@ -217,6 +216,7 @@ class Variant extends Equatable {
   @override
   List<Object?> get props => [name, image, regularPrice, salePrice, quantity];
 }
+
 List<ProductEntity> parseProducts(List<Map<String, dynamic>> docs) {
   return docs.map((data) {
     return ProductEntity(
@@ -225,7 +225,6 @@ List<ProductEntity> parseProducts(List<Map<String, dynamic>> docs) {
       subcategoryId: data['subcategoryId'] ?? "",
       mainCategoryName: data['mainCategoryName'] ?? "",
       subcategoryName: data['subcategoryName'] ?? "",
- 
       name: data['name'] ?? '',
       description: data['description'] ?? '',
       price: (data['price'] as num?)?.toDouble() ?? 0.0,

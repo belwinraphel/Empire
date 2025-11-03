@@ -388,6 +388,8 @@ class _ProductCardState extends State<ProductCard> {
                       ),
                     ),
                     onPressed: () {
+                      print(selectedVariant);
+                      print(widget.product.productDocId);
                       if (selectedVariantName != null &&
                           widget.product.productDocId != null) {
                         final varientSnapshot = VariantSnapshot(
@@ -562,6 +564,7 @@ class ProductSection extends StatelessWidget {
               if (state.products.isEmpty) {
                 return const NoResultsScreen();
               } else {
+                print(state.products);
                 return products(context, state, mainCtageoruId!, subcategoyId!);
               }
             }

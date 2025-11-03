@@ -15,7 +15,6 @@ class SubCategoryPage extends StatelessWidget {
       this.mainCtageoruId,
       required this.subcategName});
   String? isSlected;
-
   @override
   Widget build(BuildContext context) {
     context.read<SubCategoryBloc>().add(GetSubCategoryEvent(mainCtageoruId!));

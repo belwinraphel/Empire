@@ -39,7 +39,8 @@ class CategoryPage extends StatelessWidget {
         colors: [ColoRs.background, ColoRs.white],
         end: Alignment(0.0, 1),
         begin: Alignment(0.0, -1),
-      )),
+      ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
