@@ -5,6 +5,7 @@ import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/centralizedstate/category.dart';
 
 import 'package:empire/feature/product/presentation/views/CategoryPage/widget.dart';
+import 'package:empire/feature/product/presentation/views/homepage/widget.dart';
 import 'package:empire/feature/product/presentation/views/search/search.dart';
 import 'package:flutter/material.dart';
 
@@ -21,8 +22,13 @@ class CategoryPage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Container(
             color: ColoRs.white,
-            child: Column(
-              children: [searchSection(context), const CategorySection()],
+            child: const Column(
+              children: [
+                SearchSection(
+                  welcomesection: false,
+                ),
+                CategorySection()
+              ],
             ),
           ),
         ),
@@ -35,11 +41,11 @@ class CategoryPage extends StatelessWidget {
       height: MediaQuery.of(context).size.height * 0.23,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: const BoxDecoration(
-          gradient: LinearGradient(
-        colors: [ColoRs.background, ColoRs.white],
-        end: Alignment(0.0, 1),
-        begin: Alignment(0.0, -1),
-      ),
+        gradient: LinearGradient(
+          colors: [ColoRs.background, ColoRs.white],
+          end: Alignment(0.0, 1),
+          begin: Alignment(0.0, -1),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

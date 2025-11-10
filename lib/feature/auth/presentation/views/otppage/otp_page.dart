@@ -1,4 +1,3 @@
-
 import 'package:empire/feature/auth/presentation/bloc/auth/otp.dart';
 import 'package:empire/feature/auth/presentation/views/password/password.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +7,8 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 class OtpPage extends StatelessWidget {
   final String email;
   final String phoneNumber;
-   final String name;
-  
+  final String name;
+  final String photoUrl;
   final void Function(String) onOtpSubmit;
   final VoidCallback onResend;
   final VoidCallback onCancel;
@@ -21,8 +20,9 @@ class OtpPage extends StatelessWidget {
       required this.onOtpSubmit,
       required this.onResend,
       required this.onCancel,
+      required this.photoUrl,
       required this.email});
-  TextEditingController OtpController = TextEditingController();
+  TextEditingController otpController = TextEditingController();
   String getMaskedNumber(String phone) {
     if (phone.length < 4) return phone;
     return phone.replaceRange(3, phone.length - 2, '*' * (phone.length - 5));
@@ -64,8 +64,6 @@ class OtpPage extends StatelessWidget {
                       fontWeight: FontWeight.bold, color: Colors.black),
                 ),
                 const SizedBox(height: 24),
-
-                // OTP input
                 Padding(
                   padding: const EdgeInsets.only(left: 80, right: 80),
                   child: PinCodeTextField(
@@ -92,12 +90,10 @@ class OtpPage extends StatelessWidget {
                     animationDuration: const Duration(milliseconds: 300),
                     enableActiveFill: true,
                     keyboardType: TextInputType.number,
-                    controller: OtpController,
+                    controller: otpController,
                   ),
                 ),
-
                 const SizedBox(height: 12),
-
                 TextButton(
                   onPressed: onResend,
                   child: const Text(
@@ -106,13 +102,13 @@ class OtpPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: maxHeight * 0.09),
-
                 BlocConsumer<OtpBloc, OtpVerifyState>(
                     listener: (context, state) {
                   if (state is VerifiedOtpVerifyState) {
                     Navigator.push(context, MaterialPageRoute(
                       builder: (context) {
                         return Password(
+                          photoUrl:photoUrl,
                           name: name,
                           phoneNumber: phoneNumber,
                           email: email,
@@ -132,9 +128,8 @@ class OtpPage extends StatelessWidget {
                       ? const CircularProgressIndicator()
                       : ElevatedButton(
                           onPressed: () {
-                            context
-                                .read<OtpBloc>()
-                                .add(VerifyOtps(int.parse(OtpController.text)));
+                            context.read<OtpBloc>().add(Verify0tpEvent(
+                                int.parse(otpController.text)));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,

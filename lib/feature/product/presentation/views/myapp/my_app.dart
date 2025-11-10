@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<RegisterBloc>(
             create: (_) =>
                 RegisterBloc(sl<CheckingUser>(), sl<VerifyNumber>())),
-        BlocProvider<OtpBloc>(create: (_) => OtpBloc(sl<VerifyOtp>())),
+        BlocProvider<OtpBloc>(create: (_) => OtpBloc(sl<Verify0tpUsecase>())),
         BlocProvider<SavePasswordBloc>(create: (_) => SavePasswordBloc(sl())),
         BlocProvider<LoginBloc>(
             create: (_) => LoginBloc(
@@ -79,11 +79,7 @@ class MyApp extends StatelessWidget {
                 sl<AuthLocalDataSource>())),
         BlocProvider<ForgotPasswordClickBloc>(
             create: (_) => ForgotPasswordClickBloc(sl<ForgotPassword>())),
-        BlocProvider<ProfileBloc>(
-            create: (_) => ProfileBloc(
-                getUserDetails: sl<GetUserDetails>(),
-                updateUserDetails: sl<UpdateUserDetails>())
-              ..add(LoadProfile())),
+       
         BlocProvider<LogoutBloc>(
             create: (_) => LogoutBloc(
                   sl<AuthRemoteDataSource>(),

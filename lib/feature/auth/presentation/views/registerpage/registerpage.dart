@@ -1,11 +1,12 @@
 import 'package:empire/core/di/service_locator.dart';
-import 'package:empire/core/utilis/commonvalidator.dart';
+
 import 'package:empire/feature/auth/domain/usecase/auth/register_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/verify_user_usecase.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/profile_image.dart';
 
 import 'package:empire/feature/auth/presentation/bloc/auth/registerpage.dart';
 import 'package:empire/feature/auth/presentation/views/loginpage/widget.dart';
-import 'package:empire/feature/auth/presentation/views/otppage/otp_page.dart';
+
 import 'package:empire/feature/auth/presentation/views/registerpage/widget.dart';
 
 import 'package:flutter/material.dart';
@@ -37,88 +38,40 @@ class Registerpage extends StatelessWidget {
                       height: maxHeight / 7,
                     ),
                     const Headline(headlind: 'Sign Up'),
+                    SizedBox(height: maxHeight * 0.020),
+                    //PROFILE IMAGE SECTION
+
                     const ProfileImages(),
-                    SizedBox(
-                      height: maxHeight / 22,
-                    ),
-                    LoginField(
-                      controller: usernameController,
-                      label: 'User name',
-                      prefixican: Icons.person,
-                      issmallScreen: issmallScreen,
-                      maxwidth: issmallScreen ? maxwidth * 0.95 : 400,
-                      validator: (value) {
-                        return Validators.validateUsername(value ?? "");
+                    ///////////USER DETAILS SECTION
+
+                    UserdetailsSection(
+                        maxHeight: maxHeight,
+                        usernameController: usernameController,
+                        issmallScreen: issmallScreen,
+                        maxwidth: maxwidth,
+                        emailController: emailController,
+                        mobileController: mobileController,
+                        formkey: formkey,
+                        imageFile: imageFile),
+                    SizedBox(height: maxHeight * 0.080),
+
+                    /// CONTINUE BUTTON
+
+                    BlocListener<ImageAuth, ImagePickerState>(
+                      listener: (context, state) {
+                        if (state is ImagePickedSucess) {
+                          imageFile = state.image;
+                        }
                       },
+                      child: ContinueButton(
+                          usernameController: usernameController,
+                          emailController: emailController,
+                          mobileController: mobileController,
+                          issmallScreen: issmallScreen,
+                          formkey: formkey,
+                          imageFile: imageFile,
+                          maxwidth: maxwidth),
                     ),
-                    SizedBox(height: maxHeight * 0.030),
-                    LoginField(
-                      controller: emailController,
-                      label: 'Email Address',
-                      prefixican: Icons.email,
-                      issmallScreen: issmallScreen,
-                      maxwidth: issmallScreen ? maxwidth * 0.95 : 400,
-                      validator: (value) {
-                        return Validators.validateEmail(value ?? "");
-                      },
-                    ),
-                    SizedBox(height: maxHeight * 0.030),
-                    LoginField(
-                      controller: mobileController,
-                      label: 'Mobile',
-                      prefixican: Icons.phone_android_rounded,
-                      issmallScreen: issmallScreen,
-                      maxwidth: issmallScreen ? maxwidth * 0.95 : 400,
-                      validator: (value) {
-                        return Validators.validatePhone(value ?? "");
-                      },
-                    ),
-                    const SizedBox(
-                      height: 80,
-                    ),
-                    BlocConsumer<RegisterBloc, RegisterState>(
-                        listener: (context, state) {
-                      if (state is UserExist) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('already Registered')));
-                      } else if (state is NonExist) {
-                        Navigator.pushReplacement(context, MaterialPageRoute(
-                          builder: (context) {
-                            return OtpPage(
-                                name: usernameController.text,
-                                email: emailController.text,
-                                phoneNumber: mobileController.text,
-                                onOtpSubmit: (value) {},
-                                onResend: () {},
-                                onCancel: () {
-                                  Navigator.pop(context);
-                                });
-                          },
-                        ));
-                      }
-                    }, builder: (context, state) {
-                      final isloading = state is ChekingLoading;
-                      return isloading
-                          ? const CircularProgressIndicator()
-                          : Authbutton(
-                              name: 'Continue',
-                              issmallScreen: issmallScreen,
-                              onPressed: () {
-                                if (formkey.currentState!.validate()) {
-                                  context.read<RegisterBloc>().add(
-                                        ChekingUserExistenceEvent(
-                                            email: emailController.text,
-                                            phone: int.parse(
-                                                mobileController.text),
-                                            name: usernameController.text,
-                                            image: imageFile),
-                                      );
-                                }
-                              },
-                              maxwidth: maxwidth,
-                              formKey: formkey);
-                    }),
                   ],
                 ),
               ),

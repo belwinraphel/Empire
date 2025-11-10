@@ -21,8 +21,8 @@ class HomePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SearchSection(),
-                    // const ModernCarousel(),
+                    SearchSection(welcomesection: true),
+                    ModernCarousel(),
                     Category(),
                     MostUsed(
                       issmallScreen: true,

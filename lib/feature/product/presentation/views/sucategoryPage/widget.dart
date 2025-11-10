@@ -388,8 +388,7 @@ class _ProductCardState extends State<ProductCard> {
                       ),
                     ),
                     onPressed: () {
-                      print(selectedVariant);
-                      print(widget.product.productDocId);
+ 
                       if (selectedVariantName != null &&
                           widget.product.productDocId != null) {
                         final varientSnapshot = VariantSnapshot(

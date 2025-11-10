@@ -6,6 +6,8 @@ import 'package:empire/core/di/service_locator.dart';
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/core/utilis/widgets.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/get_user_details_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/update_user_deatils_usecase.dart';
 
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
 import 'package:empire/feature/product/domain/usecase/get_category_usecase.dart';
@@ -98,74 +100,119 @@ Widget buildErrorState(BuildContext context, String error) {
 }
 
 class SearchSection extends StatelessWidget {
+  final bool? welcomesection;
   const SearchSection({
     super.key,
+    this.welcomesection,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.35,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(50), bottomRight: Radius.circular(50)),
-        gradient: LinearGradient(
-          colors: [ColoRs.background, ColoRs.white],
-          begin: Alignment.topCenter, // Starts at the top center
-          end: Alignment.bottomCenter,
+    return BlocProvider<ProfileBloc>(
+      create: (_) => ProfileBloc(
+          getUserDetails: sl<GetUserDetails>(),
+          updateUserDetails: sl<UpdateUserDetails>())
+        ..add(LoadProfile()),
+      child: Container(
+        height: welcomesection == true
+            ? MediaQuery.of(context).size.height * 0.33
+            : MediaQuery.of(context).size.height * 0.26,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(50),
+              bottomRight: Radius.circular(50)),
+          gradient: LinearGradient(
+            colors: [ColoRs.background, ColoRs.white],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          BlocBuilder<ProfileBloc, ProfileState>(
-            builder: (context, state) {
-              if (state is ProfileLoaded) {
-                return Column(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            BlocBuilder<ProfileBloc, ProfileState>(
+              builder: (context, state) {
+                if (state is ProfileLoaded) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24),
+                      const Text(
+                        'Empire in',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: Fonts.ralewayExtraBold,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            state.user.name!,
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontFamily: Fonts.ralewayExtraBold,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          state.user.photourl == null
+                              ? const Icon(Icons.person_pin)
+                              : ClipRRect(
+                                  borderRadius:
+                                      BorderRadiusGeometry.circular(30),
+                                  child: OptimizedNetworkImage(
+                                    height: 65,
+                                    width: 65,
+                                    imageUrl: state.user.photourl,
+                                    errorWidget: const Icon(Icons.error),
+                                    borderRadius: 12,
+                                    fit: BoxFit.fill,
+                                    placeholder: const Center(
+                                        child: CircularProgressIndicator()),
+                                    widthQueryParam: 'resize_width',
+                                  ),
+                                ),
+                        ],
+                      ),
+                      SizedBox(height: MediaQuery.of(context).size.height / 60),
+                      SizedBox(height: MediaQuery.of(context).size.height / 60),
+                    ],
+                  );
+                }
+                return const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Empire in',
+                    SizedBox(height: 24),
+                    Text(
+                      'Welcome',
                       style: TextStyle(
                         fontSize: 16,
-                        fontFamily: Fonts.ralewayExtraBold,
                         color: Colors.black87,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
+                    SizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          state.user.name!,
-                          style: const TextStyle(
+                          'Hello User',
+                          style: TextStyle(
                             fontSize: 28,
-                            fontFamily: Fonts.ralewayExtraBold,
                             fontWeight: FontWeight.bold,
+                            color: Colors.black87,
                           ),
                         ),
-                        state.user.photourl == null
-                            ? const Icon(Icons.person_pin)
-                            : ClipRRect(
-                                borderRadius: BorderRadiusGeometry.circular(30),
-                                child: OptimizedNetworkImage(
-                                  height: 65,
-                                  width: 65,
-                                  imageUrl: state.user.photourl,
-                                  errorWidget: const Icon(Icons.error),
-                                  borderRadius: 12,
-                                  fit: BoxFit.fill,
-                                  placeholder: const Center(
-                                      child: CircularProgressIndicator()),
-                                  widthQueryParam: 'resize_width',
-                                ),
-                              ),
+                        CircleAvatar(
+                          child: Icon(Icons.person_pin),
+                        )
                       ],
                     ),
-                    SizedBox(height: MediaQuery.of(context).size.height / 60),
-                    const Row(
+                    SizedBox(height: 8),
+                    Row(
                       children: [
                         Icon(Icons.home, size: 16, color: Colors.black54),
                         SizedBox(width: 4),
@@ -179,7 +226,7 @@ class SearchSection extends StatelessWidget {
                         ),
                         SizedBox(width: 4),
                         Text(
-                          '- Kuruthukulangra House',
+                          ' ',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.black54,
@@ -189,138 +236,85 @@ class SearchSection extends StatelessWidget {
                             size: 16, color: Colors.black54),
                       ],
                     ),
-                    SizedBox(height: MediaQuery.of(context).size.height / 60),
+                    SizedBox(height: 24),
                   ],
                 );
-              }
-              return const Column(
-                children: [
-                  SizedBox(height: 24),
-                  Text(
-                    'Welcome',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        ' ',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      CircleAvatar(
-                        backgroundColor: ColoRs.white,
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.home, size: 16, color: Colors.black54),
-                      SizedBox(width: 4),
-                      Text(
-                        'Home',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        ' ',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
-                        ),
-                      ),
-                      Icon(Icons.keyboard_arrow_down,
-                          size: 16, color: Colors.black54),
-                    ],
-                  ),
-                  SizedBox(height: 24),
-                ],
-              );
-            },
-          ),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: TextField(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(
-                  builder: (context) {
-                    return const ProductSearchScreen();
-                  },
-                ));
               },
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: ColoRs.white,
-                hintText: 'Search ',
-                hintStyle: TextStyle(
-                  color: ColoRs.black,
-                  fontSize: 16,
-                ),
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: ColoRs.black,
-                  size: 24,
-                ),
-                border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 6,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: TextField(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) {
+                      return const ProductSearchScreen();
+                    },
+                  ));
+                },
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: ColoRs.white,
+                  hintText: 'Search ',
+                  hintStyle: TextStyle(
+                    color: ColoRs.black,
+                    fontSize: 16,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: ColoRs.black,
+                    size: 24,
+                  ),
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 6,
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.10,
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  'Welcome',
-                  style: TextStyle(
-                    fontSize: 30,
-                    color: Color.fromARGB(255, 190, 28, 16),
-                    fontWeight: FontWeight.w400,
-                    fontFamily: Fonts.momoSignature,
-                  ),
-                ),
-                Text(
-                  'order not to available exciting offer',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: ColoRs.red,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: Fonts.raleway,
-                  ),
-                )
-              ],
-            ),
-          )
-        ],
+            welcomesection == true
+                ? SizedBox(
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.height * 0.10,
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          'Welcome',
+                          style: TextStyle(
+                            fontSize: 30,
+                            color: Color.fromARGB(255, 190, 28, 16),
+                            fontWeight: FontWeight.w400,
+                            fontFamily: Fonts.momoSignature,
+                          ),
+                        ),
+                        Text(
+                          'order not to available exciting offer',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: ColoRs.red,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: Fonts.raleway,
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                : Container(),
+          ],
+        ),
       ),
     );
   }
@@ -721,70 +715,60 @@ class MostUsed extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                // SizedBox(
-                //   height: 130,
-                //   child: ListView.builder(
-                //       scrollDirection: Axis.horizontal,
-                //       itemCount: images.length,
-                //       itemBuilder: (context, index) {
-                //         return Padding(
-                //           padding: const EdgeInsets.only(right: 6.0),
-                //           child: SizedBox(
-                //             height: issmallScreen ? 110 : 100,
-                //             width: issmallScreen ? 120 : 110,
-                //             child: GridView.builder(
-                //               physics: const NeverScrollableScrollPhysics(),
-                //               shrinkWrap: true,
-                //               itemCount: images.length,
-                //               padding: const EdgeInsets.all(0),
-                //               gridDelegate:
-                //                   const SliverGridDelegateWithFixedCrossAxisCount(
-                //                 crossAxisCount: 2,
-                //                 mainAxisSpacing: 4,
-                //                 crossAxisSpacing: 4,
-                //                 childAspectRatio: 1 / 1,
-                //               ),
-                //               itemBuilder: (context, index) {
-                //                 if (index == 3) {
-                //                   return Container(
-                //                     height: 30,
-                //                     width: 40,
-                //                     decoration: const BoxDecoration(
-                //                         color: ColoRs.homecardcolor,
-                //                         borderRadius: BorderRadius.all(
-                //                             Radius.circular(10))),
-                //                   );
-                //                 }
-                //                 return Container(
-                //                   decoration: const BoxDecoration(
-                //                       color: ColoRs.homecardcolor,
-                //                       borderRadius: BorderRadius.all(
-                //                           Radius.circular(10))),
-                //                   child: Padding(
-                //                     padding: const EdgeInsets.all(3.0),
-                //                     child: Card(
-                //                       elevation: 4,
-                //                       child: Container(
-                //                         height: 30,
-                //                         width: 40,
-                //                         decoration: const BoxDecoration(
-                //                             color: ColoRs.homecardcolor,
-                //                             borderRadius: BorderRadius.all(
-                //                                 Radius.circular(10))),
-                //                         child: Center(
-                //                             child: Image.asset(
-                //                                 images[index]['image'] ?? '')),
-                //                       ),
-                //                     ),
-                //                   ),
-                //                 );
-                //               },
-                //             ),
-                //           ),
-                //         );
-                //       }),
-                // ),
-                const SizedBox(height: 20),
+                GridView.builder(
+                  itemCount: 4,
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                      childAspectRatio: 0.70),
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        GridView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: 4,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                          ),
+                          itemBuilder: (context, index) {
+                            return Shimmer.fromColors(
+                              baseColor: Colors.grey[300]!,
+                              highlightColor: Colors.grey[100]!,
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                    color: ColoRs.homecardcolor,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                        color: ColoRs.homecardcolor,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10))),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox10(),
+                        const Text('',
+                            style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: Fonts.ralewayBold))
+                      ],
+                    );
+                  },
+                ),
               ],
             );
           },

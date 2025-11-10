@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:empire/core/utilis/device_info.dart';
+import 'package:empire/core/utilis/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
@@ -54,7 +57,7 @@ class AuthRemoteDataSource {
     );
   }
 
-  Future<UserCredential> verifyOTP(int oTp) async {
+  Future<UserCredential> verifyOtp(int oTp) async {
     final otp = '${oTp}56';
 
     if (verificationId != null && otp.isNotEmpty) {
@@ -79,14 +82,21 @@ class AuthRemoteDataSource {
   }
 
   Future<void> savePassword(String newPasswordController, String email,
-      String password, String name, String phonenumber) async {
+      String password, String name, String phonenumber, String photoUrl) async {
+    String? uploadedImageUrls;
     try {
       // final user = FirebaseAuth.instance.currentUser;
 
       // if (user == null) {
       //   throw Exception('No authenticated user found');
       // }
+      final file = File(photoUrl);
+      final image = await uploadImageToCloudinary(file);
+      if (image == null || image.isEmpty) {
+        return;
+      }
 
+      uploadedImageUrls = image;
       final password = newPasswordController.trim();
 
       final userCredential =
@@ -99,6 +109,7 @@ class AuthRemoteDataSource {
         'name': name,
         'email': email,
         'phone': phonenumber,
+        'photoUrl': uploadedImageUrls,
         'createdAt': FieldValue.serverTimestamp(),
       });
       // try {
@@ -121,16 +132,22 @@ class AuthRemoteDataSource {
         email: email,
         password: password,
       );
-  
+
       return user.user;
     } catch (e) {
-   
       throw FirebaseAuthException(code: 'auth/Login', message: e.toString());
     }
   }
 
   Future<void> forgottPassword(String email) async {
+    if (email.isEmpty || !email.contains('@')) {
+      throw FirebaseAuthException(
+          code: 'auth/invalid-email',
+          message: 'Please enter a valid email address');
+    }
+
     try {
+      debugPrint('Sending password reset email to $email');
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     } catch (e) {
       throw FirebaseAuthException(

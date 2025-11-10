@@ -12,9 +12,11 @@ class Password extends StatelessWidget {
       {super.key,
       required this.email,
       required this.name,
+      required this.photoUrl,
       required this.phoneNumber});
   final passwordcontroller = TextEditingController();
   final password2controller = TextEditingController();
+  final String photoUrl;
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   String email;
 
@@ -97,30 +99,35 @@ class Password extends StatelessWidget {
                       builder: (context, state) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (formkey.currentState!.validate()) {
-                                context.read<SavePasswordBloc>().add(
-                                    Savepassowrd(
-                                        name: name,
-                                        number: phoneNumber,
-                                        email: email,
-                                        password: passwordcontroller.text,
-                                        rePasseord: password2controller.text));
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              minimumSize: const Size(double.infinity, 48),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Text(
-                              "Continue",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
+                          child: state is SavePasswordloading
+                              ? const CircularProgressIndicator()
+                              : ElevatedButton(
+                                  onPressed: () {
+                                    if (formkey.currentState!.validate()) {
+                                      context.read<SavePasswordBloc>().add(
+                                          Savepassowrd(
+                                              photoUrl: photoUrl,
+                                              name: name,
+                                              number: phoneNumber,
+                                              email: email,
+                                              password: passwordcontroller.text,
+                                              rePasseord:
+                                                  password2controller.text));
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                    minimumSize:
+                                        const Size(double.infinity, 48),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Continue",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
                         );
                       },
                     ),

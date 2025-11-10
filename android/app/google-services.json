@@ -1,18 +1,24 @@
 {
   "project_info": {
     "project_number": "162817882017",
+    "firebase_url": "https://empire-8f1e5-default-rtdb.firebaseio.com",
     "project_id": "empire-8f1e5",
     "storage_bucket": "empire-8f1e5.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:162817882017:android:acb4f2f937c5c4f5bdbde0",
+        "mobilesdk_app_id": "1:162817882017:android:154ac2622d61d068bdbde0",
         "android_client_info": {
-          "package_name": "com.example.empire"
+          "package_name": "com.empire.admin"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "162817882017-ic5ica4hjqp4liopbk4co8a3eaa5ta9h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBVCYPFrIwLMbnQ5SJKk_14pfVaixWkshM"
@@ -20,7 +26,41 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "162817882017-ic5ica4hjqp4liopbk4co8a3eaa5ta9h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:162817882017:android:5577efb0caec3ecabdbde0",
+        "android_client_info": {
+          "package_name": "com.empire.user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "162817882017-ic5ica4hjqp4liopbk4co8a3eaa5ta9h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVCYPFrIwLMbnQ5SJKk_14pfVaixWkshM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "162817882017-ic5ica4hjqp4liopbk4co8a3eaa5ta9h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

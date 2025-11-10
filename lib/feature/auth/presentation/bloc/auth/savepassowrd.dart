@@ -1,4 +1,3 @@
-
 import 'package:empire/feature/auth/domain/data/datasource/auth_repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,6 +8,7 @@ class Savepassowrd extends SavePasswordEvent {
   String password;
   String rePasseord;
   String name;
+  String photoUrl;
 
   String number;
   Savepassowrd({
@@ -17,11 +17,12 @@ class Savepassowrd extends SavePasswordEvent {
     required this.rePasseord,
     required this.number,
     required this.name,
+    required this.photoUrl,
   });
 }
 
 abstract class SavePasswordState {}
-
+class SavePasswordloading extends SavePasswordState {}
 class SavePasswordInitial extends SavePasswordState {}
 
 class LoadingSave extends SavePasswordState {}
@@ -40,10 +41,15 @@ class SavePasswordBloc extends Bloc<SavePasswordEvent, SavePasswordState> {
   final AuthRemoteDataSource authRemoteDataSource;
   SavePasswordBloc(this.authRemoteDataSource) : super(SavePasswordInitial()) {
     on<Savepassowrd>((event, emit) async {
-      emit(LoadingSave());
       try {
+        emit(SavePasswordloading());
         await authRemoteDataSource.savePassword(
-            event.rePasseord.toString(), event.email, event.password,event.name,event.number);
+            event.rePasseord.toString(),
+            event.email,
+            event.password,
+            event.name,
+            event.number,
+            event.photoUrl);
         emit(Saved('suceesfuly saved'));
       } catch (e) {
         emit(ErrorSave(e.toString()));

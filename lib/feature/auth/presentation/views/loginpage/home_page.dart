@@ -208,7 +208,7 @@ class Loginpage extends StatelessWidget {
                         }
 
                         Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (_) => MainScreen()),
+                          MaterialPageRoute(builder: (_) => const MainScreen()),
                           (route) => false,
                         );
                       } else if (state is ErrorLogin) {
@@ -226,7 +226,6 @@ class Loginpage extends StatelessWidget {
                               issmallScreen: issmallScreen,
                               onPressed: () {
                                 if (formKey.currentState!.validate()) {
-                             
                                   context.read<LoginBloc>().add(LogPresed(
                                       usernamecController.text,
                                       passwordController.text));
@@ -258,7 +257,7 @@ class Loginpage extends StatelessWidget {
                                   backgroundColor: Colors.black),
                               onPressed: () {
                                 Navigator.push(context,
-                                    MaterialPageRoute(builder: (Context) {
+                                    MaterialPageRoute(builder: (context) {
                                   return Registerpage();
                                 }));
                               },

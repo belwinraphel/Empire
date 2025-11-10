@@ -1,14 +1,15 @@
 import 'dart:io';
 
+import 'package:empire/core/di/service_locator.dart';
 import 'package:empire/core/utilis/commonvalidator.dart';
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/core/utilis/widgets.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/get_user_details_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/update_user_deatils_usecase.dart';
 
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_image.dart';
 import 'package:empire/feature/auth/presentation/views/loginpage/widget.dart';
-
-import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,127 +23,134 @@ class UpdateProfiles extends StatelessWidget {
   final phoneController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final maxwidth = constraints.maxWidth;
+    return BlocProvider<ProfileBloc>(
+      create: (_) => ProfileBloc(
+          getUserDetails: sl<GetUserDetails>(),
+          updateUserDetails: sl<UpdateUserDetails>())
+        ..add(LoadProfile()),
+      child: LayoutBuilder(builder: (context, constraints) {
+        final maxwidth = constraints.maxWidth;
 
-      final maxHeight = constraints.maxHeight;
+        final maxHeight = constraints.maxHeight;
 
-      final bool isSmallScreen = maxwidth < 600;
-      final paddingHorizontal = isSmallScreen ? 16.0 : 32.0;
-      final titleFontSize = isSmallScreen ? 30.0 : 36.0;
-      final issmallScreen = constraints.maxWidth < 600;
-      final listItemFontSize = isSmallScreen ? 16.0 : 18.0;
-      return BlocBuilder<ProfileBloc, ProfileState>(
-        builder: (context, state) {
-          if (state is ProfileLoading) {
-            return const Scaffold(
-                body: Center(child: CircularProgressIndicator()));
-          } else if (state is ProfileLoaded) {
-            usernameController.text = state.user.name!;
-            emailController.text = state.user.email;
-            phoneController.text = state.user.phoneNumber!;
-            fetchedImage = state.user.photourl;
-            return Scaffold(
-              appBar: AppBar(),
-              bottomNavigationBar: Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: GreenElevatedButton(
-                    text: 'Save Changes',
-                    onTap: () {
-                      final updatedUser = state.user.copyWith(
-                        name: usernameController.text,
-                        phone: phoneController.text,
-                        email: emailController.text,
-                        photourl: imageFilePath,
-                      );
+        final bool isSmallScreen = maxwidth < 600;
+        final paddingHorizontal = isSmallScreen ? 16.0 : 32.0;
+        final titleFontSize = isSmallScreen ? 30.0 : 36.0;
+        final issmallScreen = constraints.maxWidth < 600;
+        final listItemFontSize = isSmallScreen ? 16.0 : 18.0;
+        return BlocBuilder<ProfileBloc, ProfileState>(
+          builder: (context, state) {
+            if (state is ProfileLoading) {
+              return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()));
+            } else if (state is ProfileLoaded) {
+              usernameController.text = state.user.name!;
+              emailController.text = state.user.email;
+              phoneController.text = state.user.phoneNumber!;
+              fetchedImage = state.user.photourl;
+              print(fetchedImage);
+              return Scaffold(
+                appBar: AppBar(),
+                bottomNavigationBar: Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: GreenElevatedButton(
+                      text: 'Save Changes',
+                      onTap: () {
+                        final updatedUser = state.user.copyWith(
+                          name: usernameController.text,
+                          phone: phoneController.text,
+                          email: emailController.text,
+                          photourl: imageFilePath,
+                        );
 
-                      context
-                          .read<ProfileBloc>()
-                          .add(UpdateProfile(updatedUser));
-                    }),
-              ),
-              backgroundColor: Colors.white,
-              body: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox20(),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Settings',
-                        style: TextStyle(
-                          fontSize: titleFontSize,
-                          fontFamily: Fonts.ralewayExtraBold,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade900,
+                        context
+                            .read<ProfileBloc>()
+                            .add(UpdateProfile(updatedUser));
+                      }),
+                ),
+                backgroundColor: Colors.white,
+                body: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox20(),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Settings',
+                          style: TextStyle(
+                            fontSize: titleFontSize,
+                            fontFamily: Fonts.ralewayExtraBold,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey.shade900,
+                          ),
                         ),
                       ),
-                    ),
-                    Text(
-                      'Your Profile',
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        fontSize: listItemFontSize,
-                        fontWeight: FontWeight.w800,
-                        fontFamily: Fonts.ralewayBold,
-                        color: const Color(0xFF374151),
+                      Text(
+                        'Your Profile',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize: listItemFontSize,
+                          fontWeight: FontWeight.w800,
+                          fontFamily: Fonts.ralewayBold,
+                          color: const Color(0xFF374151),
+                        ),
                       ),
-                    ),
-                    const SizedBox20(),
-                    photosection(),
-                    const SizedBox30(),
-                    LoginField(
-                      color: const Color(0xffF1F4FE),
-                      controller: usernameController,
-                      label: 'User name',
-                      prefixican: Icons.person,
-                      issmallScreen: issmallScreen,
-                      maxwidth: issmallScreen ? maxwidth * 0.95 : 400,
-                      validator: (value) {
-                        return Validators.validateUsername(value ?? "");
-                      },
-                    ),
-                    const SizedBox20(),
-                    LoginField(
-                      color: const Color(0xffF1F4FE),
-                      controller: emailController,
-                      label: 'Email Address',
-                      prefixican: Icons.email,
-                      issmallScreen: issmallScreen,
-                      maxwidth: issmallScreen ? maxwidth * 0.95 : 400,
-                      validator: (value) {
-                        return Validators.validateEmail(value ?? "");
-                      },
-                    ),
-                    const SizedBox20(),
-                    LoginField(
-                      color: const Color(0xffF1F4FE),
-                      controller: phoneController,
-                      label: 'Phone Number',
-                      prefixican: Icons.phone,
-                      issmallScreen: issmallScreen,
-                      maxwidth: issmallScreen ? maxwidth * 0.95 : 400,
-                      validator: (value) {
-                        return Validators.validateEmail(value ?? "");
-                      },
-                    ),
-                    const SizedBox20(),
-                  ],
+                      const SizedBox20(),
+                      photosection(fetchedImage),
+                      const SizedBox30(),
+                      LoginField(
+                        color: const Color(0xffF1F4FE),
+                        controller: usernameController,
+                        label: 'User name',
+                        prefixican: Icons.person,
+                        issmallScreen: issmallScreen,
+                        maxwidth: issmallScreen ? maxwidth * 0.95 : 400,
+                        validator: (value) {
+                          return Validators.validateUsername(value ?? "");
+                        },
+                      ),
+                      const SizedBox20(),
+                      LoginField(
+                        color: const Color(0xffF1F4FE),
+                        controller: emailController,
+                        label: 'Email Address',
+                        prefixican: Icons.email,
+                        issmallScreen: issmallScreen,
+                        maxwidth: issmallScreen ? maxwidth * 0.95 : 400,
+                        validator: (value) {
+                          return Validators.validateEmail(value ?? "");
+                        },
+                      ),
+                      const SizedBox20(),
+                      LoginField(
+                        color: const Color(0xffF1F4FE),
+                        controller: phoneController,
+                        label: 'Phone Number',
+                        prefixican: Icons.phone,
+                        issmallScreen: issmallScreen,
+                        maxwidth: issmallScreen ? maxwidth * 0.95 : 400,
+                        validator: (value) {
+                          return Validators.validateEmail(value ?? "");
+                        },
+                      ),
+                      const SizedBox20(),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          } else if (state is ProfileError) {
-            return Scaffold(body: Center(child: Text(state.message)));
-          }
-          return const SizedBox();
-        },
-      );
-    });
+              );
+            } else if (state is ProfileError) {
+              return Scaffold(body: Center(child: Text(state.message)));
+            }
+            return const SizedBox();
+          },
+        );
+      }),
+    );
   }
 
-  BlocBuilder<dynamic, dynamic> photosection() {
+  BlocBuilder<dynamic, dynamic> photosection(String? fetchedImage) {
     return BlocBuilder<ImageAuth, ImagePickerState>(
       builder: (context, state) {
         if (state is ImagePickedSucess) {
@@ -189,18 +197,18 @@ class UpdateProfiles extends StatelessWidget {
               CircleAvatar(
                 backgroundColor: const Color.fromARGB(255, 229, 234, 236),
                 radius: 70,
-                backgroundImage: fetchedImage != null
-                    ? NetworkImage(imageFilePath!)
-                    : kIsWeb
-                        ? NetworkImage(imageFilePath!)
-                        : FileImage(File(imageFilePath!)) as ImageProvider,
-                child: imageFilePath == null
+                backgroundImage: imageFilePath != null
+                    ? FileImage(File(imageFilePath!)) as ImageProvider
+                    : (fetchedImage != null
+                        ? NetworkImage(fetchedImage!)
+                        : null),
+                child: imageFilePath == null && fetchedImage == null
                     ? const Icon(
                         Icons.person_2_rounded,
                         size: 100,
                         color: Colors.black,
                       )
-                    : null,
+                    : const Icon(Icons.person_2_rounded, size: 0),
               ),
               Positioned(
                 left: 90,

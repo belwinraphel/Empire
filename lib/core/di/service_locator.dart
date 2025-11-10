@@ -113,7 +113,8 @@ Future<void> init() async {
 
   sl.registerLazySingleton<LoginStatus>(() => LoginStatusImpl(sl()));
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
-///CheckLoginStatusUsecase
+
+  ///CheckLoginStatusUsecase
   sl.registerLazySingleton<CheckLoginStatusUsecase>(
       () => CheckLoginStatusUsecase(sl<LoginStatus>()));
   sl.registerLazySingleton(() => SaveLoginStatus(sl()));
@@ -127,13 +128,13 @@ Future<void> init() async {
   ////////register/////////////////////
 
   final firestore = FirebaseFirestore.instance;
-  
+
   sl.registerLazySingleton(() => UserFirebaseSource(firestore));
   sl.registerLazySingleton<RegisterRepository>(
       () => RegisterRepositoryimpli(sl()));
   sl.registerLazySingleton(() => CheckingUser(sl()));
   ////////////otp////////
-  sl.registerLazySingleton(() => VerifyOtp(sl()));
+  sl.registerLazySingleton(() => Verify0tpUsecase(sl()));
   sl.registerLazySingleton(() => VerifyNumber(sl()));
 
   ///password//
@@ -184,7 +185,7 @@ Future<void> init() async {
     () => GettingSubcategoryUsecase(sl<CategoryRepository>()),
   );
   //GettingSubcateoryProductUsecase
-   sl.registerLazySingleton(
+  sl.registerLazySingleton(
     () => GettingSubcateoryProductUsecase(sl<ProdcuctsRepository>()),
   );
   //////category
@@ -332,7 +333,7 @@ Future<void> init() async {
   );
 
   ////////map
-   sl.registerLazySingleton<MapRepository>(() => MapRepositoryImpl());
+  sl.registerLazySingleton<MapRepository>(() => MapRepositoryImpl());
 
   // Use Cases
   sl.registerLazySingleton(() => GetCurrentPosition(sl()));
@@ -346,7 +347,6 @@ Future<void> init() async {
         checkLocationPermission: sl(),
       ));
 
-
   ///order
   sl.registerLazySingleton<GetOrdersUseCase>(() => GetOrdersUseCase(sl()));
   sl.registerLazySingleton<WatchOrdersUseCase>(() => WatchOrdersUseCase(sl()));
@@ -359,7 +359,8 @@ Future<void> init() async {
   sl.registerLazySingleton<OrderRemoteDataSource>(
     () => OrderRemoteDataSourceImpl(
       firestore: sl<FirebaseFirestore>(),
-      logger: sl<Logger>(), auth: sl(),
+      logger: sl<Logger>(),
+      auth: sl(),
     ),
   );
   sl.registerFactory<OrdersBloc>(
