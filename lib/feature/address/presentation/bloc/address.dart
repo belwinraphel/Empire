@@ -1,6 +1,8 @@
-import 'package:empire/feature/address/data/repository/addres_repo_impli.dart';
 import 'package:empire/feature/address/domain/entity/address.dart';
- 
+import 'package:empire/feature/address/domain/usecase/address_usecase.dart';
+import 'package:empire/feature/address/domain/usecase/delete_usecase.dart';
+import 'package:empire/feature/address/domain/usecase/giveaddres_usecase.dart';
+import 'package:empire/feature/address/domain/usecase/setdefault_address_usecase.dart';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,7 +27,7 @@ class AddAddress extends AddressEvent {
 class SelectAddress extends AddressEvent {
   final String id;
   final MainAddress mainAddress;
-  const SelectAddress(this.mainAddress, this.id);
+  const SelectAddress({required this.mainAddress, required this.id});
 
   @override
   List<Object> get props => [mainAddress, id];
@@ -47,6 +49,8 @@ abstract class AddressState extends Equatable {
 }
 
 class AddressInitial extends AddressState {}
+
+class AddressAdded extends AddressState {}
 
 class AddressLoading extends AddressState {}
 
@@ -84,9 +88,17 @@ class AddressError extends AddressState {
 }
 
 class AddressBloc extends Bloc<AddressEvent, AddressState> {
-  final AddressRepositoryImpl repository;
+  final SetDefaultAddressUseCase setDefaultAddressUseCase;
+  final GetAddressesUseCase getAddressesUseCase;
+  final AddAddressUseCase addAddressUseCase;
+  final DeleteAddressUseCase deleteAddressUseCase;
 
-  AddressBloc(this.repository) : super(AddressInitial()) {
+  AddressBloc(
+    this.setDefaultAddressUseCase,
+    this.getAddressesUseCase,
+    this.addAddressUseCase,
+    this.deleteAddressUseCase,
+  ) : super(AddressInitial()) {
     on<LoadAddresses>(_onLoadAddresses);
     on<AddAddress>(_onAddAddress);
     on<SelectAddress>(onSelectAddress);
@@ -98,7 +110,7 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
     emit(AddressLoading());
 
     try {
-      final addresses = await repository.getAddresses();
+      final addresses = await getAddressesUseCase.call();
       final selected = addresses.firstWhere((a) => a.isDefault,
           orElse: () => const MainAddress(
               id: '', label: '', fullAddress: '', latitude: 0, longitude: 0));
@@ -113,7 +125,8 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
   Future<void> _onAddAddress(
       AddAddress event, Emitter<AddressState> emit) async {
     try {
-      await repository.addAddress(event.address);
+      await addAddressUseCase.call(event.address);
+      emit(AddressAdded());
       add(LoadAddresses());
     } catch (e) {
       emit(AddressError(e.toString()));
@@ -123,9 +136,13 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
   Future<void> onSelectAddress(
       SelectAddress event, Emitter<AddressState> emit) async {
     try {
-      await repository.setDefaultAddress(event.id);
-      
-      emit(SelectedAddress(selectedAddress: event.mainAddress, id: event.id));
+      await setDefaultAddressUseCase.call(event.id);
+      if (state is AddressLoaded) {
+        final currentState = state as AddressLoaded;
+        emit(AddressLoaded(
+            addresses: currentState.addresses,
+            selectedAddress: event.mainAddress));
+      }
     } catch (e) {
       emit(AddressError(e.toString()));
     }
@@ -134,7 +151,7 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
   Future<void> _onDeleteAddress(
       DeleteAddress event, Emitter<AddressState> emit) async {
     try {
-      await repository.deleteAddress(event.id);
+      await deleteAddressUseCase.call(event.id);
       add(LoadAddresses());
     } catch (e) {
       emit(AddressError(e.toString()));

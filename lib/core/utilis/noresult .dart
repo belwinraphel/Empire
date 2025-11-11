@@ -8,29 +8,32 @@ class NoResultsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: SvgPicture.string(
-                  noResultsIllistration,
-                  fit: BoxFit.scaleDown,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.70,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.70,
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: SvgPicture.string(
+                    noResultsIllistration,
+                    fit: BoxFit.scaleDown,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox30(),
-            ErrorInfo(
-              title: "No Results!",
-              description:
-                  "We couldn't find any matches for your search. Try using different categories.",
-              btnText: "Search again",
-              press: () {},
-            ),
-          ],
+              const SizedBox30(),
+              ErrorInfo(
+                title: "No Results!",
+                description:
+                    "We couldn't find any matches for your search. Try using different categories.",
+                btnText: "Search again",
+                press: () {},
+              ),
+            ],
+          ),
         ),
       ),
     );

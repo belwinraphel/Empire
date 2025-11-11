@@ -7,6 +7,7 @@
         android:label="empire"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        android:extractNativeLibs="true">
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAkPspDxf28LwM8mQSa8CZEK2Dml6JE7mY"/>
             <activity

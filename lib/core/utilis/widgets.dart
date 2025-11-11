@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 
 class SizedBox10 extends StatelessWidget {
   const SizedBox10({super.key});
@@ -245,7 +244,8 @@ class OptimizedNetworkImage extends StatelessWidget {
             });
             finalImageUrl = newUri.toString();
           } catch (e) {
-            print('OptimizedNetworkImage: Error parsing URL ($imageUrl): $e');
+            debugPrint(
+                'OptimizedNetworkImage: Error parsing URL ($imageUrl): $e');
           }
         }
 

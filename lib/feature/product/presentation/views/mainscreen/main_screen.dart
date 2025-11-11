@@ -1,4 +1,4 @@
-import 'package:empire/feature/auth/presentation/views/profile/profile_page.dart';
+import 'package:empire/feature/auth/presentation/views/setting/setting_page.dart';
 import 'package:empire/feature/favorite/presentation/view/favouritepage.dart';
 
 import 'package:empire/feature/cart/presentation/view/cart_page.dart';
@@ -18,7 +18,9 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> pages = [
     const HomePage(),
     const FavouritePage(),
-    const CategoryPage(),
+    CategoryPage(
+      welcomesection: true,
+    ),
     const CartPage(),
     const SettingsPage(),
   ];

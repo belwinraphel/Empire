@@ -39,34 +39,33 @@ class OtpPage extends StatelessWidget {
           final maxwidth = constraints.maxWidth;
           final maxHeight = constraints.maxHeight;
           final issmallScreen = constraints.maxWidth < 600;
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: maxHeight * 0.30),
-                const Text(
-                  "OTP",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  "Enter 4-digits code we sent you\non your phone number",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.black54),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  maskedNumber,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.black),
-                ),
-                const SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.only(left: 80, right: 80),
-                  child: PinCodeTextField(
+          return SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Column(
+                children: [
+                  SizedBox(height: maxHeight * 0.30),
+                  const Text(
+                    "OTP",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    "Enter 4-digits code we sent you\non your phone number",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.black54),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    maskedNumber,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black),
+                  ),
+                  const SizedBox(height: 24),
+                  PinCodeTextField(
                     length: 4,
                     appContext: context,
                     onChanged: (_) {},
@@ -92,67 +91,67 @@ class OtpPage extends StatelessWidget {
                     keyboardType: TextInputType.number,
                     controller: otpController,
                   ),
-                ),
-                const SizedBox(height: 12),
-                TextButton(
-                  onPressed: onResend,
-                  child: const Text(
-                    "Send Again",
-                    style: TextStyle(color: Colors.black),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: onResend,
+                    child: const Text(
+                      "Send Again",
+                      style: TextStyle(color: Colors.black),
+                    ),
                   ),
-                ),
-                SizedBox(height: maxHeight * 0.09),
-                BlocConsumer<OtpBloc, OtpVerifyState>(
-                    listener: (context, state) {
-                  if (state is VerifiedOtpVerifyState) {
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) {
-                        return Password(
-                          photoUrl:photoUrl,
-                          name: name,
-                          phoneNumber: phoneNumber,
-                          email: email,
-                        );
-                      },
-                    ));
-                  } else if (state is NotVerifiedOtpVerifyState) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text(
-                              state.errorMessage ?? 'OTP Verification failed')),
-                    );
-                  }
-                }, builder: (context, state) {
-                  final isloading = state is OtpLoading;
-                  return isloading
-                      ? const CircularProgressIndicator()
-                      : ElevatedButton(
-                          onPressed: () {
-                            context.read<OtpBloc>().add(Verify0tpEvent(
-                                int.parse(otpController.text)));
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            minimumSize: const Size(double.infinity, 48),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                  SizedBox(height: maxHeight * 0.09),
+                  BlocConsumer<OtpBloc, OtpVerifyState>(
+                      listener: (context, state) {
+                    if (state is VerifiedOtpVerifyState) {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
+                          return Password(
+                            photoUrl: photoUrl,
+                            name: name,
+                            phoneNumber: phoneNumber,
+                            email: email,
+                          );
+                        },
+                      ));
+                    } else if (state is NotVerifiedOtpVerifyState) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text(state.errorMessage ??
+                                'OTP Verification failed')),
+                      );
+                    }
+                  }, builder: (context, state) {
+                    final isloading = state is OtpLoading;
+                    return isloading
+                        ? const CircularProgressIndicator()
+                        : ElevatedButton(
+                            onPressed: () {
+                              context.read<OtpBloc>().add(Verify0tpEvent(
+                                  int.parse(otpController.text)));
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              minimumSize: const Size(double.infinity, 48),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
-                          ),
-                          child: const Text(
-                            "Continue",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        );
-                }),
-                const SizedBox(height: 12),
-                TextButton(
-                  onPressed: onCancel,
-                  child: const Text(
-                    "Cancel",
-                    style: TextStyle(color: Colors.black),
+                            child: const Text(
+                              "Continue",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          );
+                  }),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: onCancel,
+                    child: const Text(
+                      "Cancel",
+                      style: TextStyle(color: Colors.black),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

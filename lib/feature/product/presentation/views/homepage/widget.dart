@@ -460,7 +460,7 @@ class Category extends StatelessWidget {
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(
                     builder: (context) {
-                      return const CategoryPage();
+                      return CategoryPage(welcomesection: false);
                     },
                   ));
                 },
@@ -686,11 +686,20 @@ class MostUsed extends StatelessWidget {
                               },
                             ),
                             const SizedBox10(),
-                            Text(mainCategory,
-                                style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    fontFamily: Fonts.ralewayBold))
+                            SizedBox(
+                              height: issmallScreen
+                                  ? MediaQuery.of(context).size.height * 0.043
+                                  : MediaQuery.of(context).size.height * 0.03,
+                              width: issmallScreen
+                                  ? MediaQuery.of(context).size.width * 0.27
+                                  : MediaQuery.of(context).size.width * 0.10,
+                              child: Text(mainCategory,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: Fonts.ralewayBold)),
+                            )
                           ],
                         );
                       },

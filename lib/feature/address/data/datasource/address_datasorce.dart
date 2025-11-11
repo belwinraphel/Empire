@@ -1,9 +1,6 @@
- 
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:empire/feature/address/domain/entity/address.dart';
 import 'package:firebase_auth/firebase_auth.dart';
- 
 
 class LocalAddressDataSource {
   final FirebaseAuth auth;
@@ -11,7 +8,6 @@ class LocalAddressDataSource {
   final FirebaseFirestore firestore;
   String userid = '';
   LocalAddressDataSource(this.auth, this.firestore);
-  static const String _key = 'addresses';
 
   Future<List<MainAddress>> getAddresses() async {
     final user = auth.currentUser;
@@ -35,7 +31,6 @@ class LocalAddressDataSource {
           isDefault: data['address'][0]['isDefault'] ?? false,
         );
       }).toList();
-
       return addresses;
     } catch (e) {
       return [];
@@ -69,12 +64,33 @@ class LocalAddressDataSource {
   }
 
   Future<void> setDefault(String id) async {
-    final addresses = await getAddresses();
-    final updated = addresses
-        .map((a) => a.id == id
-            ? a.copyWith(isDefault: true)
-            : a.copyWith(isDefault: false))
-        .toList();
+    final user = auth.currentUser;
+    userid = user!.uid;
+    try {
+      final addressesSnapshot = await FirebaseFirestore.instance
+          .collection('user')
+          .doc(userid)
+          .collection('address')
+          .get();
+
+      for (var doc in addressesSnapshot.docs) {
+        final data = doc.data();
+        final addressList = data['address'] as List<dynamic>;
+
+        for (var addr in addressList) {
+          if (addr['isDefault'] == true) {
+            addr['isDefault'] = false;
+          }
+          if (doc.id == id) {
+            addr['isDefault'] = true;
+          }
+        }
+
+        await doc.reference.update({'address': addressList});
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> deleteAddress(

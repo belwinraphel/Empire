@@ -20,47 +20,52 @@ SizedBox products(BuildContext context, Productfetched state,
     width: MediaQuery.of(context).size.width - 93,
     child: Column(
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: const BoxDecoration(
-            border: Border(bottom: BorderSide(color: ColoRs.grey200)),
-          ),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                buildFilterButton("Filters", Icons.tune),
-                const SizedBox(width: 12),
-                buildFilterButton("Sort", Icons.sort),
-                const SizedBox(width: 12),
-                buildFilterButton("Brand", null),
-                const SizedBox(width: 12),
-                buildFilterButton("Atta Type", null),
-              ],
-            ),
-          ),
-        ),
+        // Container(
+        //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        //   decoration: const BoxDecoration(
+        //     border: Border(bottom: BorderSide(color: ColoRs.grey200)),
+        //   ),
+        //   child: SingleChildScrollView(
+        //     scrollDirection: Axis.horizontal,
+        //     child: Row(
+        //       children: [
+        //         buildFilterButton("Filters", Icons.tune),
+        //         const SizedBox(width: 12),
+        //         buildFilterButton("Sort", Icons.sort),
+        //         const SizedBox(width: 12),
+        //         buildFilterButton("Brand", null),
+        //         const SizedBox(width: 12),
+        //         buildFilterButton("Atta Type", null),
+        //       ],
+        //     ),
+        //   ),
+        // ),
         Expanded(
           child: LayoutBuilder(builder: (context, constraints) {
             final width = constraints.maxWidth;
+
             int crossAxisCount;
             double aspectRatio;
+            double? paddingvalue = 0;
 
             if (width > 1200) {
               crossAxisCount = 4;
               aspectRatio = 0.7;
             } else if (width > 800) {
               crossAxisCount = 3;
+
               aspectRatio = 0.65;
-            } else if (width > 300) {
+            } else if (width > 354) {
               crossAxisCount = 2;
-              aspectRatio = 0.42;
+              aspectRatio = 0.49;
+              paddingvalue = 16;
             } else {
               crossAxisCount = 2;
-              aspectRatio = 0.50;
+              aspectRatio = 0.41;
+              paddingvalue = 8;
             }
             return Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(paddingvalue),
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
@@ -263,29 +268,29 @@ class _ProductCardState extends State<ProductCard> {
                   ),
 
                   // Rating
-                  Row(
-                    children: [
-                      ...List.generate(5, (index) {
-                        return Icon(
-                          index < 6
-                              ? Icons.star
-                              : index < 7
-                                  ? Icons.star_half
-                                  : Icons.star_border,
-                          size: 12,
-                          color: ColoRs.orange,
-                        );
-                      }),
-                      const SizedBox(width: 4),
-                      Text(
-                        '(${232323})',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     ...List.generate(5, (index) {
+                  //       return Icon(
+                  //         index < 6
+                  //             ? Icons.star
+                  //             : index < 7
+                  //                 ? Icons.star_half
+                  //                 : Icons.star_border,
+                  //         size: 12,
+                  //         color: ColoRs.orange,
+                  //       );
+                  //     }),
+                  //     const SizedBox(width: 4),
+                  //     Text(
+                  //       '(${232323})',
+                  //       style: TextStyle(
+                  //         fontSize: 10,
+                  //         color: Colors.grey[600],
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                   const SizedBox(height: 8),
 
                   Column(
@@ -379,43 +384,45 @@ class _ProductCardState extends State<ProductCard> {
                               value: v.name, child: Text(v.name)))
                           .toList(),
                     ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: ColoRs.green,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  Align(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ColoRs.green,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                    ),
-                    onPressed: () {
- 
-                      if (selectedVariantName != null &&
-                          widget.product.productDocId != null) {
-                        final varientSnapshot = VariantSnapshot(
-                            name: widget.product.name,
-                            price: int.tryParse(
-                                    selectedVariant!.salePrice.toString()) ??
-                                0,
-                            weightGrams: int.tryParse(
-                                    widget.product.weight.toString()) ??
-                                0,
-                            sku: widget.product.sku,
-                            stock: widget.product.quantities);
-                        context.read<CartBloc>().add(AddToCart(
-                            widget.product.productDocId!,
-                            selectedVariantName!,
-                            1,
-                            widget.product.name,
-                            snapshot: varientSnapshot));
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('please select the varients')));
-                      }
-                    },
-                    child: const Text(
-                      'Add to Cart',
-                      style: TextStyle(fontSize: 12),
+                      onPressed: () {
+                        if (selectedVariantName != null &&
+                            widget.product.productDocId != null) {
+                          final varientSnapshot = VariantSnapshot(
+                              name: widget.product.name,
+                              price: int.tryParse(
+                                      selectedVariant!.salePrice.toString()) ??
+                                  0,
+                              weightGrams: int.tryParse(
+                                      widget.product.weight.toString()) ??
+                                  0,
+                              sku: widget.product.sku,
+                              stock: widget.product.quantities);
+                          context.read<CartBloc>().add(AddToCart(
+                              widget.product.productDocId!,
+                              selectedVariantName!,
+                              1,
+                              widget.product.name,
+                              snapshot: varientSnapshot));
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('please select the varients')));
+                        }
+                      },
+                      child: const Text(
+                        'Add to Cart',
+                        style: TextStyle(fontSize: 12),
+                      ),
                     ),
                   ),
                 ],
@@ -563,7 +570,6 @@ class ProductSection extends StatelessWidget {
               if (state.products.isEmpty) {
                 return const NoResultsScreen();
               } else {
-                print(state.products);
                 return products(context, state, mainCtageoruId!, subcategoyId!);
               }
             }

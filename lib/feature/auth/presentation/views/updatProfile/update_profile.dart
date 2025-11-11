@@ -33,24 +33,35 @@ class UpdateProfiles extends StatelessWidget {
 
         final maxHeight = constraints.maxHeight;
 
-        final bool isSmallScreen = maxwidth < 600;
+        final bool isSmallScreen = maxwidth < 342;
         final paddingHorizontal = isSmallScreen ? 16.0 : 32.0;
         final titleFontSize = isSmallScreen ? 30.0 : 36.0;
         final issmallScreen = constraints.maxWidth < 600;
-        final listItemFontSize = isSmallScreen ? 16.0 : 18.0;
+        final listItemFontSize = isSmallScreen ? 20.0 : 24.0;
         return BlocBuilder<ProfileBloc, ProfileState>(
           builder: (context, state) {
             if (state is ProfileLoading) {
               return const Scaffold(
                   body: Center(child: CircularProgressIndicator()));
             } else if (state is ProfileLoaded) {
-              usernameController.text = state.user.name!;
-              emailController.text = state.user.email;
-              phoneController.text = state.user.phoneNumber!;
+              usernameController.text = state.user.name ?? '';
+              emailController.text = state.user.email ?? '';
+              phoneController.text = state.user.phoneNumber ?? '';
               fetchedImage = state.user.photourl;
-              print(fetchedImage);
+
               return Scaffold(
-                appBar: AppBar(),
+                appBar: AppBar(
+                  centerTitle: true,
+                  title: Text(
+                    'Update Profile',
+                    style: TextStyle(
+                      fontSize: listItemFontSize,
+                      fontWeight: FontWeight.w800,
+                      fontFamily: Fonts.ralewayBold,
+                      color: const Color(0xFF374151),
+                    ),
+                  ),
+                ),
                 bottomNavigationBar: Padding(
                   padding: const EdgeInsets.all(14.0),
                   child: GreenElevatedButton(
@@ -75,30 +86,10 @@ class UpdateProfiles extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox20(),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Settings',
-                          style: TextStyle(
-                            fontSize: titleFontSize,
-                            fontFamily: Fonts.ralewayExtraBold,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey.shade900,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        'Your Profile',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontSize: listItemFontSize,
-                          fontWeight: FontWeight.w800,
-                          fontFamily: Fonts.ralewayBold,
-                          color: const Color(0xFF374151),
-                        ),
-                      ),
                       const SizedBox20(),
-                      photosection(fetchedImage),
+                      Align(
+                          alignment: Alignment.center,
+                          child: photosection(fetchedImage)),
                       const SizedBox30(),
                       LoginField(
                         color: const Color(0xffF1F4FE),

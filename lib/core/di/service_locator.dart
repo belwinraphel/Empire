@@ -1,9 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:empire/feature/address/data/datasource/address_datasorce.dart';
+import 'package:empire/feature/address/data/repository/addres_repo_impli.dart';
 import 'package:empire/feature/address/data/repository/map_repo_impl.dart';
+import 'package:empire/feature/address/domain/repository/address_repository.dart';
 import 'package:empire/feature/address/domain/repository/map_repositor.dart';
 import 'package:empire/feature/address/domain/usecase/Checklocationpermission.dart';
 import 'package:empire/feature/address/domain/usecase/GetAddress.dart';
 import 'package:empire/feature/address/domain/usecase/Getcurrentcase.dart';
+import 'package:empire/feature/address/domain/usecase/address_usecase.dart';
+import 'package:empire/feature/address/domain/usecase/delete_usecase.dart';
+import 'package:empire/feature/address/domain/usecase/giveaddres_usecase.dart';
+import 'package:empire/feature/address/domain/usecase/setdefault_address_usecase.dart';
+import 'package:empire/feature/address/presentation/bloc/address.dart';
 import 'package:empire/feature/address/presentation/bloc/map_bloc.dart';
 
 import 'package:empire/feature/auth/domain/data/datasource/auth_repo.dart';
@@ -331,17 +339,39 @@ Future<void> init() async {
       getOrder: sl(),
     ),
   );
-
-  ////////map
+/////////////////address
+  sl.registerLazySingleton<LocalAddressDataSource>(
+      () => LocalAddressDataSource(sl(), sl()));
+  sl.registerLazySingleton<AddressRepository>(
+      () => AddressRepositoryImpl(sl()));
   sl.registerLazySingleton<MapRepository>(() => MapRepositoryImpl());
 
   // Use Cases
-  sl.registerLazySingleton(() => GetCurrentPosition(sl()));
-  sl.registerLazySingleton(() => GetAddressFromCoordinates(sl()));
-  sl.registerLazySingleton(() => CheckLocationPermission(sl()));
+  sl.registerLazySingleton<GetAddressesUseCase>(
+      () => GetAddressesUseCase(sl()));
+  sl.registerLazySingleton<AddAddressUseCase>(() => AddAddressUseCase(sl()));
+  sl.registerLazySingleton<SetDefaultAddressUseCase>(
+      () => SetDefaultAddressUseCase(sl()));
+  sl.registerLazySingleton<DeleteAddressUseCase>(
+      () => DeleteAddressUseCase(sl()));
+
+  // BLoCs
+  sl.registerFactory(() => AddressBloc(
+        sl<SetDefaultAddressUseCase>(),
+        sl<GetAddressesUseCase>(),
+        sl<AddAddressUseCase>(),
+        sl<DeleteAddressUseCase>(),
+      ));
+
+  // Use Cases
+  sl.registerLazySingleton<GetCurrentPosition>(() => GetCurrentPosition(sl()));
+  sl.registerLazySingleton<GetAddressFromCoordinates>(
+      () => GetAddressFromCoordinates(sl()));
+  sl.registerLazySingleton<CheckLocationPermission>(
+      () => CheckLocationPermission(sl()));
 
   // BLoC
-  sl.registerFactory(() => MapBloc(
+  sl.registerFactory<MapBloc>(() => MapBloc(
         getCurrentPosition: sl(),
         getAddressFromCoordinates: sl(),
         checkLocationPermission: sl(),

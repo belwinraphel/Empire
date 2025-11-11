@@ -12,22 +12,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CategoryPage extends StatelessWidget {
-  const CategoryPage({super.key});
-
+  CategoryPage({super.key, required this.welcomesection});
+  bool welcomesection = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar( 
+        backgroundColor: ColoRs.background,
+        elevation: 0,
+      ),
       backgroundColor: ColoRs.background,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
             color: ColoRs.white,
-            child: const Column(
+            child: Column(
               children: [
-                SearchSection(
-                  welcomesection: false,
-                ),
-                CategorySection()
+                welcomesection == true
+                    ? const SearchSection(
+                        welcomesection: false,
+                      )
+                    : const SizedBox.shrink(),
+                const CategorySection()
               ],
             ),
           ),

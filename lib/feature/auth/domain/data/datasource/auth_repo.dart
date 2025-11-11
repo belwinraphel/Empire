@@ -37,6 +37,15 @@ class AuthRemoteDataSource {
         final userCredential =
             await _firebaseAuth.signInWithCredential(credential);
 
+        final authUid = userCredential.user?.uid;
+        await FirebaseFirestore.instance.collection("user").doc(authUid).set({
+          'name': userCredential.user!.displayName,
+          'email': userCredential.user!.email,
+          'phone': userCredential.user!.phoneNumber,
+          'photoUrl': userCredential.user!.photoURL,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
         return userCredential.user;
       }
     } catch (e) {

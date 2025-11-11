@@ -1,5 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dartz/dartz.dart';
 import 'package:empire/core/di/service_locator.dart';
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/widgets.dart';
@@ -24,9 +22,16 @@ class CheckoutPage extends StatelessWidget {
       );
     }
 
-    return BlocProvider<CheckoutBloc>(
-      create: (context) => sl<CheckoutBloc>()
-        ..add(InitializeCheckout(cartState.items, cartState.breakdown)),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CheckoutBloc>(
+          create: (context) => sl<CheckoutBloc>()
+            ..add(InitializeCheckout(cartState.items, cartState.breakdown)),
+        ),
+        BlocProvider<AddressBloc>(
+          create: (context) => sl<AddressBloc>()..add(LoadAddresses()),
+        )
+      ],
       child: Scaffold(
         backgroundColor: Colors.grey[50],
         appBar: _buildAppBar(context),
@@ -36,7 +41,7 @@ class CheckoutPage extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             }
             if (state is CheckoutSuccess) {
-              return Center(child: Text('Order: ${state.orderId}'));
+              return Center(child: Text('Order: //${state.orderId}'));
             }
             if (state is CheckoutInitial) {
               return const Center(child: CircularProgressIndicator());
@@ -67,25 +72,6 @@ class CheckoutPage extends StatelessWidget {
         ),
       ),
       centerTitle: false,
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
-          onPressed: () {},
-        ),
-        const Padding(
-          padding: EdgeInsets.only(right: 16.0),
-          child: Center(
-            child: Text(
-              'Share',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -556,27 +542,53 @@ class CheckoutPage extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Icon(Icons.home, color: Colors.grey[600], size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(contex, MaterialPageRoute(
-                  builder: (context) {
-                    return const AddressSelectionScreen();
-                  },
-                ));
-              },
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            contex,
+            MaterialPageRoute(
+              builder: (_) => BlocProvider.value(
+                value: BlocProvider.of<AddressBloc>(contex),
+                child: const AddressSelectionScreen(),
+              ),
+            ),
+          );
+        },
+        child: Row(
+          children: [
+            Icon(Icons.home, color: Colors.grey[600], size: 24),
+            const SizedBox(width: 12),
+            Expanded(
               child: BlocBuilder<AddressBloc, AddressState>(
                 builder: (context, state) {
                   if (state is AddressLoaded) {
+                    if (state.addresses.isEmpty) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'No Address Found',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            'Please add a delivery address.',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Delivering to ${state.addresses.first.label}',
+                          'Delivering to ${state.selectedAddress?.label ?? 'No Address'}',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -584,7 +596,7 @@ class CheckoutPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          state.addresses.first.fullAddress,
+                          state.selectedAddress?.fullAddress ?? '',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],
@@ -616,15 +628,15 @@ class CheckoutPage extends StatelessWidget {
                 },
               ),
             ),
-          ),
-          const Text(
-            'Change',
-            style: TextStyle(
-              color: ColoRs.checkoutButtoncolor,
-              fontWeight: FontWeight.w600,
+            const Text(
+              'Change',
+              style: TextStyle(
+                color: ColoRs.checkoutButtoncolor,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

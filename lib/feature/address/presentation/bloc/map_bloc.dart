@@ -10,8 +10,6 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
- 
-
 abstract class MapEvent extends Equatable {
   const MapEvent();
 
@@ -51,7 +49,6 @@ class PinPositionChanged extends MapEvent {
   @override
   List<Object> get props => [newPosition];
 }
- 
 
 class MapState extends Equatable {
   final LatLng pinPosition;
@@ -98,8 +95,10 @@ class MapState extends Equatable {
       addressLine2: addressLine2 ?? this.addressLine2,
       isLoadingLocation: isLoadingLocation ?? this.isLoadingLocation,
       isLoadingAddress: isLoadingAddress ?? this.isLoadingAddress,
-      hasLocationPermission: hasLocationPermission ?? this.hasLocationPermission,
-      isLocationServiceEnabled: isLocationServiceEnabled ?? this.isLocationServiceEnabled,
+      hasLocationPermission:
+          hasLocationPermission ?? this.hasLocationPermission,
+      isLocationServiceEnabled:
+          isLocationServiceEnabled ?? this.isLocationServiceEnabled,
       errorMessage: errorMessage,
     );
   }
@@ -123,16 +122,16 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   final GetCurrentPosition getCurrentPosition;
   final GetAddressFromCoordinates getAddressFromCoordinates;
   final CheckLocationPermission checkLocationPermission;
-  
+
   Timer? _debounceTimer;
 
-  static const LatLng _initialPosition = LatLng(19.0760, 72.8777);
+  static const LatLng initialPosition = LatLng(19.0760, 72.8777);
 
   MapBloc({
     required this.getCurrentPosition,
     required this.getAddressFromCoordinates,
     required this.checkLocationPermission,
-  }) : super(MapState(pinPosition: _initialPosition)) {
+  }) : super(const MapState(pinPosition: initialPosition)) {
     on<MapInitialized>(_onMapInitialized);
     on<LocationPermissionRequested>(_onLocationPermissionRequested);
     on<CurrentLocationRequested>(_onCurrentLocationRequested);
@@ -151,11 +150,44 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     await _checkLocationPermissions(emit);
   }
 
-  void _onLocationPermissionRequested(
+  Future<void> _onLocationPermissionRequested(
     LocationPermissionRequested event,
     Emitter<MapState> emit,
   ) async {
-    await _checkLocationPermissions(emit);
+    try {
+      emit(state.copyWith(isLoadingLocation: true, errorMessage: null));
+
+      final isServiceEnabled = await checkLocationPermission();
+      if (!isServiceEnabled) {
+        emit(state.copyWith(
+          isLoadingLocation: false,
+          errorMessage: 'Location services are disabled. Please enable them.',
+        ));
+        return;
+      }
+
+      final hasPermission = await checkLocationPermission();
+      if (!hasPermission) {
+        final permission = await checkLocationPermission();
+        if (permission != LocationPermission.always &&
+            permission != LocationPermission.whileInUse) {
+          emit(state.copyWith(
+            isLoadingLocation: false,
+            errorMessage:
+                'Location permissions are required to use this feature.',
+          ));
+          return;
+        }
+      }
+
+      // Permission granted - get current location
+      add(CurrentLocationRequested());
+    } catch (e) {
+      emit(state.copyWith(
+        isLoadingLocation: false,
+        errorMessage: 'Failed to request location permission: $e',
+      ));
+    }
   }
 
   void _onCurrentLocationRequested(
@@ -168,7 +200,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
     try {
       final position = await getCurrentPosition();
-      
+
       emit(state.copyWith(
         pinPosition: LatLng(position.latitude, position.longitude),
         currentPosition: position,
@@ -193,8 +225,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   }
 
   void _onPinPositionChanged(PinPositionChanged event, Emitter<MapState> emit) {
-    final distanceKm = _computeDistanceKm(event.newPosition, state.currentPosition);
-    
+    final distanceKm =
+        _computeDistanceKm(event.newPosition, state.currentPosition);
+
     emit(state.copyWith(
       pinPosition: event.newPosition,
       distanceKm: distanceKm,
@@ -218,8 +251,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       );
 
       if (placemarks.isNotEmpty) {
-        final (addressLine1, addressLine2) = _buildAddressLines(placemarks.first);
-        
+        final (addressLine1, addressLine2) =
+            _buildAddressLines(placemarks.first);
+
         emit(state.copyWith(
           addressLine1: addressLine1,
           addressLine2: addressLine2,
@@ -258,7 +292,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   double? _computeDistanceKm(LatLng position, Position? currentPosition) {
     if (currentPosition == null) return null;
-    
+
     final meters = Geolocator.distanceBetween(
       position.latitude,
       position.longitude,
@@ -287,12 +321,16 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
     // Build address line 2
     final line2Parts = <String>[];
-    if (place.locality != null && place.locality!.isNotEmpty && place.locality != line1) {
+    if (place.locality != null &&
+        place.locality!.isNotEmpty &&
+        place.locality != line1) {
       line2Parts.add(place.locality!);
     }
-    if (place.subAdministrativeArea != null && place.subAdministrativeArea!.isNotEmpty) {
+    if (place.subAdministrativeArea != null &&
+        place.subAdministrativeArea!.isNotEmpty) {
       line2Parts.add(place.subAdministrativeArea!);
-    } else if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
+    } else if (place.administrativeArea != null &&
+        place.administrativeArea!.isNotEmpty) {
       line2Parts.add(place.administrativeArea!);
     }
 

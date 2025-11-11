@@ -85,51 +85,57 @@ class CategoryItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Text(
-            category.category,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          ),
-        ),
-        if (subCategoryData == null || subCategoryData!.isLoading)
-          const Center(child: CircularProgressIndicator())
-        else if (subCategoryData!.error != null)
-          Center(child: Text('Error: ${subCategoryData!.error}'))
-        else if (subCategoryData!.subCategories.isEmpty)
-          const Center(child: Text("No sub-categories."))
-        else
-          GridView.builder(
-            shrinkWrap: true,
-            padding: const EdgeInsets.all(0),
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              childAspectRatio: 0.74,
-              crossAxisSpacing: 0,
-              mainAxisSpacing: 0,
+    print(MediaQuery.of(context).size);
+    return LayoutBuilder(builder: (context, constraints) {
+      final maxWidth = constraints.maxWidth;
+      print(maxWidth);
+      final bool issmallScreen = maxWidth < 431;
+      print(issmallScreen);
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Text(
+              category.category,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
-            itemCount: subCategoryData!.subCategories.length,
-            itemBuilder: (context, index) {
-              final subCategory = subCategoryData!.subCategories[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (context) {
-                      return SubCategoryPage(
-                        subcategoyId: subCategory.uid,
-                        mainCtageoruId: category.uid,
-                        subcategName: subCategory.category,
-                      );
-                    },
-                  ));
-                },
-                child: Column(
-                  children: [
-                    Container(
+          ),
+          if (subCategoryData == null || subCategoryData!.isLoading)
+            const Center(child: CircularProgressIndicator())
+          else if (subCategoryData!.error != null)
+            Center(child: Text('Error: ${subCategoryData!.error}'))
+          else if (subCategoryData!.subCategories.isEmpty)
+            const Center(child: Text("No sub-categories."))
+          else
+            GridView.builder(
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(0),
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                childAspectRatio: 0.74,
+                crossAxisSpacing: 0,
+                mainAxisSpacing: 0,
+              ),
+              itemCount: subCategoryData!.subCategories.length,
+              itemBuilder: (context, index) {
+                final subCategory = subCategoryData!.subCategories[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (context) {
+                        return SubCategoryPage(
+                          subcategoyId: subCategory.uid,
+                          mainCtageoruId: category.uid,
+                          subcategName: subCategory.category,
+                        );
+                      },
+                    ));
+                  },
+                  child: Column(
+                    children: [
+                      Container(
                         height: 90,
                         width: 90,
                         decoration: BoxDecoration(
@@ -148,27 +154,30 @@ class CategoryItems extends StatelessWidget {
                           ),
                           widthQueryParam: 'resize_width',
                         ),
-                        ),
-                    const SizedBox(height: 4),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 5, right: 5),
-                      child: Text(
-                        subCategory.category,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: Fonts.celiasregular,
-                        ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          )
-      ],
-    );
+                      const SizedBox(height: 4),
+                      SizedBox(
+                        height: issmallScreen
+                            ? MediaQuery.of(context).size.height * 0.039
+                            : MediaQuery.of(context).size.height * 0.04,
+                        width: issmallScreen
+                            ? MediaQuery.of(context).size.width * 0.27
+                            : MediaQuery.of(context).size.width * 0.20,
+                        child: Text(subCategory.category,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: Fonts.ralewayBold)),
+                      )
+                    ],
+                  ),
+                );
+              },
+            )
+        ],
+      );
+    });
   }
 }
 
