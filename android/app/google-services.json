@@ -71,6 +71,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:162817882017:android:8b2071126c371d01bdbde0",
+        "android_client_info": {
+          "package_name": "com.empire.users"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "162817882017-ic5ica4hjqp4liopbk4co8a3eaa5ta9h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVCYPFrIwLMbnQ5SJKk_14pfVaixWkshM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "162817882017-ic5ica4hjqp4liopbk4co8a3eaa5ta9h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

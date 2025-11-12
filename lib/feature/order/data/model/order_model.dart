@@ -37,6 +37,7 @@ class OrderModel extends OrderEntity {
         items: (json['items'] as List)
             .map(
               (item) => CartItem(
+                amount: item['amount'],
                 productId: item['productId'],
                 productName: item['productName'] ?? item['name'],
                 varientName: item['variantName'] ?? item['varientname'],

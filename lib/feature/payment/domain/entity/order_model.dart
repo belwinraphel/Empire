@@ -38,6 +38,7 @@ class OrderModel extends OrderEntity {
                   productName: item['productName'],
                   varientName: item['variantName'],
                   quantity: item['quantity'],
+                  amount: item['amount'],
                 ))
             .toList(),
         totalAmount: (json['totalAmount'] as num).toDouble(),
@@ -56,6 +57,7 @@ class OrderModel extends OrderEntity {
             .map((item) => {
                   'productId': item.productId,
                   'name': item.productName,
+                  'amount': item.amount,
                   'varientname': item.snapshot!.name,
                   'quantity': item.quantity,
                   'imageUrl': item.snapshot!.imageUrl,

@@ -171,32 +171,173 @@ class _CartItemsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      color: Colors.grey[100],
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: order.items.length,
-        itemBuilder: (context, index) {
-          final item = order.items[index];
-          return ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: item.imageUrl != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child: Image.network(
-                      item.imageUrl!,
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.cover,
+    return Card(
+      elevation: 3,
+      color: ColoRs.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text("items (${order.items.length.toString()})",
+                style: const TextStyle(
+                    fontSize: 14,
+                    fontFamily: Fonts.ralewayExtraBold,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87)),
+          ),
+          ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: order.items.length,
+            itemBuilder: (context, index) {
+              final item = order.items[index];
+              return ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: item.imageUrl != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: Image.network(
+                          item.imageUrl!,
+                          width: 70,
+                          height: 70,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : const Icon(Icons.shopping_bag),
+                title: Text(
+                  item.productName,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: Fonts.ralewaySemibold,
+                    color: Colors.black87,
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.varientName,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: Fonts.ralewaySemibold,
+                        color: Colors.black87,
+                      ),
                     ),
-                  )
-                : const Icon(Icons.shopping_bag),
-            title: Text(item.productName ?? 'no name'),
-            subtitle: Text('Qty: ${item.quantity}'),
-            trailing: Text('₹${order.totalAmount}'),
-          );
-        },
+                    Text(
+                      'Qty: ${item.quantity}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: Fonts.ralewaySemibold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+                trailing: Text(
+                  '₹${order.items[index].amount.toString()}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: Fonts.ralewayBold,
+                    color: Colors.black87,
+                  ),
+                ),
+              );
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            child: Divider(color: Colors.grey[300]),
+          ),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text("Order Summary",
+                style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: Fonts.ralewayExtraBold,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87)),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("date",
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87)),
+                    Text(
+                        '${order.createdAt.day}/${order.createdAt.month}/${order.createdAt.year} ',
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87)),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("payment Status",
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87)),
+                    Text(order.paymentStatus,
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87)),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("delivery Status",
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87)),
+                    Text(order.status,
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87)),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Total",
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontFamily: Fonts.ralewayExtraBold,
+                            fontWeight: FontWeight.w600,
+                            color: ColoRs.black)),
+                    Text('₹${order.totalAmount}',
+                        style: const TextStyle(
+                            fontSize: 15,
+                            fontFamily: Fonts.ralewayExtraBold,
+                            fontWeight: FontWeight.w600,
+                            color: ColoRs.black)),
+                  ],
+                ),
+                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -226,29 +367,32 @@ class OrderHeader extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: Colors.purple[300],
-              borderRadius: BorderRadius.circular(8),
+          Card(
+            elevation: 3,
+            child: Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: Colors.purple[300],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: order.items[0].imageUrl != null
+                  ? OptimizedNetworkImage(
+                      width: double.infinity,
+                      height: MediaQuery.of(context).size.height * 0.30,
+                      imageUrl: order.items[0].imageUrl,
+                      errorWidget: const Icon(Icons.error),
+                      borderRadius: 7,
+                      fit: BoxFit.fill,
+                      placeholder: Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: const SizedBox(height: 80, width: 85),
+                      ),
+                      widthQueryParam: 'resize_width',
+                    )
+                  : const Icon(Icons.error),
             ),
-            child: order.items[0].imageUrl != null
-                ? OptimizedNetworkImage(
-                    width: double.infinity,
-                    height: MediaQuery.of(context).size.height * 0.30,
-                    imageUrl: order.items[0].imageUrl,
-                    errorWidget: const Icon(Icons.error),
-                    borderRadius: 7,
-                    fit: BoxFit.fill,
-                    placeholder: Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: const SizedBox(height: 80, width: 85),
-                    ),
-                    widthQueryParam: 'resize_width',
-                  )
-                : const Icon(Icons.error),
           ),
           const SizedBox(width: 12),
           Expanded(
