@@ -1,6 +1,5 @@
 import 'package:empire/core/di/service_locator.dart';
-
-import 'package:empire/presentation/views/myapp/my_app.dart';
+import 'package:empire/feature/product/presentation/views/myapp/my_app.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
