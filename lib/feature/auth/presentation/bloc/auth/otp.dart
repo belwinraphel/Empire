@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
- 
- 
 import 'package:empire/feature/auth/domain/usecase/auth/send_otp_usecase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -10,9 +8,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class OtpVerifyEvent {}
 
-class VerifyOtps extends OtpVerifyEvent {
+class Verify0tpEvent extends OtpVerifyEvent {
   final int otp;
-  VerifyOtps(this.otp);
+  Verify0tpEvent(this.otp);
 }
 
 abstract class OtpVerifyState {}
@@ -29,14 +27,13 @@ class NotVerifiedOtpVerifyState extends OtpVerifyState {
 }
 
 class OtpBloc extends Bloc<OtpVerifyEvent, OtpVerifyState> {
-  final VerifyOtp authRepository;
+  final Verify0tpUsecase authRepository;
   OtpBloc(this.authRepository) : super(OtpInitial()) {
-    on<VerifyOtps>((event, emit) async {
+    on<Verify0tpEvent>((event, emit) async {
       emit(OtpLoading());
 
       try {
-        final result =
-            await authRepository(event.otp); // result = UserCredential?
+        final result = await authRepository(event.otp);
 
         final phoneNumber = result.user?.phoneNumber ?? '';
 

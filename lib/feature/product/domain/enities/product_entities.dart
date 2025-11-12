@@ -48,6 +48,7 @@ class ProductEntity extends Equatable {
     required this.filterTags,
     required this.variantDetails,
   });
+
   factory ProductEntity.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return ProductEntity(
@@ -55,7 +56,7 @@ class ProductEntity extends Equatable {
       subcategoryId: data['subcategoryId'] ?? "",
       mainCategoryName: data['mainCategoryName'] ?? "",
       subcategoryName: data['subcategoryName'] ?? "",
-      productDocId: data[''] ?? '',
+      productDocId: doc.id,
       name: data['name'] ?? '',
       description: data['description'] ?? '',
       price: (data['price'] as num?)?.toDouble() ?? 0.0,
@@ -214,4 +215,43 @@ class Variant extends Equatable {
 
   @override
   List<Object?> get props => [name, image, regularPrice, salePrice, quantity];
+}
+
+List<ProductEntity> parseProducts(List<Map<String, dynamic>> docs) {
+  return docs.map((data) {
+    return ProductEntity(
+      productDocId: data['productDocId'],
+      mainCategoryId: data['mainCategoryId'] ?? "",
+      subcategoryId: data['subcategoryId'] ?? "",
+      mainCategoryName: data['mainCategoryName'] ?? "",
+      subcategoryName: data['subcategoryName'] ?? "",
+      name: data['name'] ?? '',
+      description: data['description'] ?? '',
+      price: (data['price'] as num?)?.toDouble() ?? 0.0,
+      discountPrice: (data['discountPrice'] as num?)?.toDouble() ?? 0.0,
+      sku: data['sku'] ?? '',
+      tags: List<String>.from(data['tags'] ?? []),
+      inStock: data['inStock'] ?? false,
+      weight: (data['weight'] as num?)?.toDouble() ?? 0.0,
+      length: (data['length'] as num?)?.toDouble() ?? 0.0,
+      width: (data['width'] as num?)?.toDouble() ?? 0.0,
+      height: (data['height'] as num?)?.toDouble() ?? 0.0,
+      taxRate: (data['taxRate'] as num?)?.toDouble() ?? 0.0,
+      category: data['category'] ?? '',
+      quantities: data['quantities'] ?? 0,
+      images: List<String>.from(data['images'] ?? []),
+      filterTags: List<String>.from(data['filterTags'] ?? []),
+      variantDetails: data['variantDetails']
+          .map<Variant>(
+            (v) => Variant(
+              name: v['name'] ?? "",
+              image: v['image'] ?? "",
+              regularPrice: (v['regularPrice'] as num?)?.toDouble() ?? 0.0,
+              salePrice: (v['salePrice'] as num?)?.toDouble() ?? 0.0,
+              quantity: v['quantity'] ?? 0,
+            ),
+          )
+          .toList(),
+    );
+  }).toList();
 }

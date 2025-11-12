@@ -1,14 +1,14 @@
-import 'package:empire/feature/auth/presentation/views/profile/profile_page.dart';
+import 'package:empire/feature/auth/presentation/views/setting/setting_page.dart';
 import 'package:empire/feature/favorite/presentation/view/favouritepage.dart';
 
-import 'package:empire/feature/product/presentation/views/cart/cart_page.dart';
+import 'package:empire/feature/cart/presentation/view/cart_page.dart';
 import 'package:empire/feature/product/presentation/views/CategoryPage/categorypage.dart';
 
 import 'package:empire/feature/product/presentation/views/homepage/home_page.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
-  MainScreen({super.key});
+  const MainScreen({super.key});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -16,9 +16,11 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final List<Widget> pages = [
-    HomePage(),
-    const Favouritepage(),
-    const CategoryPage(),
+    const HomePage(),
+    const FavouritePage(),
+    CategoryPage(
+      welcomesection: true,
+    ),
     const CartPage(),
     const SettingsPage(),
   ];

@@ -10,8 +10,9 @@ class SavePassword {
       String email,
       String password,
       String name,String phoneNumber,
+      String photoUrl
     ) async {
     return authRemoteDataSource.savePassword(
-        newPasswordController, email, password,name,phoneNumber);
+        newPasswordController, email, password,name,phoneNumber, photoUrl);
   }
 }

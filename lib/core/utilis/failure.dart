@@ -9,7 +9,10 @@ class Failures extends Equatable {
   const Failures.network(String message) : this._(message, 'networ');
   const Failures.validation(String message) : this._(message, 'validation');
   const Failures.server(String message) : this._(message, 'server');
-
+   const Failures.outofstock(String message) : this._(message, 'Outofstock');
+   const Failures.paymentFailure(String message) : this._(message, 'PaymentFailure');
+      const Failures.cancelled(String message) : this._(message, 'PaymentCancelled');
+   
   @override
   List<Object?> get props => [message, type];
 }

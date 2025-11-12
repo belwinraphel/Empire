@@ -12,7 +12,7 @@ abstract class FavoritesRemoteDataSource {
 }
 
 class FavoritesRemoteDataSourceImpl implements FavoritesRemoteDataSource {
-  final FirebaseAuth _auth;
+    final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
 
   FavoritesRemoteDataSourceImpl({
@@ -70,7 +70,6 @@ class FavoritesRemoteDataSourceImpl implements FavoritesRemoteDataSource {
         return const Left(Failures.server('User not logged in'));
       }
 
-     
       final favorites = await FirebaseFirestore.instance
           .collection('user')
           .doc(user.uid)
@@ -81,19 +80,18 @@ class FavoritesRemoteDataSourceImpl implements FavoritesRemoteDataSource {
           favorites.docs.map((doc) => doc.id).toList();
 
       if (favoritesProductIds.isEmpty) {
-        return const Right([]); // No favorites
+        return const Right([]);
       }
 
-     
       final productSnapShot =
           await FirebaseFirestore.instance.collection('products').get();
 
-      // Filter only favorite products
       List<ProductEntity> products = productSnapShot.docs
           .where((doc) => favoritesProductIds.contains(doc.id))
           .map((doc) => ProductEntity.fromDocument(doc))
           .toList();
 
+    
       return Right(products);
     } catch (e) {
       return Left(Failures.server(e.toString()));

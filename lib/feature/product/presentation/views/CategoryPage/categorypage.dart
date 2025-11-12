@@ -1,64 +1,43 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:empire/core/utilis/color.dart';
-import 'package:empire/core/utilis/widget.dart';
+
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
-import 'package:empire/feature/product/presentation/bloc/product_bloc/get_category_bloc.dart';
+import 'package:empire/feature/product/presentation/bloc/product_bloc/centralizedstate/category.dart';
+
 import 'package:empire/feature/product/presentation/views/CategoryPage/widget.dart';
-import 'package:empire/feature/product/presentation/views/search/seacrh.dart';
+import 'package:empire/feature/product/presentation/views/homepage/widget.dart';
+import 'package:empire/feature/product/presentation/views/search/search.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CategoryPage extends StatelessWidget {
-  const CategoryPage({super.key});
-
+  CategoryPage({super.key, required this.welcomesection});
+  bool welcomesection = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar( 
+        backgroundColor: ColoRs.background,
+        elevation: 0,
+      ),
       backgroundColor: ColoRs.background,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
             color: ColoRs.white,
             child: Column(
-              children: [searchSection(context), categorySection()],
+              children: [
+                welcomesection == true
+                    ? const SearchSection(
+                        welcomesection: false,
+                      )
+                    : const SizedBox.shrink(),
+                const CategorySection()
+              ],
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Padding categorySection() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          BlocBuilder<CategoryBloc, CategoryState>(
-            builder: (context, state) {
-              if (state is CategoryLoadingState) {
-                return buildShimmerLoading();
-              } else if (state is CategoryErrorState) {
-                return buildErrorState(context, state.error);
-              } else if (state is CategoryLoadedState) {
-                if (state.categories.isEmpty) {
-                  return const Center(child: Text("No categories available."));
-                }
-                return ListView.builder(
-                  padding: const EdgeInsets.all(0),
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: state.categories.length,
-                  itemBuilder: (context, index) {
-                    final category = state.categories[index];
-                    return CategoryItems(category: category);
-                  },
-                );
-              }
-              return buildShimmerLoading();
-            },
-          ),
-        ],
       ),
     );
   }
@@ -68,11 +47,12 @@ class CategoryPage extends StatelessWidget {
       height: MediaQuery.of(context).size.height * 0.23,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: const BoxDecoration(
-          gradient: LinearGradient(
-        colors: [ColoRs.background, ColoRs.white],
-        end: Alignment(0.0, 1),
-        begin: Alignment(0.0, -1),
-      )),
+        gradient: LinearGradient(
+          colors: [ColoRs.background, ColoRs.white],
+          end: Alignment(0.0, 1),
+          begin: Alignment(0.0, -1),
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -222,7 +202,7 @@ class CategoryPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(
                   builder: (context) {
-                    return ProductSearchScreen();
+                    return const ProductSearchScreen();
                   },
                 ));
               },
@@ -249,7 +229,6 @@ class CategoryPage extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox20()
         ],
       ),
     );
@@ -282,87 +261,35 @@ class CategoryPage extends StatelessWidget {
 }
 
 class CategorySection extends StatelessWidget {
-  final String title;
-  final List<CategoryItem> categories;
-
-  const CategorySection({
-    super.key,
-    required this.title,
-    required this.categories,
-  });
+  const CategorySection({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 16),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              childAspectRatio: 0.8,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
-            itemCount: categories.length,
-            itemBuilder: (context, index) {
-              final category = categories[index];
-              return GestureDetector(
-                onTap: () {},
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: category.color,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.image,
-                              color: Colors.grey,
-                              size: 30,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      category.title,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
-                        height: 1.2,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
+      padding: const EdgeInsets.all(8.0),
+      child: BlocBuilder<CategorsyBloc, CategorysState>(
+        builder: (context, state) {
+          if (state is CategorysLoadedState) {
+            return ListView.builder(
+              padding: EdgeInsets.zero,
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: state.categories.length,
+              itemBuilder: (context, index) {
+                final category = state.categories[index];
+
+                final subCategoryData = state.subCategoryMap[category.uid];
+
+                return CategoryItems(
+                  category: category,
+                  subCategoryData: subCategoryData,
+                );
+              },
+            );
+          }
+
+          return const Center(child: CircularProgressIndicator());
+        },
       ),
     );
   }

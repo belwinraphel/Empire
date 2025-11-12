@@ -1,4 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:empire/feature/address/data/datasource/address_datasorce.dart';
+import 'package:empire/feature/address/data/repository/addres_repo_impli.dart';
+import 'package:empire/feature/address/data/repository/map_repo_impl.dart';
+import 'package:empire/feature/address/domain/repository/address_repository.dart';
+import 'package:empire/feature/address/domain/repository/map_repositor.dart';
+import 'package:empire/feature/address/domain/usecase/Checklocationpermission.dart';
+import 'package:empire/feature/address/domain/usecase/GetAddress.dart';
+import 'package:empire/feature/address/domain/usecase/Getcurrentcase.dart';
+import 'package:empire/feature/address/domain/usecase/address_usecase.dart';
+import 'package:empire/feature/address/domain/usecase/delete_usecase.dart';
+import 'package:empire/feature/address/domain/usecase/giveaddres_usecase.dart';
+import 'package:empire/feature/address/domain/usecase/setdefault_address_usecase.dart';
+import 'package:empire/feature/address/presentation/bloc/address.dart';
+import 'package:empire/feature/address/presentation/bloc/map_bloc.dart';
 
 import 'package:empire/feature/auth/domain/data/datasource/auth_repo.dart';
 import 'package:empire/feature/auth/domain/data/datasource/checking_login_status.dart';
@@ -32,12 +46,43 @@ import 'package:empire/feature/auth/domain/usecase/auth/send_otp_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/update_user_deatils_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/verify_user_usecase.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
+import 'package:empire/feature/cart/data/datasource/cartdatatsource.dart';
+import 'package:empire/feature/cart/data/repository/cartrepitoryompli.dart';
+import 'package:empire/feature/cart/domain/repository/cart_repository.dart';
+import 'package:empire/feature/cart/domain/usecase/add_cart_usecase.dart';
+import 'package:empire/feature/cart/domain/usecase/breakdown_usecase.dart';
+import 'package:empire/feature/cart/domain/usecase/clearcartusecase.dart';
+import 'package:empire/feature/cart/domain/usecase/get_cart_use_case.dart';
+import 'package:empire/feature/cart/domain/usecase/remove_from_cart_usecase.dart';
+import 'package:empire/feature/cart/domain/usecase/updatequantityusecase.dart';
+import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
+import 'package:empire/feature/checkout/data/datasource/checkoutdatasource.dart';
+import 'package:empire/feature/checkout/data/repository/checkoutrepositoryimpli.dart';
+import 'package:empire/feature/checkout/domain/repository/chekout.dart';
+
+import 'package:empire/feature/checkout/domain/usecase/getpaymentmethod_usecase.dart';
+
+import 'package:empire/feature/checkout/domain/usecase/submit_checkout_usecase.dart';
+import 'package:empire/feature/checkout/presentaton/bloc/checkoutbloc.dart';
 import 'package:empire/feature/favorite/data/datasource/favoritedatavaseimple.dart';
 import 'package:empire/feature/favorite/data/repository/favoriterepositoryimple.dart';
 import 'package:empire/feature/favorite/domain/repository/favotiterepository.dart';
 import 'package:empire/feature/favorite/domain/usecase/add_favorites_usecase.dart';
 import 'package:empire/feature/favorite/domain/usecase/get_favourite_usecase.dart';
 import 'package:empire/feature/favorite/domain/usecase/remove_favorites_usecase.dart';
+import 'package:empire/feature/order/data/datasource/orderdatasource.dart';
+import 'package:empire/feature/order/data/repository/order_repository_impli.dart';
+import 'package:empire/feature/order/domain/repository/order_repository.dart';
+import 'package:empire/feature/order/domain/usecase/order_usecase.dart';
+import 'package:empire/feature/order/domain/usecase/update_order_status_usecase.dart';
+import 'package:empire/feature/order/domain/usecase/wacthorder_usecase.dart';
+import 'package:empire/feature/order/presentation/Bloc/order_bloc.dart';
+import 'package:empire/feature/payment/data/datasource/payment_datasource.dart';
+
+import 'package:empire/feature/payment/data/repository/Payment_repository.dart';
+import 'package:empire/feature/payment/domain/repository/Payment_repository.dart';
+import 'package:empire/feature/payment/domain/usecase/Payment_usecase.dart';
+import 'package:empire/feature/payment/presentation/bloc/paymentbloc.dart';
 import 'package:empire/feature/product/data/datasource/category_data_source.dart';
 import 'package:empire/feature/product/data/datasource/category_data_source_impli.dart';
 import 'package:empire/feature/product/data/datasource/product_datasource.dart';
@@ -47,10 +92,13 @@ import 'package:empire/feature/product/domain/repository/category_repository.dar
 import 'package:empire/feature/product/domain/repository/prodcuct_call_repository.dart';
 import 'package:empire/feature/product/domain/usecase/get_category_usecase.dart';
 import 'package:empire/feature/product/domain/usecase/getting_subcategory_usecase.dart';
+import 'package:empire/feature/product/domain/usecase/product/sucategory_product_usecase.dart';
 import 'package:empire/feature/product/domain/usecase/productcaliing_usecase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -74,6 +122,7 @@ Future<void> init() async {
   sl.registerLazySingleton<LoginStatus>(() => LoginStatusImpl(sl()));
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
 
+  ///CheckLoginStatusUsecase
   sl.registerLazySingleton<CheckLoginStatusUsecase>(
       () => CheckLoginStatusUsecase(sl<LoginStatus>()));
   sl.registerLazySingleton(() => SaveLoginStatus(sl()));
@@ -93,7 +142,7 @@ Future<void> init() async {
       () => RegisterRepositoryimpli(sl()));
   sl.registerLazySingleton(() => CheckingUser(sl()));
   ////////////otp////////
-  sl.registerLazySingleton(() => VerifyOtp(sl()));
+  sl.registerLazySingleton(() => Verify0tpUsecase(sl()));
   sl.registerLazySingleton(() => VerifyNumber(sl()));
 
   ///password//
@@ -143,10 +192,14 @@ Future<void> init() async {
   sl.registerLazySingleton(
     () => GettingSubcategoryUsecase(sl<CategoryRepository>()),
   );
+  //GettingSubcateoryProductUsecase
+  sl.registerLazySingleton(
+    () => GettingSubcateoryProductUsecase(sl<ProdcuctsRepository>()),
+  );
   //////category
   sl.registerSingleton<Logger>(Logger());
   sl.registerLazySingleton<CategoryDataSource>(
-    () => CategoryDataSourceImpl(sl<Logger>()),
+    () => CategoryDataSourceImpl(logger: sl<Logger>()),
   );
 
   sl.registerLazySingleton<CategoryRepository>(
@@ -165,15 +218,186 @@ Future<void> init() async {
   );
 
   ///favorite
- 
+
   sl.registerLazySingleton(() => GetFavoritesStreamUseCase(sl()));
   sl.registerLazySingleton(() => AddFavoriteUseCase(sl()));
   sl.registerLazySingleton(() => RemoveFavoriteUseCase(sl()));
   sl.registerLazySingleton<FavoritesRepository>(
     () => FavoritesRepositoryImpl(remoteDataSource: sl()),
   );
- sl.registerLazySingleton<FavoritesRemoteDataSource>(
+  sl.registerLazySingleton<FavoritesRemoteDataSource>(
     () => FavoritesRemoteDataSourceImpl(auth: sl(), firestore: sl()),
   );
+// Cart Feature
+  sl.registerLazySingleton<CartFirestoreDataSource>(
+    () => CartFirestoreDataSource(sl(), sl()),
+  );
+  sl.registerLazySingleton<CartRepository>(
+    () => CartRepositoryImpl(sl()),
+  );
+  sl.registerLazySingleton<AddToCartUseCase>(
+    () => AddToCartUseCase(sl()),
+  );
+  sl.registerLazySingleton<UpdateQuantityUseCase>(
+    () => UpdateQuantityUseCase(sl()),
+  );
+  sl.registerLazySingleton<RemoveFromCartUseCase>(
+    () => RemoveFromCartUseCase(sl()),
+  );
+  sl.registerLazySingleton<ClearCartUseCase>(
+    () => ClearCartUseCase(sl()),
+  );
+  sl.registerLazySingleton<GetCart>(
+    () => GetCart(sl()),
+  );
+  sl.registerLazySingleton<CalculateBreakdownUseCase>(
+    () => CalculateBreakdownUseCase(),
+  );
+  sl.registerLazySingleton<CartBloc>(
+    () => CartBloc(
+      addToCartUseCase: sl<AddToCartUseCase>(),
+      updateQuantityUseCase: sl<UpdateQuantityUseCase>(),
+      removeFromCartUseCase: sl<RemoveFromCartUseCase>(),
+      clearCartUseCase: sl<ClearCartUseCase>(),
+      getCart: sl<GetCart>(),
+      calculateBreakdownUseCase: sl<CalculateBreakdownUseCase>(),
+    ),
+  );
 
+  // Checkout Feature
+  sl.registerLazySingleton<CheckoutFirestoreDataSource>(
+    () => CheckoutFirestoreDataSource(sl(), sl()),
+  );
+  sl.registerLazySingleton<CheckoutRepositoryImpl>(
+    () => CheckoutRepositoryImpl(sl()),
+  );
+
+  sl.registerSingleton<CheckoutRepository>(sl<CheckoutRepositoryImpl>());
+  // sl.registerLazySingleton<GetAddressesUseCase>(
+  //   () => GetAddressesUseCase(sl()),
+  // );
+  // sl.registerLazySingleton<GetShippingMethodsUseCase>(
+  //   () => GetShippingMethodsUseCase(sl()),
+  // );
+  sl.registerLazySingleton<GetPaymentMethodsUseCase>(
+    () => GetPaymentMethodsUseCase(sl()),
+  );
+  // sl.registerLazySingleton<ApplyCouponUseCase>(
+  //   () => ApplyCouponUseCase(sl()),
+  // );
+  sl.registerLazySingleton<SubmitCheckoutUseCase>(
+    () => SubmitCheckoutUseCase(sl()),
+  );
+  sl.registerFactory<CheckoutBloc>(
+    () => CheckoutBloc(
+      // getAddressesUseCase: sl(),
+      // getShippingMethodsUseCase: sl(),
+      getPaymentMethodsUseCase: sl(),
+      // applyCouponUseCase: sl(),
+      submitCheckoutUseCase: sl(),
+      calculateBreakdownUseCase: sl(),
+    ),
+  );
+  ///////////payment
+
+  sl.registerLazySingleton<http.Client>(() => http.Client());
+  // Data sources
+  sl.registerLazySingleton<PaymentRemoteDataSource>(
+    () => PaymentRemoteDataSourceImpl(
+      firestore: sl(),
+      auth: sl(),
+      client: sl(),
+    ),
+  );
+
+  // Repository
+  sl.registerLazySingleton<PaymentRepository>(
+    () => CheckoutpaymentRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  // Use cases
+  sl.registerLazySingleton(() => ValidateCartItems(sl()));
+  sl.registerLazySingleton(() => CreateOrder(sl()));
+  sl.registerLazySingleton(() => CreatePaymentIntent(sl()));
+  sl.registerLazySingleton(() => ProcessPayment(sl()));
+  sl.registerLazySingleton<UpdateOrderStatus>(() => UpdateOrderStatus(sl()));
+  sl.registerLazySingleton(() => HandleSuccessfulPayment(sl()));
+  sl.registerLazySingleton(() => HandleFailedPayment(sl()));
+  sl.registerLazySingleton(() => CanRetryPayment(sl()));
+  sl.registerLazySingleton(() => GetOrder(sl()));
+
+  // Bloc
+  sl.registerFactory(
+    () => CheckoutPayBloc(
+      validateCartItems: sl(),
+      createOrder: sl(),
+      createPaymentIntent: sl(),
+      processPayment: sl(),
+      handleSuccessfulPayment: sl(),
+      handleFailedPayment: sl(),
+      canRetryPayment: sl(),
+      getOrder: sl(),
+    ),
+  );
+/////////////////address
+  sl.registerLazySingleton<LocalAddressDataSource>(
+      () => LocalAddressDataSource(sl(), sl()));
+  sl.registerLazySingleton<AddressRepository>(
+      () => AddressRepositoryImpl(sl()));
+  sl.registerLazySingleton<MapRepository>(() => MapRepositoryImpl());
+
+  // Use Cases
+  sl.registerLazySingleton<GetAddressesUseCase>(
+      () => GetAddressesUseCase(sl()));
+  sl.registerLazySingleton<AddAddressUseCase>(() => AddAddressUseCase(sl()));
+  sl.registerLazySingleton<SetDefaultAddressUseCase>(
+      () => SetDefaultAddressUseCase(sl()));
+  sl.registerLazySingleton<DeleteAddressUseCase>(
+      () => DeleteAddressUseCase(sl()));
+
+  // BLoCs
+  sl.registerFactory(() => AddressBloc(
+        sl<SetDefaultAddressUseCase>(),
+        sl<GetAddressesUseCase>(),
+        sl<AddAddressUseCase>(),
+        sl<DeleteAddressUseCase>(),
+      ));
+
+  // Use Cases
+  sl.registerLazySingleton<GetCurrentPosition>(() => GetCurrentPosition(sl()));
+  sl.registerLazySingleton<GetAddressFromCoordinates>(
+      () => GetAddressFromCoordinates(sl()));
+  sl.registerLazySingleton<CheckLocationPermission>(
+      () => CheckLocationPermission(sl()));
+
+  // BLoC
+  sl.registerFactory<MapBloc>(() => MapBloc(
+        getCurrentPosition: sl(),
+        getAddressFromCoordinates: sl(),
+        checkLocationPermission: sl(),
+      ));
+
+  ///order
+  sl.registerLazySingleton<GetOrdersUseCase>(() => GetOrdersUseCase(sl()));
+  sl.registerLazySingleton<WatchOrdersUseCase>(() => WatchOrdersUseCase(sl()));
+  sl.registerLazySingleton<updateOrderstatus>(
+    () => updateOrderstatus(sl()),
+  );
+  sl.registerLazySingleton<OrderRepository>(
+    () => OrderRepositoryImpl(remoteDataSource: sl(), logger: sl()),
+  );
+  sl.registerLazySingleton<OrderRemoteDataSource>(
+    () => OrderRemoteDataSourceImpl(
+      firestore: sl<FirebaseFirestore>(),
+      logger: sl<Logger>(),
+      auth: sl(),
+    ),
+  );
+  sl.registerFactory<OrdersBloc>(
+    () => OrdersBloc(
+      getOrdersUseCase: sl(),
+      watchOrdersUseCase: sl(),
+      updateOrderstatusUseCase: sl<updateOrderstatus>(),
+    ),
+  );
 }

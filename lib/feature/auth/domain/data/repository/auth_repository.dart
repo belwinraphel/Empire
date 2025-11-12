@@ -1,4 +1,3 @@
-
 import 'package:empire/feature/auth/domain/data/datasource/auth_repo.dart';
 import 'package:empire/feature/auth/domain/entities/user_entities.dart';
 import 'package:empire/feature/auth/domain/repositories/auth_repository.dart';
@@ -24,7 +23,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserCredential> verifyOtp(int otp) async {
-    return await remoteDataSource.verifyOTP(otp);
+    return await remoteDataSource.verifyOtp(otp);
   }
 
   @override
@@ -34,14 +33,16 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> savePassword(
+     String photoUrl,
     String newPasswordController,
     String email,
     String password,
     String name,
     String phonenUmber,
+    
   ) async {
     return await remoteDataSource.savePassword(
-        newPasswordController, email, password, name, phonenUmber);
+        newPasswordController, email, password, name, phonenUmber, photoUrl);
   }
 
   @override

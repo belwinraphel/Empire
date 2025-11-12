@@ -1,9 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:label="empire"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <activity
+        android:extractNativeLibs="true">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAkPspDxf28LwM8mQSa8CZEK2Dml6JE7mY"/>
+            <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"

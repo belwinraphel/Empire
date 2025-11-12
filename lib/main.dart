@@ -1,12 +1,15 @@
 import 'package:empire/core/di/service_locator.dart';
+import 'package:empire/core/utilis/constants.dart';
 import 'package:empire/feature/product/presentation/views/myapp/my_app.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey = SharedpreferenceKey.stripePublishKey;
   await Firebase.initializeApp(
       options: kIsWeb
           ? const FirebaseOptions(
