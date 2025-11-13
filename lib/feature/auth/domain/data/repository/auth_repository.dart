@@ -1,3 +1,5 @@
+import 'package:dartz/dartz.dart';
+import 'package:empire/core/utilis/failure.dart';
 import 'package:empire/feature/auth/domain/data/datasource/auth_repo.dart';
 import 'package:empire/feature/auth/domain/entities/user_entities.dart';
 import 'package:empire/feature/auth/domain/repositories/auth_repository.dart';
@@ -27,8 +29,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future verifyNumber(int number) async {
-    return await remoteDataSource.verifyPhone(number);
+  Future<Either<Failures,void>> verifEmailandNumber(int number,String email) async {
+    return await remoteDataSource.verifyPhone(number,email);
   }
 
   @override

@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dartz/dartz.dart';
 import 'package:empire/core/utilis/device_info.dart';
+import 'package:empire/core/utilis/failure.dart';
 import 'package:empire/core/utilis/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -53,17 +56,85 @@ class AuthRemoteDataSource {
     }
   }
 
-  Future verifyPhone(int phone) async {
-    await _firebaseAuth.verifyPhoneNumber(
-      phoneNumber: '+91${phone.toString()}',
-      timeout: const Duration(seconds: 60),
-      verificationCompleted: (PhoneAuthCredential credential) async {},
-      verificationFailed: (FirebaseAuthException e) {},
-      codeSent: (String verid, int? resendToken) {
-        verificationId = verid;
-      },
-      codeAutoRetrievalTimeout: (String verid) {},
-    );
+  Future<bool> isEmailRegistered(String email) async {
+    final String emails = email;
+    try {
+      final email = await _firestore
+          .collection('user')
+          .where('email', isEqualTo: emails)
+          .limit(1)
+          .get();
+
+      return email.docs.isEmpty;
+    } catch (e) {
+      debugPrint('Error checking email: $e');
+      return false;
+    }
+  }
+
+  Future<Either<Failures, void>> verifyPhone(int phone, String email) async {
+    try {
+      bool isEmailRegisteredOrNot = await isEmailRegistered(email);
+
+      if (isEmailRegisteredOrNot == false) {
+        return const Left(Failures.emailexisted('email already registed'));
+      }
+
+      final Completer<Either<Failures, void>> completer = Completer();
+      if (isEmailRegisteredOrNot == true) {
+        await _firebaseAuth.verifyPhoneNumber(
+          phoneNumber: '+91${phone.toString()}',
+          timeout: const Duration(seconds: 60),
+          verificationFailed: (FirebaseAuthException e) {
+            completer.complete(Left(_handleFirebaseAuthException(e)));
+          },
+          codeSent: (String verid, int? resendToken) {
+            verificationId = verid;
+
+            completer.complete(const Right(null));
+          },
+          verificationCompleted: (PhoneAuthCredential credential) {
+            if (!completer.isCompleted) {
+              completer.complete(const Right(null));
+            }
+          },
+          codeAutoRetrievalTimeout: (String verid) {
+            if (!completer.isCompleted) {
+              completer
+                  .complete(const Left(Failures.messange('OTP timed out')));
+            }
+          },
+        );
+      }
+      return await completer.future;
+    } on SocketException catch (e) {
+      return Left(Failures.network(e.message));
+    } on TimeoutException catch (e) {
+      return Left(Failures.timeout(e.duration.toString()));
+    } on FirebaseAuthException catch (e) {
+      return Left(_handleFirebaseAuthException(e));
+    } catch (e) {
+      return Left(Failures.unexpected(e.toString()));
+    }
+  }
+
+  Failures _handleFirebaseAuthException(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'invalid-phone-number':
+        return const Failures.messange('Please enter a valid phone number');
+      case 'too-many-requests':
+        return const Failures.messange(
+            'Too many attempts. Please try again later.');
+      case 'quota-exceeded':
+        return const Failures.messange(
+            'SMS quota exceeded. Please try again later.');
+      case 'user-disabled':
+        return const Failures.messange('This account has been disabled.');
+      case 'operation-not-allowed':
+        return const Failures.messange('Phone authentication is not enabled.');
+      default:
+        return Failures.messange(e.message ?? e.code);
+    }
   }
 
   Future<UserCredential> verifyOtp(int oTp) async {
@@ -99,13 +170,15 @@ class AuthRemoteDataSource {
       // if (user == null) {
       //   throw Exception('No authenticated user found');
       // }
-      final file = File(photoUrl);
-      final image = await uploadImageToCloudinary(file);
-      if (image == null || image.isEmpty) {
-        return;
+      if (photoUrl.isNotEmpty || photoUrl != '') {
+        final file = File(photoUrl);
+        final image = await uploadImageToCloudinary(file);
+        if (image == null || image.isEmpty || image == '') {
+          return;
+        }
+        uploadedImageUrls = image;
       }
 
-      uploadedImageUrls = image;
       final password = newPasswordController.trim();
 
       final userCredential =
@@ -132,7 +205,9 @@ class AuthRemoteDataSource {
       //     print('Password setup failed: ${e.message}');
       //   }
       // }
-    } catch (e) {}
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   Future<User?> login(String email, String password) async {

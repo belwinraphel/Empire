@@ -8,7 +8,7 @@ class OtpPage extends StatelessWidget {
   final String email;
   final String phoneNumber;
   final String name;
-  final String photoUrl;
+   
   final void Function(String) onOtpSubmit;
   final VoidCallback onResend;
   final VoidCallback onCancel;
@@ -20,7 +20,7 @@ class OtpPage extends StatelessWidget {
       required this.onOtpSubmit,
       required this.onResend,
       required this.onCancel,
-      required this.photoUrl,
+      
       required this.email});
   TextEditingController otpController = TextEditingController();
   String getMaskedNumber(String phone) {
@@ -60,7 +60,7 @@ class OtpPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    maskedNumber,
+                    maskedNumber.toString(),
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.black),
                   ),
@@ -106,7 +106,7 @@ class OtpPage extends StatelessWidget {
                       Navigator.push(context, MaterialPageRoute(
                         builder: (context) {
                           return Password(
-                            photoUrl: photoUrl,
+              
                             name: name,
                             phoneNumber: phoneNumber,
                             email: email,

@@ -1,5 +1,6 @@
 import 'package:empire/core/utilis/commonvalidator.dart';
 import 'package:empire/core/utilis/fonts.dart';
+import 'package:empire/feature/auth/presentation/bloc/auth/profile_image.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/savepassowrd.dart';
 import 'package:empire/feature/auth/presentation/views/loginpage/login_page.dart';
 import 'package:empire/feature/auth/presentation/views/loginpage/widget.dart';
@@ -12,14 +13,13 @@ class Password extends StatelessWidget {
       {super.key,
       required this.email,
       required this.name,
-      required this.photoUrl,
       required this.phoneNumber});
   final passwordcontroller = TextEditingController();
   final password2controller = TextEditingController();
-  final String photoUrl;
+
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   String email;
-
+  String? profileImage;
   final String phoneNumber;
   final String name;
   @override
@@ -79,7 +79,14 @@ class Password extends StatelessWidget {
                               value ?? '', passwordcontroller.text);
                         },
                       ),
-                      SizedBox(height: maxHeight * 0.09),
+                      BlocListener<ImageAuth, ImagePickerState>(
+                        listener: (context, state) {
+                          if (state is ImagePickedSucess) {
+                            profileImage = state.image;
+                          }
+                        },
+                        child: SizedBox(height: maxHeight * 0.09),
+                      ),
                       BlocConsumer<SavePasswordBloc, SavePasswordState>(
                         listener: (context, state) {
                           if (state is LoadingSave) {
@@ -87,11 +94,11 @@ class Password extends StatelessWidget {
                           } else if (state is Saved) {
                             ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(state.message)));
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) {
-                                return Loginpage();
-                              },
-                            ));
+                            // Navigator.push(context, MaterialPageRoute(
+                            //   builder: (context) {
+                            //     return Loginpage();
+                            //   },
+                            // ));
                           } else if (state is ErrorSave) {
                             ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(state.error)));
@@ -107,7 +114,7 @@ class Password extends StatelessWidget {
                                       if (formkey.currentState!.validate()) {
                                         context.read<SavePasswordBloc>().add(
                                             Savepassowrd(
-                                                photoUrl: photoUrl,
+                                                photoUrl: profileImage ?? "",
                                                 name: name,
                                                 number: phoneNumber,
                                                 email: email,
