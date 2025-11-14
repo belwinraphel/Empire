@@ -1,5 +1,3 @@
- 
-
 import 'package:empire/feature/auth/domain/usecase/auth/register_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/verify_user_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +24,10 @@ class ChekingLoading extends RegisterState {}
 
 class CheckingUserState extends RegisterState {}
 
-class UserExist extends RegisterState {}
+class UserExist extends RegisterState {
+  final String messange;
+  UserExist(this.messange);
+}
 
 class NonExist extends RegisterState {}
 
@@ -44,12 +45,20 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           image: event.image);
 
       if (result) {
-        emit(UserExist());
+        emit(UserExist(''));
       } else {
-        await verifyNumber(
-          event.phone,
+        final isUserexistedOrNot = await verifyNumber(event.phone, event.email);
+        print(isUserexistedOrNot);
+        isUserexistedOrNot.fold(
+          (fail) {
+            print(fail.message);
+            emit(UserExist(fail.message));
+          },
+          (nonexist) {
+            print(NonExist);
+            emit(NonExist());
+          },
         );
-        emit(NonExist());
       }
     });
   }

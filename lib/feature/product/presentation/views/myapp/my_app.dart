@@ -6,7 +6,7 @@ import 'package:empire/feature/auth/domain/data/datasource/auth_repo.dart';
 import 'package:empire/feature/auth/domain/repositories/auth_repository.dart';
 import 'package:empire/feature/auth/domain/repositories/local_auth.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/forgotpassword_usecase.dart';
- import 'package:empire/feature/auth/domain/usecase/auth/login_auth_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/login_auth_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/loginstatue_usecase.dart';
 
 import 'package:empire/feature/auth/domain/usecase/auth/pick_image_camera_usecase.dart';
@@ -14,7 +14,7 @@ import 'package:empire/feature/auth/domain/usecase/auth/pick_image_gallery_useca
 import 'package:empire/feature/auth/domain/usecase/auth/register_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/save_login_status_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/send_otp_usecase.dart';
- import 'package:empire/feature/auth/domain/usecase/auth/verify_user_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/verify_user_usecase.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/forgot_password.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/login.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/login_status.dart';
@@ -42,6 +42,7 @@ import 'package:empire/feature/product/presentation/bloc/product_bloc/get_catego
 import 'package:empire/feature/product/presentation/bloc/product_bloc/get_subcategory.dart';
 import 'package:empire/feature/product/presentation/bloc/product_bloc/product_bloc.dart';
 import 'package:empire/feature/product/presentation/views/mainscreen/main_screen.dart';
+import 'package:empire/feature/product/presentation/views/splashScreen/splachscreen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -77,7 +78,7 @@ class MyApp extends StatelessWidget {
                 sl<AuthLocalDataSource>())),
         BlocProvider<ForgotPasswordClickBloc>(
             create: (_) => ForgotPasswordClickBloc(sl<ForgotPassword>())),
-       
+
         BlocProvider<LogoutBloc>(
             create: (_) => LogoutBloc(
                   sl<AuthRemoteDataSource>(),
@@ -85,7 +86,6 @@ class MyApp extends StatelessWidget {
                 )),
 
         //////category////////////
-
         BlocProvider(
             create: (_) => CategoryBloc(
                   sl<CategoryUsecase>(),
@@ -123,7 +123,7 @@ class MyApp extends StatelessWidget {
             if (state is SucessLoginStatusState) {
               return const MainScreen();
             } else if (state is NotLoginState) {
-              return Loginpage();
+              return const SplashScreen();
             } else {
               return const Scaffold(
                 body: Center(child: CircularProgressIndicator()),

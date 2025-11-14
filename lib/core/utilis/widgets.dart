@@ -124,7 +124,7 @@ class _GreenElevatedButtonState extends State<GreenElevatedButton> {
     return Padding(
       padding: EdgeInsets.all(widget.padding),
       child: SizedBox(
-        height: 40,
+        height: 50,
         width: responsiveWidth(context, widget.width),
         child: ElevatedButton.icon(
           style: ElevatedButton.styleFrom(

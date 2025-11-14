@@ -1,3 +1,4 @@
+import 'package:empire/feature/product/presentation/views/splashScreen/starting_page.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,6 +17,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   splash() async {
     await Future.delayed(const Duration(seconds: 3));
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const StartingScreen()),
+    );
   }
 
   @override
@@ -23,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF4BB04F),
       body: Center(
-        child: Image.asset('assets/milkshake.png'),
+        child: Image.asset('assets/logo.png', width: 150, height: 150),
       ),
     );
   }

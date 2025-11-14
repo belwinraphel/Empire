@@ -311,13 +311,13 @@ class ContinueButton extends StatelessWidget {
     return BlocConsumer<RegisterBloc, RegisterState>(
         listener: (context, state) {
       if (state is UserExist) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('already Registered')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                state.messange == '' ? state.messange : 'already Registered')));
       } else if (state is NonExist) {
-        Navigator.pushReplacement(context, MaterialPageRoute(
+        Navigator.push(context, MaterialPageRoute(
           builder: (context) {
             return OtpPage(
-                photoUrl: imageFile,
                 name: usernameController.text,
                 email: emailController.text,
                 phoneNumber: mobileController.text,
@@ -337,7 +337,6 @@ class ContinueButton extends StatelessWidget {
               name: 'Continue',
               issmallScreen: issmallScreen,
               onPressed: () {
-                
                 if (formkey.currentState!.validate()) {
                   context.read<RegisterBloc>().add(
                         ChekingUserExistenceEvent(

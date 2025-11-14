@@ -13,7 +13,7 @@ void main() async {
   await Firebase.initializeApp(
       options: kIsWeb
           ? const FirebaseOptions(
-              apiKey: "AIzaSyDDemGBh8yl8FjfnzNDNiVd0sg_jXHxou4",
+              apiKey: "AIzaSyDDemGBh8yl8FjfnzNDNiVd0sg_jXHšou4",
               authDomain: "empire-8f1e5.firebaseapp.com",
               projectId: "empire-8f1e5",
               storageBucket: "empire-8f1e5.firebasestorage.app",

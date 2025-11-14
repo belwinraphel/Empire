@@ -139,10 +139,10 @@ class CheckoutCard extends StatelessWidget {
                     onPressed: () {
                       final order = OrderEntity(
                         orderId: '${DateTime.now().millisecondsSinceEpoch}',
-                        userId: 'YOUR_CURRENT_USER_ID',
+                        userId: '',
                         items: cartItem,
                         totalAmount: totalAmount,
-                        currency: 'usd',
+                        currency: 'INR',
                         status: 'pending',
                         paymentStatus: 'pending',
                         createdAt: DateTime.now(),

@@ -1,5 +1,6 @@
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/fonts.dart';
+import 'package:empire/feature/address/domain/entity/address.dart';
 import 'package:empire/feature/address/presentation/bloc/address.dart';
 
 import 'package:empire/feature/address/presentation/view/widget.dart';
@@ -24,15 +25,7 @@ class AddressView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColoRs.addresBackgroundcolor,
-      appBar: AppBar(
-        title: const Text('Address Selection',
-            style: TextStyle(
-                color: ColoRs.black,
-                fontWeight: FontWeight.w600,
-                fontSize: 18,
-                fontFamily: Fonts.raleway)),
-        backgroundColor: ColoRs.addresBackgroundcolor,
-      ),
+      appBar: appBar(),
       body: RefreshIndicator(
         onRefresh: () async {
           context.read<AddressBloc>().add(LoadAddresses());
@@ -50,152 +43,176 @@ class AddressView extends StatelessWidget {
             }
             if (state is AddressLoaded) {
               if (state.addresses.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          foregroundColor: ColoRs.white,
-                          textStyle: const TextStyle(
-                            fontSize: 15,
-                          ),
-                          backgroundColor: ColoRs.buttoncolor),
-                      onPressed: () => Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                            builder: (_) => const MapConfirmPage()),
-                      ),
-                      child: const Text('Add Address'),
-                    ),
-                  ),
-                );
+                return const EmptyAddress();
               }
               final selected = state.selectedAddress;
-              return Column(
-                children: [
-                  if (selected != null) ...[
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.location_on,
-                            color: ColoRs.buttoncolor,
-                          ),
-                          SizedBox(
-                            width: MediaQuery.sizeOf(context).width * 0.03,
-                          ),
-                          Text(
-                            'Default Address: ${selected.fullAddress}',
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Divider(),
-                  ],
-                  Expanded(
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) {
-                        return SizedBox(
-                          height: MediaQuery.sizeOf(context).height * 0.01,
-                        );
-                      },
-                      padding: EdgeInsets.all(
-                          MediaQuery.sizeOf(context).width * 0.02),
-                      itemCount: state.addresses.length,
-                      itemBuilder: (context, index) {
-                        final address = state.addresses[index];
-                        return GestureDetector(
-                          onTap: () {
-                            context.read<AddressBloc>().add(SelectAddress(
-                                id: address.id, mainAddress: address));
-                          },
-                          child: Container(
-                            height: MediaQuery.sizeOf(context).height * 0.09,
-                            width: MediaQuery.sizeOf(context).width * 0.5,
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [ColoRs.white, ColoRs.white],
-                                end: Alignment(0.0, -5),
-                                begin: Alignment(0.0, -5),
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                      color: ColoRs.white,
-                                      borderRadius: BorderRadius.circular(10)),
-                                  width:
-                                      MediaQuery.sizeOf(context).width * 0.10,
-                                  child: const Icon(
-                                    Icons.home,
-                                    color: ColoRs.background,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.sizeOf(context).width * 0.03,
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.sizeOf(context).width * 0.74,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        address.label,
-                                        style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                      Text(
-                                        address.fullAddress,
-                                        style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w300),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: ColoRs.buttoncolor),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const MapConfirmPage(),
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        'Add New Address',
-                        style: TextStyle(color: ColoRs.white),
-                      ),
-                    ),
-                  ),
-                ],
-              );
+              return addressSection(selected, context, state);
             }
 
             return const SizedBox();
           },
+        ),
+      ),
+    );
+  }
+
+  Column addressSection(
+      MainAddress? selected, BuildContext context, AddressLoaded state) {
+    return Column(
+      children: [
+        if (selected != null) ...[
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.location_on,
+                  color: ColoRs.buttoncolor,
+                ),
+                SizedBox(
+                  width: MediaQuery.sizeOf(context).width * 0.03,
+                ),
+                Flexible(
+                  flex: 5,
+                  child: Text(
+                    'Default Address: ${selected.fullAddress}',
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(),
+        ],
+        Expanded(
+          child: ListView.separated(
+            separatorBuilder: (context, index) {
+              return SizedBox(
+                height: MediaQuery.sizeOf(context).height * 0.01,
+              );
+            },
+            padding: EdgeInsets.all(MediaQuery.sizeOf(context).width * 0.02),
+            itemCount: state.addresses.length,
+            itemBuilder: (context, index) {
+              final address = state.addresses[index];
+              return GestureDetector(
+                onTap: () {
+                  context
+                      .read<AddressBloc>()
+                      .add(SelectAddress(id: address.id, mainAddress: address));
+                },
+                child: Container(
+                  height: MediaQuery.sizeOf(context).height * 0.09,
+                  width: MediaQuery.sizeOf(context).width * 0.5,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [ColoRs.white, ColoRs.white],
+                      end: Alignment(0.0, -5),
+                      begin: Alignment(0.0, -5),
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: ColoRs.white,
+                            borderRadius: BorderRadius.circular(10)),
+                        width: MediaQuery.sizeOf(context).width * 0.10,
+                        child: const Icon(
+                          Icons.home,
+                          color: ColoRs.background,
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.sizeOf(context).width * 0.03,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.sizeOf(context).width * 0.74,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              address.label,
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w700),
+                            ),
+                            Text(
+                              address.fullAddress,
+                              style: const TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.w300),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ElevatedButton(
+            style:
+                ElevatedButton.styleFrom(backgroundColor: ColoRs.buttoncolor),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MapConfirmPage(),
+                ),
+              );
+            },
+            child: const Text(
+              'Add New Address',
+              style: TextStyle(color: ColoRs.white),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  AppBar appBar() {
+    return AppBar(
+      title: const Text('Address Selection',
+          style: TextStyle(
+              color: ColoRs.black,
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
+              fontFamily: Fonts.raleway)),
+      backgroundColor: ColoRs.addresBackgroundcolor,
+    );
+  }
+}
+
+class EmptyAddress extends StatelessWidget {
+  const EmptyAddress({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              foregroundColor: ColoRs.white,
+              textStyle: const TextStyle(
+                fontSize: 15,
+              ),
+              backgroundColor: ColoRs.buttoncolor),
+          onPressed: () => Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const MapConfirmPage()),
+          ),
+          child: const Text('Add Address'),
         ),
       ),
     );

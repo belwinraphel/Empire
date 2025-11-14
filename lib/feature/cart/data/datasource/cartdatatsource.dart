@@ -31,21 +31,16 @@ class CartFirestoreDataSource {
     String variantName,
     int quantity,
   ) async {
- 
     if (quantity <= 0) {
       return left(const Failures.validation('Quantity must be positive.'));
     }
 
     try {
- 
       await _ensureDocExists();
 
       final result =
           await firestore.runTransaction<Either<Failures, List<CartItem>>>(
         (transaction) async {
- 
-
-  
           final productDoc = await transaction.get(
             firestore.collection('products').doc(productId),
           );
@@ -57,11 +52,10 @@ class CartFirestoreDataSource {
           // 2. Get the user's cart.
           final cartSnap = await transaction.get(_cartDoc());
           if (!cartSnap.exists) {
-          
             return left(const Failures.network('Cart not found'));
           }
 
-          //   the available stock for the selected variant.
+          //  the available stock for the selected variant.
           final productData = productDoc.data()!;
           final variantData =
               (productData['variantDetails'] as List<dynamic>?)?.firstWhere(
@@ -69,7 +63,7 @@ class CartFirestoreDataSource {
             orElse: () => null,
           );
 
-          // Use the variant's quantity if it exists, otherwise fall back to the main product quantity.
+          // Use the variant's quantity if it exists, otherwise back to the main product quantity.
           final stock = variantData != null
               ? ((variantData['quantity'] as num?)?.toInt() ?? 0)
               : ((productData['quantities'] as num?)?.toInt() ?? 0);
@@ -80,10 +74,10 @@ class CartFirestoreDataSource {
 
           final index = items.indexWhere((item) =>
               item['productId'] == productId &&
-              item['variantName'] == variantName);
+              item['snapshot']['name'] == variantName);
 
           if (index != -1) {
-            // Item ALREADY EXISTS in cart: Update its quantity 
+            // Item ALREADY EXISTS in cart: Update its quantity
             final existingQuantity = (items[index]['quantity'] as num).toInt();
             final newQuantity = existingQuantity + quantity;
 
@@ -94,14 +88,16 @@ class CartFirestoreDataSource {
             }
             items[index]['quantity'] = newQuantity;
           } else {
-            //  Item is New to the cart- Add it 
+            //  Item is New to the cart- Add it
             if (quantity > stock) {
               return left(const Failures.outofstock(
                 'Out Of Stock',
               ));
             }
-           
+
             final newItem = CartItem(
+              amount: (variantData?['salePrice'] as num?)?.toString() ??
+                  (productData['price'] as num).toString(),
               productId: productId,
               productName: productData['name'],
               varientName: variantName,
@@ -149,8 +145,7 @@ class CartFirestoreDataSource {
 
   Future<VariantSnapshot> getVariantSnapshot(
       String productId, String variantName, int quantity) async {
-
-        //get the all produts
+    //get the all produts
     final productDoc =
         await firestore.collection('products').doc(productId).get();
     if (!productDoc.exists) throw Exception('Product not found');
@@ -233,7 +228,7 @@ class CartFirestoreDataSource {
               ? (variantData['quantity'] as int?) ?? 0
               : availableStock;
           final List cartItmes = items.map((data) => data['snapshot']).toList();
-         
+
           final index = cartItmes.indexWhere((item) {
             return item['name'] == variantName;
           });

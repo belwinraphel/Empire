@@ -45,6 +45,7 @@ class OrderEntity extends Equatable {
 
 class CartItem extends Equatable {
   final String productId;
+  final String amount;    
   final String productName;
   final String varientName;
   final int quantity;
@@ -52,6 +53,7 @@ class CartItem extends Equatable {
 
   const CartItem({
     required this.productId,
+    required this.amount,
     required this.productName,
     required this.varientName,
     required this.quantity,
@@ -62,6 +64,7 @@ class CartItem extends Equatable {
   List<Object?> get props => [
     productId,
     productName,
+    amount,
     varientName,
     quantity,
     imageUrl,
@@ -71,14 +74,16 @@ class CartItem extends Equatable {
 class ProductSnapshot extends Equatable {
   final String name;
   final double price;
+  final String amount;
   final String? imageUrl;
 
   const ProductSnapshot({
     required this.name,
     required this.price,
+    required this.amount,
     this.imageUrl,
   });
 
   @override
-  List<Object?> get props => [name, price, imageUrl];
+  List<Object?> get props => [name, price, amount, imageUrl];
 }

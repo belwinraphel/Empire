@@ -79,33 +79,33 @@ class Loginpage extends StatelessWidget {
                           left: issmallScreen ? maxwidth * 0.0322 : 379,
                           right: issmallScreen ? maxwidth * 0.0322 : 379),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                height: 15,
-                                width: 15,
-                                decoration: BoxDecoration(
-                                    color: issmallScreen
-                                        ? Colors.black
-                                        : Colors.amber,
-                                    border: Border.all(color: Colors.black87),
-                                    borderRadius: BorderRadius.circular(4)),
-                              ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              const Text(
-                                'Remember me',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: Fonts.raleway,
-                                ),
-                              ),
-                            ],
-                          ),
+                          // Row(
+                          //   children: [
+                          //     Container(
+                          //       height: 15,
+                          //       width: 15,
+                          //       decoration: BoxDecoration(
+                          //           color: issmallScreen
+                          //               ? Colors.black
+                          //               : Colors.amber,
+                          //           border: Border.all(color: Colors.black87),
+                          //           borderRadius: BorderRadius.circular(4)),
+                          //     ),
+                          //     const SizedBox(
+                          //       width: 20,
+                          //     ),
+                          //     const Text(
+                          //       'Remember me',
+                          //       style: TextStyle(
+                          //         fontSize: 12,
+                          //         fontWeight: FontWeight.w600,
+                          //         fontFamily: Fonts.raleway,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                           GestureDetector(
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(
