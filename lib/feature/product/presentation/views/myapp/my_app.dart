@@ -64,9 +64,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<ImageAuth>(
             create: (_) => ImageAuth(
                 sl<PickImageFromCamera>(), sl<PickImageFromGallery>())),
-        BlocProvider<RegisterBloc>(
-            create: (_) =>
-                RegisterBloc(sl<CheckingUser>(), sl<VerifyNumber>())),
+ 
         BlocProvider<OtpBloc>(create: (_) => OtpBloc(sl<Verify0tpUsecase>())),
         BlocProvider<SavePasswordBloc>(create: (_) => SavePasswordBloc(sl())),
         BlocProvider<LoginBloc>(
@@ -79,11 +77,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<ForgotPasswordClickBloc>(
             create: (_) => ForgotPasswordClickBloc(sl<ForgotPassword>())),
 
-        BlocProvider<LogoutBloc>(
-            create: (_) => LogoutBloc(
-                  sl<AuthRemoteDataSource>(),
-                  sl<SaveLoginStatus>(),
-                )),
+       
 
         //////category////////////
         BlocProvider(

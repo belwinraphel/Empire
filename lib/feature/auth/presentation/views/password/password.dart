@@ -94,11 +94,11 @@ class Password extends StatelessWidget {
                           } else if (state is Saved) {
                             ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(state.message)));
-                            // Navigator.push(context, MaterialPageRoute(
-                            //   builder: (context) {
-                            //     return Loginpage();
-                            //   },
-                            // ));
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) {
+                                return Loginpage();
+                              },
+                            ));
                           } else if (state is ErrorSave) {
                             ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(state.error)));

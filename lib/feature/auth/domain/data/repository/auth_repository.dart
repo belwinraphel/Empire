@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:empire/core/utilis/device_info.dart';
 import 'package:empire/core/utilis/failure.dart';
 import 'package:empire/feature/auth/domain/data/datasource/auth_repo.dart';
 import 'package:empire/feature/auth/domain/entities/user_entities.dart';
@@ -11,16 +12,8 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<UserEntity?> sigInWithGoogle() async {
-    final user = await remoteDataSource.signInWithGoogle();
-    if (user == null) return null;
-    return UserEntity(
-      uid: user.uid,
-      email: user.email ?? '',
-      name: user.displayName,
-      photourl: user.photoURL,
-      phoneNumber: user.phoneNumber,
-    );
+  Future<Either<Failures, UserEntity?>> sigInWithGoogle() async {
+    return remoteDataSource.signInWithGoogle();
   }
 
   @override
@@ -29,26 +22,26 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failures,void>> verifEmailandNumber(int number,String email) async {
-    return await remoteDataSource.verifyPhone(number,email);
+  Future<Either<Failures, OTP>> verifEmailandNumber(
+      int number, String email) async {
+    return await remoteDataSource.verifyPhone(number, email);
   }
 
   @override
   Future<void> savePassword(
-     String photoUrl,
+    String photoUrl,
     String newPasswordController,
     String email,
     String password,
     String name,
     String phonenUmber,
-    
   ) async {
     return await remoteDataSource.savePassword(
         newPasswordController, email, password, name, phonenUmber, photoUrl);
   }
 
   @override
-  Future<User?> login(String name, String password) {
+  Future<Either<Failures,User>> login(String name, String password) {
     return remoteDataSource.login(name, password);
   }
 

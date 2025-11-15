@@ -2,7 +2,7 @@ import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/feature/address/domain/entity/address.dart';
 import 'package:empire/feature/address/presentation/bloc/address.dart';
-
+import 'package:empire/feature/address/presentation/view/map_widget.dart';
 import 'package:empire/feature/address/presentation/view/widget.dart';
 
 import 'package:flutter/material.dart';
@@ -13,14 +13,14 @@ class AddressSelectionScreen extends StatelessWidget {
   const AddressSelectionScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return AddressView();
+    return BlocProvider.value(
+        value: BlocProvider.of<AddressBloc>(context), child: AddressView());
   }
 }
 
 class AddressView extends StatelessWidget {
   String? isSlected;
   AddressView({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +46,10 @@ class AddressView extends StatelessWidget {
                 return const EmptyAddress();
               }
               final selected = state.selectedAddress;
-              return addressSection(selected, context, state);
+              return BlocProvider.value(
+                value: BlocProvider.of<AddressBloc>(context),
+                child: addressSection(selected, context, state),
+              );
             }
 
             return const SizedBox();
@@ -164,7 +167,9 @@ class AddressView extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const MapConfirmPage(),
+                  builder: (context) => BlocProvider.value(
+                      value: context.read<AddressBloc>(),
+                      child: const MapConfirmPage()),
                 ),
               );
             },
@@ -209,9 +214,19 @@ class EmptyAddress extends StatelessWidget {
                 fontSize: 15,
               ),
               backgroundColor: ColoRs.buttoncolor),
-          onPressed: () => Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const MapConfirmPage()),
-          ),
+          onPressed: () {
+            BlocProvider.value(
+                value: BlocProvider.of<AddressBloc>(context),
+                child: const MapConfirmPage());
+
+            //   Navigator.of(context).push(
+            //   MaterialPageRoute(builder: (_) {
+            //     return BlocProvider.value(
+            //         value: BlocProvider.of<AddressBloc>(context),
+            //         child: const MapConfirmPage());
+            //   }),
+            // );
+          },
           child: const Text('Add Address'),
         ),
       ),

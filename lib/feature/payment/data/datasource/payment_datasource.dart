@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:empire/core/utilis/constants.dart';
 import 'package:empire/core/utilis/failure.dart';
 import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
 import 'package:empire/feature/payment/domain/entity/Payment_entity.dart';
 import 'package:empire/feature/payment/domain/entity/order_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
@@ -138,12 +137,16 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
       double amount, String currency) async {
     logger.d('createIntent');
     try {
+      String? stripeSecretKey = dotenv.env['stripeSecretKey'];
+      String? stripePublishKey = dotenv.env['stripePublishKey'];
+      logger.d('this secret key $stripeSecretKey');
+      logger.d('this secret key $stripePublishKey');
       final amountInCents = (amount * 100).round();
       final response = await client.post(
         Uri.parse('https://api.stripe.com/v1/payment_intents'),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Bearer ${SharedpreferenceKey.stripeSecretKey}',
+          'Authorization': 'Bearer $stripeSecretKey',
         },
         body: {
           'amount': amountInCents.toString(),
@@ -188,6 +191,7 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
   Future<void> processPayment(
       String paymentIntentId, PaymentIntentEntity paymentIntentDetails) async {
     logger.d('Processing payment with PaymentSheet...');
+    logger.d('  clientSecret ------------${paymentIntentDetails.clientSecret}');
     if (paymentIntentDetails.clientSecret.isEmpty) {
       logger.w('Client secret is empty, cannot process payment.');
 
@@ -203,7 +207,6 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
         ),
       );
       await Stripe.instance.presentPaymentSheet();
-      logger.i('Payment sheet presented and confirmed successfully');
     } on StripeException catch (e, s) {
       logger.e('Stripe error during payment processing: ${e.error.message}',
           error: e, stackTrace: s);

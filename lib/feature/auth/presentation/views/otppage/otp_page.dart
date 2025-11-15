@@ -8,7 +8,7 @@ class OtpPage extends StatelessWidget {
   final String email;
   final String phoneNumber;
   final String name;
-   
+
   final void Function(String) onOtpSubmit;
   final VoidCallback onResend;
   final VoidCallback onCancel;
@@ -20,7 +20,6 @@ class OtpPage extends StatelessWidget {
       required this.onOtpSubmit,
       required this.onResend,
       required this.onCancel,
-      
       required this.email});
   TextEditingController otpController = TextEditingController();
   String getMaskedNumber(String phone) {
@@ -52,21 +51,21 @@ class OtpPage extends StatelessWidget {
                     "OTP",
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: maxHeight * 0.06),
                   const Text(
                     "Enter 4-digits code we sent you\non your phone number",
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.black54),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: maxHeight * 0.02),
                   Text(
                     maskedNumber.toString(),
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.black),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: maxHeight * 0.03),
                   PinCodeTextField(
-                    length: 4,
+                    length: 6,
                     appContext: context,
                     onChanged: (_) {},
                     onCompleted: onOtpSubmit,
@@ -80,18 +79,18 @@ class OtpPage extends StatelessWidget {
                       activeColor: Colors.transparent,
                       inactiveColor: Colors.transparent,
                       selectedColor: Colors.grey,
-                      fieldHeight: 50,
+                      fieldHeight: 40,
                       fieldWidth: 40,
                       borderWidth: 0,
                       fieldOuterPadding:
-                          const EdgeInsets.symmetric(horizontal: 6),
+                          EdgeInsets.only(left: maxwidth * 0.04, right: 0.06),
                     ),
                     animationDuration: const Duration(milliseconds: 300),
                     enableActiveFill: true,
                     keyboardType: TextInputType.number,
                     controller: otpController,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: maxHeight * 0.04),
                   TextButton(
                     onPressed: onResend,
                     child: const Text(
@@ -99,14 +98,13 @@ class OtpPage extends StatelessWidget {
                       style: TextStyle(color: Colors.black),
                     ),
                   ),
-                  SizedBox(height: maxHeight * 0.09),
+                  SizedBox(height: maxHeight * 0.04),
                   BlocConsumer<OtpBloc, OtpVerifyState>(
                       listener: (context, state) {
                     if (state is VerifiedOtpVerifyState) {
                       Navigator.push(context, MaterialPageRoute(
                         builder: (context) {
                           return Password(
-              
                             name: name,
                             phoneNumber: phoneNumber,
                             email: email,

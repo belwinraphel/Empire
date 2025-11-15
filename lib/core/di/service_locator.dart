@@ -140,7 +140,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UserFirebaseSource(firestore));
   sl.registerLazySingleton<RegisterRepository>(
       () => RegisterRepositoryimpli(sl()));
-  sl.registerLazySingleton(() => CheckingUser(sl()));
+  sl.registerLazySingleton(() => CheckingUseUsecase(sl()));
   ////////////otp////////
   sl.registerLazySingleton(() => Verify0tpUsecase(sl()));
   sl.registerLazySingleton(() => VerifyNumber(sl()));
@@ -371,9 +371,9 @@ Future<void> init() async {
       () => CheckLocationPermission(sl()));
 
   // BLoC
-  sl.registerFactory<MapBloc>(() => MapBloc(
+  sl.registerLazySingleton<MapBloc>(() => MapBloc(
         getCurrentPosition: sl(),
-        getAddressFromCoordinates: sl(),
+        getAddressFromCoordinates: sl(),      
         checkLocationPermission: sl(),
       ));
 

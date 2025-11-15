@@ -94,7 +94,7 @@ class FavoritesRemoteDataSourceImpl implements FavoritesRemoteDataSource {
     
       return Right(products);
     } catch (e) {
-      return Left(Failures.server(e.toString()));
+      return Left(Failures.unexpected(e.toString()));
     }
   }
 }

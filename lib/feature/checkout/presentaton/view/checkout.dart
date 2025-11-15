@@ -2,6 +2,7 @@ import 'package:empire/core/di/service_locator.dart';
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/widgets.dart';
 import 'package:empire/feature/address/presentation/bloc/address.dart';
+import 'package:empire/feature/address/presentation/bloc/map_bloc.dart';
 import 'package:empire/feature/address/presentation/view/addres_screen.dart';
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
 import 'package:empire/feature/checkout/presentaton/bloc/checkoutbloc.dart';
@@ -30,7 +31,10 @@ class CheckoutPage extends StatelessWidget {
         ),
         BlocProvider<AddressBloc>(
           create: (context) => sl<AddressBloc>()..add(LoadAddresses()),
-        )
+        ),
+        BlocProvider<MapBloc>(
+          create: (context) => sl<MapBloc>(),
+        ),
       ],
       child: Scaffold(
         backgroundColor: Colors.grey[50],

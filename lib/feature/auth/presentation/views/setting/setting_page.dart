@@ -1,4 +1,7 @@
+import 'package:empire/core/di/service_locator.dart';
 import 'package:empire/core/utilis/fonts.dart';
+import 'package:empire/feature/auth/domain/data/datasource/auth_repo.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/save_login_status_usecase.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/logout_bloc.dart';
 import 'package:empire/feature/auth/presentation/views/loginpage/login_page.dart';
 import 'package:empire/feature/auth/presentation/views/updatProfile/update_profile.dart';
@@ -35,175 +38,183 @@ class _SettingsPageState extends State<SettingsPage> {
       final Color activeColor = Colors.amber[600]!;
       final Color inactiveColor = Colors.grey.shade400;
 
-      return SafeArea(
-        child: Scaffold(
-          backgroundColor: const Color(0xFFF9FAFB),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: paddingHorizontal, vertical: 8),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Settings',
-                      style: TextStyle(
-                        fontSize: titleFontSize,
-                        fontFamily: Fonts.ralewayExtraBold,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade900,
+      return  BlocProvider<LogoutBloc>(
+            create: (_) => LogoutBloc(
+                  sl<AuthRemoteDataSource>(),
+                  sl<SaveLoginStatus>(),
+                ),
+        child: SafeArea(
+          child: Scaffold(
+            backgroundColor: const Color(0xFFF9FAFB),
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: paddingHorizontal, vertical: 8),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Settings',
+                        style: TextStyle(
+                          fontSize: titleFontSize,
+                          fontFamily: Fonts.ralewayExtraBold,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey.shade900,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: paddingHorizontal),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 24),
-                      Text(
-                        'Personal',
-                        style: TextStyle(
-                          fontSize: sectionTitleFontSize,
-                          fontFamily: Fonts.ralewayExtraBold,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Column(
-                        children: [
-                          ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(
-                              'Profile',
-                              style: TextStyle(
-                                fontSize: listItemFontSize,
-                                fontFamily: Fonts.ralewaySemibold,
-                                color: const Color(0xFF374151),
-                              ),
-                            ),
-                            trailing: const Icon(
-                              Icons.chevron_right,
-                              color: Color(0xFF9CA3AF),
-                            ),
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) {
-                                  return UpdateProfiles();
-                                },
-                              ));
-                            },
-                          ),
-                          const Divider(
-                            thickness: 1,
-                            color: Color.fromARGB(255, 232, 234, 236),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 32),
-                      Text(
-                        'Shop',
-                        style: TextStyle(
-                          fontSize: sectionTitleFontSize,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: Fonts.ralewayExtraBold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          'Order',
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: paddingHorizontal),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 24),
+                        Text(
+                          'Personal',
                           style: TextStyle(
-                            fontSize: listItemFontSize,
-                            fontFamily: Fonts.ralewaySemibold,
-                            color: const Color(0xFF374151),
+                            fontSize: sectionTitleFontSize,
+                            fontFamily: Fonts.ralewayExtraBold,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
                           ),
                         ),
-                        trailing: const Icon(
-                          Icons.chevron_right,
-                          color: Color(0xFF9CA3AF),
-                        ),
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) {
-                              return const MyOrdersScreen();
-                            },
-                          ));
-                        },
-                      ),
-                      const Divider(
-                        thickness: 1,
-                        color: Color.fromARGB(255, 232, 234, 236),
-                      ),
-                      BlocConsumer<LogoutBloc, LogoutState>(
-                        listener: (context, state) {
-                          if (state is LogoutPressed) {
-                            showDialog(
-                                context: context,
-                                builder: (_) {
-                                  return AlertDialog(
-                                    title: const Text('Logout'),
-                                    content:
-                                        const Text('Are you sure to Logout'),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('Cancel')),
-                                      TextButton(
-                                          onPressed: () {
-                                            context
-                                                .read<LogoutBloc>()
-                                                .add(LogoutRequested());
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(const SnackBar(
-                                                    backgroundColor: Colors.red,
-                                                    content: Text(
-                                                        'Suceessfuly Logout')));
-                                          },
-                                          child: const Text('Yes')),
-                                    ],
-                                  );
-                                });
-                          }
-                          if (state is LogoutSucees) {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(builder: (_) => Loginpage()),
-                              (route) => false,
-                            );
-                          }
-                        },
-                        builder: (context, state) {
-                          return ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(
-                              'Log Out',
-                              style: TextStyle(
-                                fontSize: listItemFontSize,
-                                fontFamily: Fonts.ralewaySemibold,
-                                color: const Color(0xFF374151),
+                        const SizedBox(height: 16),
+                        Column(
+                          children: [
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                'Profile',
+                                style: TextStyle(
+                                  fontSize: listItemFontSize,
+                                  fontFamily: Fonts.ralewaySemibold,
+                                  color: const Color(0xFF374151),
+                                ),
                               ),
+                              trailing: const Icon(
+                                Icons.chevron_right,
+                                color: Color(0xFF9CA3AF),
+                              ),
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) {
+                                    return UpdateProfiles();
+                                  },
+                                ));
+                              },
                             ),
-                            trailing: const Icon(
-                              Icons.chevron_right,
-                              color: Color(0xFF9CA3AF),
+                            const Divider(
+                              thickness: 1,
+                              color: Color.fromARGB(255, 232, 234, 236),
                             ),
-                            onTap: () {
-                              context.read<LogoutBloc>().add(LogoutClicked());
-                            },
-                          );
-                        },
-                      ),
-                    ],
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+                        Text(
+                          'Shop',
+                          style: TextStyle(
+                            fontSize: sectionTitleFontSize,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: Fonts.ralewayExtraBold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            'Order',
+                            style: TextStyle(
+                              fontSize: listItemFontSize,
+                              fontFamily: Fonts.ralewaySemibold,
+                              color: const Color(0xFF374151),
+                            ),
+                          ),
+                          trailing: const Icon(
+                            Icons.chevron_right,
+                            color: Color(0xFF9CA3AF),
+                          ),
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) {
+                                return const MyOrdersScreen();
+                              },
+                            ));
+                          },
+                        ),
+                        const Divider(
+                          thickness: 1,
+                          color: Color.fromARGB(255, 232, 234, 236),
+                        ),
+                        BlocConsumer<LogoutBloc, LogoutState>(
+                          listener: (context, state) {
+                            if (state is LogoutPressed) {
+                              showDialog(
+                                  context: context,
+                                  builder: (_) {
+                                    return AlertDialog(
+                                      title: const Text('Logout'),
+                                      content:
+                                          const Text('Are you sure to Logout'),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('Cancel')),
+                                        TextButton(
+                                            onPressed: () {
+                                              context
+                                                  .read<LogoutBloc>()
+                                                  .add(LogoutRequested());
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                      backgroundColor:
+                                                          Colors.red,
+                                                      content: Text(
+                                                          'Suceessfuly Logout')));
+                                            },
+                                            child: const Text('Yes')),
+                                      ],
+                                    );
+                                  });
+                            }
+                            if (state is LogoutSucees) {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (_) => Loginpage()),
+                                (route) => false,
+                              );
+                            }
+                          },
+                          builder: (context, state) {
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                'Log Out',
+                                style: TextStyle(
+                                  fontSize: listItemFontSize,
+                                  fontFamily: Fonts.ralewaySemibold,
+                                  color: const Color(0xFF374151),
+                                ),
+                              ),
+                              trailing: const Icon(
+                                Icons.chevron_right,
+                                color: Color(0xFF9CA3AF),
+                              ),
+                              onTap: () {
+                                context.read<LogoutBloc>().add(LogoutClicked());
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

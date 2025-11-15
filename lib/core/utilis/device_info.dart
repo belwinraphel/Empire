@@ -7,3 +7,12 @@ class DeviceInfoService {
     return androidInfo.id;
   }
 }
+enum OTP {
+success,
+failes,
+timout,
+error,
+unknownerror,
+firebaserror,
+
+}

@@ -6,7 +6,6 @@ import 'package:empire/core/utilis/commonvalidator.dart';
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/feature/address/domain/entity/address.dart';
 import 'package:empire/feature/address/presentation/bloc/address.dart';
-import 'package:empire/feature/address/presentation/bloc/map_bloc.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -137,7 +136,6 @@ class _MapConfirmPageState extends State<MapConfirmPage> {
         _distanceKm = _computeDistanceKm(_pin, _myPosition!);
       });
     }
-    // Fetch address after camera stops
     _getAddressFromCoordinates(_pin);
   }
 
@@ -155,7 +153,6 @@ class _MapConfirmPageState extends State<MapConfirmPage> {
       if (placemarks.isNotEmpty && mounted) {
         final place = placemarks.first;
 
-        // Build address lines
         String line1 = '';
         String line2 = '';
 
@@ -213,114 +210,104 @@ class _MapConfirmPageState extends State<MapConfirmPage> {
     const green = Color(0xFF18A957);
     const dark = Color(0xFF2C2C2C);
 
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => sl<MapBloc>(),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new),
+          onPressed: () => Navigator.of(context).pop(),
         ),
-        BlocProvider(
-          create: (context) => sl<AddressBloc>(),
-        ),
-      ],
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          centerTitle: true,
-          title: const Text('Confirm map pin location'),
-        ),
-        body: Stack(
-          children: [
-            GoogleMap(
-              initialCameraPosition: _initialCamera,
-              onMapCreated: (c) => _mapController = c,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: false,
-              zoomControlsEnabled: false,
-              compassEnabled: false,
-              mapToolbarEnabled: false,
-              rotateGesturesEnabled: true,
-              scrollGesturesEnabled: true,
-              tiltGesturesEnabled: false,
-              zoomGesturesEnabled: true,
-              onCameraMove: _onCameraMove,
-              onCameraIdle: _onCameraIdle,
-              padding: const EdgeInsets.only(bottom: 280, top: 90),
-              minMaxZoomPreference: const MinMaxZoomPreference(10, 20),
-              liteModeEnabled: false,
-            ),
-            const Positioned(
-              left: 20,
-              right: 20,
-              bottom: 570,
-              child: IgnorePointer(
-                ignoring: true,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _Bubble(
-                      color: dark,
-                      text1: 'Your order will be delivered here',
-                      text2: 'Move pin to your exact location',
-                    ),
-                    SizedBox(height: 6),
-                    _MapPin(),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              left: 20,
-              right: 20,
-              bottom: 340,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  right: 80.0,
-                  left: 80.0,
-                ),
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: green, width: 1),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(13)),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: Colors.white,
-                    foregroundColor: green,
-                    textStyle: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  onPressed: _isLoadingLocation ? null : _goToCurrentLocation,
-                  icon: _isLoadingLocation
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(green),
-                          ),
-                        )
-                      : const Icon(Icons.my_location),
-                  label: Text(_isLoadingLocation
-                      ? 'Getting location...'
-                      : 'Go to current location'),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: _BottomSheetPanel(
-                labelcontroller: label,
-                green: green,
-                distanceKm: _distanceKm,
-                pin: _pin,
-                addressLine1: _addressLine1,
-                addressLine2: _addressLine2,
-                isLoadingAddress: _isLoadingAddress,
-              ),
-            ),
-          ],
-        ),
+        centerTitle: true,
+        title: const Text('Confirm map pin location'),
+      ),
+      body: Stack(
+        children: [
+          // GoogleMap(
+          //   initialCameraPosition: _initialCamera,
+          //   onMapCreated: (c) => _mapController = c,
+          //   myLocationEnabled: true,
+          //   myLocationButtonEnabled: false,
+          //   zoomControlsEnabled: false,
+          //   compassEnabled: false,
+          //   mapToolbarEnabled: false,
+          //   rotateGesturesEnabled: true,
+          //   scrollGesturesEnabled: true,
+          //   tiltGesturesEnabled: false,
+          //   zoomGesturesEnabled: true,
+          //   onCameraMove: _onCameraMove,
+          //   onCameraIdle: _onCameraIdle,
+          //   padding: const EdgeInsets.only(bottom: 280, top: 90),
+          //   minMaxZoomPreference: const MinMaxZoomPreference(10, 20),
+          //   liteModeEnabled: false,
+          // ),
+          // const Positioned(
+          //   left: 20,
+          //   right: 20,
+          //   bottom: 570,
+          //   child: IgnorePointer(
+          //     ignoring: true,
+          //     child: Column(
+          //       mainAxisSize: MainAxisSize.min,
+          //       children: [
+          //         _Bubble(
+          //           color: dark,
+          //           text1: 'Your order will be delivered here',
+          //           text2: 'Move pin to your exact location',
+          //         ),
+          //         SizedBox(height: 6),
+          //         _MapPin(),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          // Positioned(
+          //   left: 20,
+          //   right: 20,
+          //   bottom: 340,
+          //   child: Padding(
+          //     padding: const EdgeInsets.only(
+          //       right: 80.0,
+          //       left: 80.0,
+          //     ),
+          //     child: OutlinedButton.icon(
+          //       style: OutlinedButton.styleFrom(
+          //         side: const BorderSide(color: green, width: 1),
+          //         shape: RoundedRectangleBorder(
+          //             borderRadius: BorderRadius.circular(13)),
+          //         padding: const EdgeInsets.symmetric(vertical: 16),
+          //         backgroundColor: Colors.white,
+          //         foregroundColor: green,
+          //         textStyle: const TextStyle(fontWeight: FontWeight.w600),
+          //       ),
+          //       onPressed: _isLoadingLocation ? null : _goToCurrentLocation,
+          //       icon: _isLoadingLocation
+          //           ? const SizedBox(
+          //               width: 20,
+          //               height: 20,
+          //               child: CircularProgressIndicator(
+          //                 strokeWidth: 2,
+          //                 valueColor: AlwaysStoppedAnimation<Color>(green),
+          //               ),
+          //             )
+          //           : const Icon(Icons.my_location),
+          //       label: Text(_isLoadingLocation
+          //           ? 'Getting location...'
+          //           : 'Go to current location'),
+          //     ),
+          //   ),
+          // ),
+          // Align(
+          //   alignment: Alignment.bottomCenter,
+          //   child: _BottomSheetPanel(
+          //     labelcontroller: label,
+          //     green: green,
+          //     distanceKm: _distanceKm,
+          //     pin: _pin,
+          //     addressLine1: _addressLine1,
+          //     addressLine2: _addressLine2,
+          //     isLoadingAddress: _isLoadingAddress,
+          //   ),
+          // ),
+        ],
       ),
     );
   }
@@ -376,7 +363,6 @@ class _Bubble extends StatelessWidget {
             ],
           ),
         ),
-        // Pointer triangle
         CustomPaint(
           painter: _TrianglePainter(color),
           size: const Size(18, 10),
@@ -499,7 +485,6 @@ class _BottomSheetPanel extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Title
                 const Row(
                   children: [
                     Text(
@@ -512,7 +497,6 @@ class _BottomSheetPanel extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 9),
-
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
@@ -576,7 +560,6 @@ class _BottomSheetPanel extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 8),
                 TextFormField(
                   autovalidateMode: AutovalidateMode.always,
@@ -600,15 +583,13 @@ class _BottomSheetPanel extends StatelessWidget {
                           borderSide: BorderSide.none,
                           borderRadius: BorderRadius.all(Radius.circular(10)))),
                 ),
-            
-
                 const SizedBox(height: 14),
-
-         
                 BlocListener<AddressBloc, AddressState>(
                   listener: (context, state) {
                     if (state is AddressAdded) {
-                      Navigator.pop(context,);
+                      Navigator.pop(
+                        context,
+                      );
                     }
                   },
                   child: SizedBox(
@@ -651,7 +632,6 @@ class _BottomSheetPanel extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 12),
               ],
             ),

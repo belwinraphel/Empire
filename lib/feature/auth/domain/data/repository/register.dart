@@ -6,7 +6,7 @@ class RegisterRepositoryimpli implements RegisterRepository {
   final UserFirebaseSource userFirebaseSource;
   RegisterRepositoryimpli(this.userFirebaseSource);
   @override
-  Future<bool> checkingUser({required String email, required int mobile,required String name,String? image}) {
+  Future<bool> verifEmailandNumber({required String email, required int mobile,required String name,String? image}) {
     return userFirebaseSource.checkUserExist(email: email, mobile: mobile,name: name,image: image);
   }
 }
