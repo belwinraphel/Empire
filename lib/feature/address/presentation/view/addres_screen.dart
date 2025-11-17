@@ -2,7 +2,7 @@ import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/feature/address/domain/entity/address.dart';
 import 'package:empire/feature/address/presentation/bloc/address.dart';
- import 'package:empire/feature/address/presentation/view/widget.dart';
+import 'package:empire/feature/address/presentation/view/widget.dart';
 
 import 'package:flutter/material.dart';
 
@@ -218,13 +218,13 @@ class EmptyAddress extends StatelessWidget {
                 value: BlocProvider.of<AddressBloc>(context),
                 child: const MapConfirmPage());
 
-            //   Navigator.of(context).push(
-            //   MaterialPageRoute(builder: (_) {
-            //     return BlocProvider.value(
-            //         value: BlocProvider.of<AddressBloc>(context),
-            //         child: const MapConfirmPage());
-            //   }),
-            // );
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) {
+                return BlocProvider.value(
+                    value: BlocProvider.of<AddressBloc>(context),
+                    child: const MapConfirmPage());
+              }),
+            );
           },
           child: const Text('Add Address'),
         ),

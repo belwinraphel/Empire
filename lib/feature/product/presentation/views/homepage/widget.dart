@@ -1,14 +1,9 @@
-import 'dart:developer';
-
-import 'package:cached_network_image/cached_network_image.dart';
+ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:empire/core/di/service_locator.dart';
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/core/utilis/widgets.dart';
-import 'package:empire/feature/auth/domain/usecase/auth/get_user_details_usecase.dart';
-import 'package:empire/feature/auth/domain/usecase/auth/update_user_deatils_usecase.dart';
-
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
 import 'package:empire/feature/product/domain/usecase/get_category_usecase.dart';
 import 'package:empire/feature/product/domain/usecase/getting_subcategory_usecase.dart';
