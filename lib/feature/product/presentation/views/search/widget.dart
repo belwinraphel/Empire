@@ -492,7 +492,7 @@ class ProdcutList extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                           subtitle: Text(
-                            'Brand: ${product.filterTags.join(", ")}',
+                            product.category,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),

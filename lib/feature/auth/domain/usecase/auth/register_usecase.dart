@@ -1,14 +1,14 @@
 import 'package:empire/feature/auth/domain/repositories/register.dart';
 
-class CheckingUser {
+class CheckingUseUsecase {
   final RegisterRepository registerRepository;
-  CheckingUser(this.registerRepository);
+  CheckingUseUsecase(this.registerRepository);
   Future<bool> call(
       {required String email,
       required int mobile,
       required String name,
       String? image}) async {
-    return registerRepository.checkingUser(
+    return registerRepository.verifEmailandNumber(
         email: email, mobile: mobile, name: name, image: image);
   }
 }

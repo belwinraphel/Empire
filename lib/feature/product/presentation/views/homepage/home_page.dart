@@ -10,6 +10,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
+      final bool isSmallScreen = constraints.maxWidth < 600;
       return Builder(builder: (context) {
         return Scaffold(
           backgroundColor: ColoRs.background,
@@ -17,15 +18,15 @@ class HomePage extends StatelessWidget {
             child: Container(
               height: MediaQuery.of(context).size.height,
               color: ColoRs.white,
-              child: const SingleChildScrollView(
+              child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SearchSection(welcomesection: true),
+                    const SearchSection(welcomesection: true),
                     ModernCarousel(),
                     Category(),
                     MostUsed(
-                      issmallScreen: true,
+                      issmallScreen: isSmallScreen,
                     ),
                   ],
                 ),

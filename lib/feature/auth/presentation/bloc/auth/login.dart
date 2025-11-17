@@ -40,23 +40,31 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LogPresed>((event, emit) async {
       emit(LoginLoading());
       try {
-        dynamic savedDeviceId;
-        final deviceId = await DeviceInfoService.getDeviceId();
-        await login(event.email, event.password).then((use) async {
-          savedDeviceId = await repository.getStoredDeviceId(use!.uid);
-          if (savedDeviceId == null) {
-            await repository.storeDeviceId(use.uid, deviceId!);
-            profileBloc.add(LoadProfile());
-            await saveLoginStatus(true);
-            emit(LoginSucess());
-          } else if (savedDeviceId != null && savedDeviceId != deviceId) {
-            throw Exception('You are already logged in on another device.');
-          } else if (savedDeviceId == deviceId) {
-            profileBloc.add(LoadProfile());
-            await saveLoginStatus(true);
-            emit(LoginSucess());
-          }
+        // dynamic savedDeviceId;
+        // final deviceId = await DeviceInfoService.getDeviceId();
+        final user = await login(event.email, event.password);
+        user.fold((failures) {
+          emit(ErrorLogin(failures.toString()));
+        }, (succees) async {
+          saveLoginStatus(true);
+          emit(LoginSucess());
         });
+        // emit(LoginSucess());)
+        // await login(event.email, event.password).then((user) async {
+        //   savedDeviceId = await repository.getStoredDeviceId(user.);
+        //   if (savedDeviceId == null) {
+        //     await repository.storeDeviceId(use.uid, deviceId!);
+        //     profileBloc.add(LoadProfile());
+        //     await saveLoginStatus(true);
+        //     emit(LoginSucess());
+        //   } else if (savedDeviceId != null && savedDeviceId != deviceId) {
+        //     throw Exception('You are already logged in on another device.');
+        //   } else if (savedDeviceId == deviceId) {
+        //     profileBloc.add(LoadProfile());
+        //     await saveLoginStatus(true);
+        //     emit(LoginSucess());
+        //   }
+        // });
       } catch (e) {
         emit(ErrorLogin(e.toString()));
       }

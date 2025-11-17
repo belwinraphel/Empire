@@ -244,7 +244,7 @@ class UserdetailsSection extends StatelessWidget {
     return Column(
       children: [
         SizedBox(
-          height: maxHeight / 22,
+          height: maxHeight * 0.05,
         ),
         const UserTittle(title: ' Name'),
         LoginField(
@@ -311,9 +311,8 @@ class ContinueButton extends StatelessWidget {
     return BlocConsumer<RegisterBloc, RegisterState>(
         listener: (context, state) {
       if (state is UserExist) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-                state.messange == '' ? state.messange : 'already Registered')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(state.messange)));
       } else if (state is NonExist) {
         Navigator.push(context, MaterialPageRoute(
           builder: (context) {
@@ -322,7 +321,9 @@ class ContinueButton extends StatelessWidget {
                 email: emailController.text,
                 phoneNumber: mobileController.text,
                 onOtpSubmit: (value) {},
-                onResend: () {},
+                onResend: () {
+                  Navigator.pop(context);
+                },
                 onCancel: () {
                   Navigator.pop(context);
                 });

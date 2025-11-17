@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+
 class UserEntity {
   final String uid;
   final String? name;
-  final String email;
+  final String?email;
   final String? phoneNumber;
   final String? photourl;
 
@@ -19,7 +21,21 @@ class UserEntity {
         phoneNumber: json['phone'],
         photourl: json['photoUrl']);
   } 
+factory UserEntity.fromFirebaseUser(firebase_auth.User firebaseUser) {
+    return UserEntity(
+      uid: firebaseUser.uid,
+      name: firebaseUser.displayName,
+      email: firebaseUser.email,
+      phoneNumber: firebaseUser.phoneNumber,
+      photourl: firebaseUser.photoURL,
+   
+    );
+  }
 
+  // Optional: Map back to Firebase User (for updates)
+  firebase_auth.User toFirebaseUser() {
+    throw UnimplementedError('Use FirebaseAuth.currentUser for updates');
+  }
   Map<String, dynamic> toJson() => {
         'uid': uid,
         'name': name,

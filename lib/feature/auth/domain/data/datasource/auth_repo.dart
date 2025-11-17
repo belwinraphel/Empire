@@ -6,10 +6,14 @@ import 'package:dartz/dartz.dart';
 import 'package:empire/core/utilis/device_info.dart';
 import 'package:empire/core/utilis/failure.dart';
 import 'package:empire/core/utilis/widgets.dart';
+import 'package:empire/feature/auth/domain/entities/user_entities.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:logger/logger.dart';
 
 class AuthRemoteDataSource {
   final FirebaseAuth _firebaseAuth;
@@ -18,70 +22,170 @@ class AuthRemoteDataSource {
 
   AuthRemoteDataSource(this._firebaseAuth, this._googleSignIn, this._firestore);
   String? verificationId;
-  Future<User?> signInWithGoogle() async {
+  var logger = Logger();
+
+  Future<Either<Failures, UserEntity?>> signInWithGoogle() async {
     try {
-      if (kIsWeb) {
-        final googleProvider = GoogleAuthProvider();
-        final userCredintial =
-            await _firebaseAuth.signInWithPopup(googleProvider);
-        final user = userCredintial.user;
-        if (user == null) return null;
-        return userCredintial.user;
-      } else {
-        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-
-        if (googleUser == null) return null;
-        final GoogleSignInAuthentication googleAuth =
-            await googleUser.authentication;
-        final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-        final userCredential =
-            await _firebaseAuth.signInWithCredential(credential);
-
-        final authUid = userCredential.user?.uid;
-        await FirebaseFirestore.instance.collection("user").doc(authUid).set({
-          'name': userCredential.user!.displayName,
-          'email': userCredential.user!.email,
-          'phone': userCredential.user!.phoneNumber,
-          'photoUrl': userCredential.user!.photoURL,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-
-        return userCredential.user;
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        return const Left(Failures.messange(' No User '));
       }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential =
+          await _firebaseAuth.signInWithCredential(credential);
+      final authUid = userCredential.user?.uid;
+
+      if (authUid == null) {
+        await _firebaseAuth.signOut();
+        return left(const Failures.authFailure(
+            'Sign-in succeeded but no user ID available'));
+      }
+
+      // Map Firebase User to your Entity (implement as needed)
+      final firebaseUser = userCredential.user!;
+      final userEntity = UserEntity.fromFirebaseUser(firebaseUser);
+
+      // Store in Firestore; handle potential failure here too
+      await FirebaseFirestore.instance.collection("user").doc(authUid).set({
+        'name': firebaseUser.displayName ?? '',
+        'email': firebaseUser.email ?? '',
+        'phone': firebaseUser.phoneNumber ?? '',
+        'photoUrl': firebaseUser.photoURL ?? '',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      return right(userEntity);
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      String message;
+      switch (e.code) {
+        case 'account-exists-with-different-credential':
+          message = 'Account exists with a different sign-in method';
+          break;
+        case 'invalid-credential':
+          message = 'Invalid Google credentials';
+          break;
+        case 'operation-not-allowed':
+          message = 'Google sign-in is not enabled';
+          break;
+        case 'user-disabled':
+          message = 'User account is disabled';
+          break;
+        case 'user-not-found':
+          message = 'No user found for this credential';
+          break;
+        default:
+          message = e.message ?? 'Authentication failed';
+      }
+      return left(Failures.authFailure(message));
+    } on FirebaseException catch (e) {
+      return left(
+          Failures.firestoreFailure(e.message ?? 'Firestore operation failed'));
+    } on PlatformException catch (e) {
+      String message;
+      switch (e.code) {
+        case 'sign_in_failed':
+          message = 'Google sign-in failed; check Play Services';
+          break;
+        case 'network_error':
+          message = 'Network error during sign-in';
+          break;
+        default:
+          message = e.message ?? 'Platform error: ${e.code}';
+      }
+      return left(Failures.platformFailure(message));
     } catch (e) {
-      throw Exception(e);
+      return left(Failures.unexpectedFailure(e.toString()));
     }
   }
 
-  Future<bool> isEmailRegistered(String email) async {
-    final String emails = email;
+  // Future<String?> cheackEmailandNumberExist(String email, int phone) async {
+  //   // logger.e('checkRegistration started');
+  //   try {
+  //     final emailQuery = await _firestore
+  //         .collection('user')
+  //         .where('email', isEqualTo: email)
+  //         .limit(1)
+  //         .get();
+  //     final bool emailExists = emailQuery.docs.isNotEmpty;
+
+  //     final phoneQuery = await _firestore
+  //         .collection('user')
+  //         .where('phone', isEqualTo: phone.toString())
+  //         .limit(1)
+  //         .get();
+  //     final bool phoneExists = phoneQuery.docs.isNotEmpty;
+  //     // logger.e(
+  //     //     'checkRegistration started and result phoneExists  : $phone -$phoneExists  emailexist : email $email -$emailExists ');
+  //     // Return appropriate message based on existence
+  //     if (emailExists && phoneExists) {
+  //       return 'Both email and phone are already registered.';
+  //     } else if (emailExists) {
+  //       return 'Email is already registered.';
+  //     } else if (phoneExists) {
+  //       return 'Phone is already registered.';
+  //     } else {
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     // logger.e('checkRegistration Error checking ');
+  //     debugPrint('Error checking registration: $e');
+  //     return 'Error checking registration.';
+  //   }
+  // }
+  Future<String?> cheackEmail(String email) async {
+    logger.e('checking email started');
     try {
-      final email = await _firestore
+      final emailQuery = await _firestore
           .collection('user')
-          .where('email', isEqualTo: emails)
+          .where('email', isEqualTo: email)
           .limit(1)
           .get();
+      final bool emailExists = emailQuery.docs.isNotEmpty;
 
-      return email.docs.isEmpty;
+      if (emailExists) {
+        logger.e(
+            'checkRegistration started and result  emailexist : email $email -$emailExists ');
+        return 'Both email and phone are already registered.';
+      } else if (emailExists) {
+        return 'Email is already registered.';
+      } else {
+        return null;
+      }
     } catch (e) {
-      debugPrint('Error checking email: $e');
-      return false;
+      if (e.toString().contains('firestore.googleapis.com')) {
+        throw const SocketException('No internet');
+      }
+      rethrow;
     }
   }
 
-  Future<Either<Failures, void>> verifyPhone(int phone, String email) async {
+  Future<Either<Failures, OTP>> verifyPhone(int phone, String email) async {
+    logger.e('Phone number verifying started ');
     try {
-      bool isEmailRegisteredOrNot = await isEmailRegistered(email);
+      String? isEmailRegisteredOrNot = await cheackEmail(
+        email,
+      );
 
-      if (isEmailRegisteredOrNot == false) {
-        return const Left(Failures.emailexisted('email already registed'));
+      if (isEmailRegisteredOrNot != null) {
+        return Left(Failures.emailexisted(isEmailRegisteredOrNot));
       }
 
-      final Completer<Either<Failures, void>> completer = Completer();
-      if (isEmailRegisteredOrNot == true) {
+      final Completer<Either<Failures, OTP>> completer = Completer();
+      Timer(const Duration(seconds: 70), () {
+        if (!completer.isCompleted) {
+          completer.complete(const Left(Failures.timeout(
+              'Verification timed out. Check network and retry.')));
+        }
+      });
+      if (isEmailRegisteredOrNot == null) {
+        logger.e(' All OkAY creating otp credential ');
         await _firebaseAuth.verifyPhoneNumber(
           phoneNumber: '+91${phone.toString()}',
           timeout: const Duration(seconds: 60),
@@ -90,12 +194,12 @@ class AuthRemoteDataSource {
           },
           codeSent: (String verid, int? resendToken) {
             verificationId = verid;
-
-            completer.complete(const Right(null));
+            logger.e(' All OkAY created otp credential $verificationId ');
+            completer.complete(const Right(OTP.success));
           },
           verificationCompleted: (PhoneAuthCredential credential) {
             if (!completer.isCompleted) {
-              completer.complete(const Right(null));
+              completer.complete(const Right(OTP.success));
             }
           },
           codeAutoRetrievalTimeout: (String verid) {
@@ -128,17 +232,35 @@ class AuthRemoteDataSource {
       case 'quota-exceeded':
         return const Failures.messange(
             'SMS quota exceeded. Please try again later.');
-      case 'user-disabled':
-        return const Failures.messange('This account has been disabled.');
       case 'operation-not-allowed':
         return const Failures.messange('Phone authentication is not enabled.');
+      case 'user-disabled':
+        return const Failures.messange('This account has been disabled.');
+
+      case 'user-not-found':
+        return const Failures.messange(
+            'No user found for that email. Please register first.');
+      case 'wrong-password':
+        return const Failures.messange('Incorrect password. Please try again.');
+      case 'invalid-email':
+        return const Failures.messange(
+            'Invalid email format. Please check and try again.');
+      case 'email-already-in-use':
+        return const Failures.messange(
+            'Email is already registered. Try logging in instead.');
+
+      case 'network-request-failed':
+      case 'timeout':
+        return const Failures.network(
+            'Network error. Please check your connection and retry.');
+
       default:
         return Failures.messange(e.message ?? e.code);
     }
   }
 
   Future<UserCredential> verifyOtp(int oTp) async {
-    final otp = '${oTp}56';
+    final otp = '$oTp';
 
     if (verificationId != null && otp.isNotEmpty) {
       try {
@@ -165,11 +287,6 @@ class AuthRemoteDataSource {
       String password, String name, String phonenumber, String photoUrl) async {
     String? uploadedImageUrls;
     try {
-      // final user = FirebaseAuth.instance.currentUser;
-
-      // if (user == null) {
-      //   throw Exception('No authenticated user found');
-      // }
       if (photoUrl.isNotEmpty || photoUrl != '') {
         final file = File(photoUrl);
         final image = await uploadImageToCloudinary(file);
@@ -194,32 +311,40 @@ class AuthRemoteDataSource {
         'photoUrl': uploadedImageUrls,
         'createdAt': FieldValue.serverTimestamp(),
       });
-      // try {
-      //   // Try linking email/password provider
-      //   await user.linkWithCredential(credential);
-      // } on FirebaseAuthException catch (e) {
-      //   if (e.code == 'provider-already-linked') {
-      //     // Provider already linked, update password instead
-      //     await user.updatePassword(password);
-      //   } else {
-      //     print('Password setup failed: ${e.message}');
-      //   }
-      // }
     } catch (e) {
       debugPrint(e.toString());
     }
   }
 
-  Future<User?> login(String email, String password) async {
+  Future<Either<Failures, User>> login(String email, String password) async {
     try {
       final user = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      return user.user;
+      return Right(user.user!);
+    } on FirebaseAuthException catch (e) {
+      logger.e('Firebase Auth Error during login: ${e.code} - ${e.message}');
+      throw _handleFirebaseAuthException(e);
+    } on SocketException catch (e) {
+      logger.e('Network error during login: ${e.message}');
+      throw FirebaseAuthException(
+        code: 'auth/network-error',
+        message: 'No internet connection. Please check your network.',
+      );
+    } on TimeoutException catch (e) {
+      logger.e('Timeout during login: ${e.duration}');
+      throw FirebaseAuthException(
+        code: 'auth/timeout',
+        message: 'Login timed out. Please try again.',
+      );
     } catch (e) {
-      throw FirebaseAuthException(code: 'auth/Login', message: e.toString());
+      logger.e('Unexpected error during login: $e');
+      throw FirebaseAuthException(
+        code: 'auth/unexpected',
+        message: 'Something went wrong. Please try again later.',
+      );
     }
   }
 

@@ -76,132 +76,122 @@
 
 //   @override
 //   Widget build(BuildContext context) {
-//     return MultiBlocProvider(
-//       providers: [
-//         BlocProvider(
-//           create: (context) => sl<MapBloc>(),
+//     return Scaffold(
+//       appBar: AppBar(
+//         leading: IconButton(
+//           icon: const Icon(Icons.arrow_back_ios_new),
+//           onPressed: () => Navigator.of(context).pop(),
 //         ),
-//         BlocProvider(
-//           create: (context) => sl<AddressBloc>()..add(LoadAddresses()),
-//         ),
-//       ],
-//       child: Scaffold(
-//         appBar: AppBar(
-//           leading: IconButton(
-//             icon: const Icon(Icons.arrow_back_ios_new),
-//             onPressed: () => Navigator.of(context).pop(),
-//           ),
-//           centerTitle: true,
-//           title: const Text('Confirm map pin location'),
-//         ),
-//         body: BlocConsumer<MapBloc, MapState>(
-//           listener: (context, state) {
-//             if (state.errorMessage != null) {
-//               ScaffoldMessenger.of(context).showSnackBar(
-//                 SnackBar(content: Text(state.errorMessage!)),
-//               );
-//             }
-//           },
-//           builder: (context, state) {
-//             return Stack(
-//               children: [
-//                 GoogleMap(
-//                   initialCameraPosition: _initialCamera,
-//                   onMapCreated: _onMapCreated,
-//                   onCameraMove: _onCameraMove,
-//                   onCameraIdle: _onCameraIdle,
-//                   myLocationEnabled: true,
-//                   myLocationButtonEnabled: false,
-//                   zoomControlsEnabled: false,
-//                   compassEnabled: false,
-//                   mapToolbarEnabled: false,
-//                   rotateGesturesEnabled: true,
-//                   scrollGesturesEnabled: true,
-//                   tiltGesturesEnabled: false,
-//                   zoomGesturesEnabled: true,
-//                   padding: const EdgeInsets.only(bottom: 280, top: 90),
-//                   minMaxZoomPreference: const MinMaxZoomPreference(10, 20),
-//                   cameraTargetBounds: CameraTargetBounds.unbounded,
-//                 ),
-
-//                 const Positioned(
-//                   left: 20,
-//                   right: 20,
-//                   bottom: 570,
-//                   child: IgnorePointer(
-//                     ignoring: true,
-//                     child: Column(
-//                       mainAxisSize: MainAxisSize.min,
-//                       children: [
-//                         MapBubble(
-//                           color: ColoRs.dark,
-//                           text1: 'Your order will be delivered here',
-//                           text2: 'Move pin to your exact location',
-//                         ),
-//                         SizedBox(height: 6),
-//                         _MapPin(),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-
-//                 Positioned(
-//                   left: 20,
-//                   right: 20,
-//                   bottom: 340,
-//                   child: Padding(
-//                     padding: const EdgeInsets.symmetric(horizontal: 80.0),
-//                     child: OutlinedButton.icon(
-//                       style: OutlinedButton.styleFrom(
-//                         side: const BorderSide(
-//                             color: Color(0xFF18A957), width: 1),
-//                         shape: RoundedRectangleBorder(
-//                           borderRadius: BorderRadius.circular(13),
-//                         ),
-//                         padding: const EdgeInsets.symmetric(vertical: 16),
-//                         backgroundColor: Colors.white,
-//                         foregroundColor: const Color(0xFF18A957),
-//                         textStyle: const TextStyle(fontWeight: FontWeight.w600),
-//                       ),
-//                       onPressed:
-//                           state.isLoadingLocation ? null : _goToCurrentLocation,
-//                       icon: state.isLoadingLocation
-//                           ? const SizedBox(
-//                               width: 20,
-//                               height: 20,
-//                               child: CircularProgressIndicator(
-//                                 strokeWidth: 2,
-//                                 valueColor: AlwaysStoppedAnimation<Color>(
-//                                     Color(0xFF18A957)),
-//                               ),
-//                             )
-//                           : const Icon(Icons.my_location),
-//                       label: Text(
-//                         state.isLoadingLocation
-//                             ? 'Getting location...'
-//                             : 'Go to current location',
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-
-//                 // Bottom sheet
-//                 Align(
-//                   alignment: Alignment.bottomCenter,
-//                   child: MapBottomSheet(
-//                     pin: state.pinPosition,
-//                     distanceKm: state.distanceKm,
-//                     addressLine1: state.addressLine1,
-//                     addressLine2: state.addressLine2,
-//                     isLoadingAddress: state.isLoadingAddress,
-//                     labelcontroller: label,
-//                     green: ColoRs.green,
-//                   ),
-//                 ),
-//               ],
+//         centerTitle: true,
+//         title: const Text('Confirm map pin location'),
+//       ),
+//       body: BlocConsumer<MapBloc, MapState>(
+//         listener: (context, state) {
+//           if (state.errorMessage != null) {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               SnackBar(content: Text(state.errorMessage!)),
 //             );
-//           },
-//         ),
+//           }
+//         },
+//         builder: (context, state) {
+//           return Stack(
+//             children: [
+//               GoogleMap(
+//                 initialCameraPosition: _initialCamera,
+//                 onMapCreated: _onMapCreated,
+//                 onCameraMove: _onCameraMove,
+//                 onCameraIdle: _onCameraIdle,
+//                 myLocationEnabled: true,
+//                 myLocationButtonEnabled: false,
+//                 zoomControlsEnabled: false,
+//                 compassEnabled: false,
+//                 mapToolbarEnabled: false,
+//                 rotateGesturesEnabled: true,
+//                 scrollGesturesEnabled: true,
+//                 tiltGesturesEnabled: false,
+//                 zoomGesturesEnabled: true,
+//                 padding: const EdgeInsets.only(bottom: 280, top: 90),
+//                 minMaxZoomPreference: const MinMaxZoomPreference(10, 20),
+//                 cameraTargetBounds: CameraTargetBounds.unbounded,
+//               ),
+
+//               const Positioned(
+//                 left: 20,
+//                 right: 20,
+//                 bottom: 570,
+//                 child: IgnorePointer(
+//                   ignoring: true,
+//                   child: Column(
+//                     mainAxisSize: MainAxisSize.min,
+//                     children: [
+//                       MapBubble(
+//                         color: ColoRs.dark,
+//                         text1: 'Your order will be delivered here',
+//                         text2: 'Move pin to your exact location',
+//                       ),
+//                       SizedBox(height: 6),
+//                       _MapPin(),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+
+//               Positioned(
+//                 left: 20,
+//                 right: 20,
+//                 bottom: 340,
+//                 child: Padding(
+//                   padding: const EdgeInsets.symmetric(horizontal: 80.0),
+//                   child: OutlinedButton.icon(
+//                     style: OutlinedButton.styleFrom(
+//                       side:
+//                           const BorderSide(color: Color(0xFF18A957), width: 1),
+//                       shape: RoundedRectangleBorder(
+//                         borderRadius: BorderRadius.circular(13),
+//                       ),
+//                       padding: const EdgeInsets.symmetric(vertical: 16),
+//                       backgroundColor: Colors.white,
+//                       foregroundColor: const Color(0xFF18A957),
+//                       textStyle: const TextStyle(fontWeight: FontWeight.w600),
+//                     ),
+//                     onPressed:
+//                         state.isLoadingLocation ? null : _goToCurrentLocation,
+//                     icon: state.isLoadingLocation
+//                         ? const SizedBox(
+//                             width: 20,
+//                             height: 20,
+//                             child: CircularProgressIndicator(
+//                               strokeWidth: 2,
+//                               valueColor: AlwaysStoppedAnimation<Color>(
+//                                   Color(0xFF18A957)),
+//                             ),
+//                           )
+//                         : const Icon(Icons.my_location),
+//                     label: Text(
+//                       state.isLoadingLocation
+//                           ? 'Getting location...'
+//                           : 'Go to current location',
+//                     ),
+//                   ),
+//                 ),
+//               ),
+
+//               // Bottom sheet
+//               Align(
+//                 alignment: Alignment.bottomCenter,
+//                 child: MapBottomSheet(
+//                   pin: state.pinPosition,
+//                   distanceKm: state.distanceKm,
+//                   addressLine1: state.addressLine1,
+//                   addressLine2: state.addressLine2,
+//                   isLoadingAddress: state.isLoadingAddress,
+//                   labelcontroller: label,
+//                   green: ColoRs.green,
+//                 ),
+//               ),
+//             ],
+//           );
+//         },
 //       ),
 //     );
 //   }

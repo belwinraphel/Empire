@@ -1,32 +1,27 @@
 import 'package:empire/core/di/service_locator.dart';
-import 'package:empire/feature/address/data/datasource/address_datasorce.dart';
-import 'package:empire/feature/address/data/repository/addres_repo_impli.dart';
 import 'package:empire/feature/address/presentation/bloc/address.dart';
-import 'package:empire/feature/auth/domain/data/datasource/auth_repo.dart';
+
 import 'package:empire/feature/auth/domain/repositories/auth_repository.dart';
 import 'package:empire/feature/auth/domain/repositories/local_auth.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/forgotpassword_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/get_user_details_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/login_auth_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/loginstatue_usecase.dart';
 
 import 'package:empire/feature/auth/domain/usecase/auth/pick_image_camera_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/pick_image_gallery_usecase.dart';
-import 'package:empire/feature/auth/domain/usecase/auth/register_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/save_login_status_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/send_otp_usecase.dart';
-import 'package:empire/feature/auth/domain/usecase/auth/verify_user_usecase.dart';
+import 'package:empire/feature/auth/domain/usecase/auth/update_user_deatils_usecase.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/forgot_password.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/login.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/login_status.dart';
 
 import 'package:empire/feature/auth/presentation/bloc/auth/loginpage.dart';
-import 'package:empire/feature/auth/presentation/bloc/auth/logout_bloc.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/otp.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_bloc.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_image.dart';
-import 'package:empire/feature/auth/presentation/bloc/auth/registerpage.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/savepassowrd.dart';
-import 'package:empire/feature/auth/presentation/views/loginpage/login_page.dart';
 import 'package:empire/feature/cart/presentation/bloc/cartbloc.dart';
 import 'package:empire/feature/favorite/domain/repository/favotiterepository.dart';
 import 'package:empire/feature/favorite/domain/usecase/add_favorites_usecase.dart';
@@ -64,9 +59,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<ImageAuth>(
             create: (_) => ImageAuth(
                 sl<PickImageFromCamera>(), sl<PickImageFromGallery>())),
-        BlocProvider<RegisterBloc>(
-            create: (_) =>
-                RegisterBloc(sl<CheckingUser>(), sl<VerifyNumber>())),
+
         BlocProvider<OtpBloc>(create: (_) => OtpBloc(sl<Verify0tpUsecase>())),
         BlocProvider<SavePasswordBloc>(create: (_) => SavePasswordBloc(sl())),
         BlocProvider<LoginBloc>(
@@ -78,13 +71,16 @@ class MyApp extends StatelessWidget {
                 sl<AuthLocalDataSource>())),
         BlocProvider<ForgotPasswordClickBloc>(
             create: (_) => ForgotPasswordClickBloc(sl<ForgotPassword>())),
-
-        BlocProvider<LogoutBloc>(
-            create: (_) => LogoutBloc(
-                  sl<AuthRemoteDataSource>(),
-                  sl<SaveLoginStatus>(),
-                )),
-
+        /////profile
+        BlocProvider<ProfileBloc>(
+            create: (_) => ProfileBloc(
+                getUserDetails: sl<GetUserDetails>(),
+                updateUserDetails: sl<UpdateUserDetails>())
+              ..add(LoadProfile())),
+         ////////////address
+          BlocProvider<AddressBloc>(
+          create: (context) => sl<AddressBloc>()..add(LoadAddresses()),
+        ),
         //////category////////////
         BlocProvider(
             create: (_) => CategoryBloc(

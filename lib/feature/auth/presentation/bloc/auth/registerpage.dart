@@ -1,5 +1,6 @@
 import 'package:empire/feature/auth/domain/usecase/auth/register_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/verify_user_usecase.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class RegisterEvent {}
@@ -32,34 +33,22 @@ class UserExist extends RegisterState {
 class NonExist extends RegisterState {}
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
-  final CheckingUser checkingUser;
+  final CheckingUseUsecase checkingUser;
   final VerifyNumber verifyNumber;
   RegisterBloc(this.checkingUser, this.verifyNumber) : super(ChekingInitial()) {
     on<ChekingUserExistenceEvent>((event, emit) async {
       emit(ChekingLoading());
 
-      final result = await checkingUser(
-          email: event.email,
-          mobile: event.phone,
-          name: event.name,
-          image: event.image);
+      final isUserexistedOrNot = await verifyNumber(event.phone, event.email);
 
-      if (result) {
-        emit(UserExist(''));
-      } else {
-        final isUserexistedOrNot = await verifyNumber(event.phone, event.email);
-        print(isUserexistedOrNot);
-        isUserexistedOrNot.fold(
-          (fail) {
-            print(fail.message);
-            emit(UserExist(fail.message));
-          },
-          (nonexist) {
-            print(NonExist);
-            emit(NonExist());
-          },
-        );
-      }
+      isUserexistedOrNot.fold(
+        (fail) {
+          emit(UserExist(fail.message));
+        },
+        (nonexist) {
+          emit(NonExist());
+        },
+      );
     });
   }
 }

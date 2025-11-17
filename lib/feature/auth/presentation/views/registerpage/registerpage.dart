@@ -1,14 +1,10 @@
 import 'package:empire/core/di/service_locator.dart';
-
 import 'package:empire/feature/auth/domain/usecase/auth/register_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/verify_user_usecase.dart';
 import 'package:empire/feature/auth/presentation/bloc/auth/profile_image.dart';
-
 import 'package:empire/feature/auth/presentation/bloc/auth/registerpage.dart';
 import 'package:empire/feature/auth/presentation/views/loginpage/widget.dart';
-
 import 'package:empire/feature/auth/presentation/views/registerpage/widget.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,7 +18,7 @@ class Registerpage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => RegisterBloc(sl<CheckingUser>(), sl<VerifyNumber>()),
+      create: (_) => RegisterBloc(sl<CheckingUseUsecase>(), sl<VerifyNumber>()),
       child: Scaffold(
         body: LayoutBuilder(
           builder: (context, constraints) {
@@ -35,10 +31,10 @@ class Registerpage extends StatelessWidget {
                 child: Column(
                   children: [
                     SizedBox(
-                      height: maxHeight / 7,
+                      height: maxHeight * 0.10,
                     ),
                     const Headline(headlind: 'Sign Up'),
-                    SizedBox(height: maxHeight * 0.020),
+                    SizedBox(height: maxHeight * 0.05),
                     //PROFILE IMAGE SECTION
 
                     const ProfileImages(),

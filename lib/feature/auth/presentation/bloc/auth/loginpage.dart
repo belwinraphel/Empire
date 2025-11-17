@@ -1,5 +1,3 @@
-
- 
 import 'package:empire/feature/auth/domain/usecase/auth/login_auth_usecase.dart';
 import 'package:empire/feature/auth/domain/usecase/auth/save_login_status_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,13 +33,8 @@ class AuthBloc extends Bloc<GoogleLoginpageEvent, GoogleLoginPageState> {
       emit(GoogleLoginLoadingState());
       try {
         final user = await signingWithGoogle();
-
-        if (user != null) {
-          emit(GoogleLoginSuceesstate());
-          await saveLoginStatus(true);
-        } else {
-          emit(GoogleLoginFailureState('Login Failed'));
-        }
+        user.fold(((failure) => emit(GoogleLoginErrorState(failure.message))),
+            (success) => emit(GoogleLoginSuceesstate()));
       } catch (e) {
         emit(GoogleLoginErrorState(e.toString()));
       }
