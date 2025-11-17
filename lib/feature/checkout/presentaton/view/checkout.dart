@@ -29,9 +29,7 @@ class CheckoutPage extends StatelessWidget {
           create: (context) => sl<CheckoutBloc>()
             ..add(InitializeCheckout(cartState.items, cartState.breakdown)),
         ),
-        BlocProvider<AddressBloc>(
-          create: (context) => sl<AddressBloc>()..add(LoadAddresses()),
-        ),
+       
         BlocProvider<MapBloc>(
           create: (context) => sl<MapBloc>(),
         ),

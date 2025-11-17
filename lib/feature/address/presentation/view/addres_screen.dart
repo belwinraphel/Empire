@@ -2,8 +2,7 @@ import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/feature/address/domain/entity/address.dart';
 import 'package:empire/feature/address/presentation/bloc/address.dart';
-import 'package:empire/feature/address/presentation/view/map_widget.dart';
-import 'package:empire/feature/address/presentation/view/widget.dart';
+ import 'package:empire/feature/address/presentation/view/widget.dart';
 
 import 'package:flutter/material.dart';
 

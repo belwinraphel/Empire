@@ -108,213 +108,205 @@ class SearchSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ProfileBloc>(
-      create: (_) => ProfileBloc(
-          getUserDetails: sl<GetUserDetails>(),
-          updateUserDetails: sl<UpdateUserDetails>())
-        ..add(LoadProfile()),
-      child: Container(
-        height: welcomesection == true
-            ? MediaQuery.of(context).size.height * 0.33
-            : MediaQuery.of(context).size.height * 0.26,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(50),
-              bottomRight: Radius.circular(50)),
-          gradient: LinearGradient(
-            colors: [ColoRs.background, ColoRs.white],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+    return Container(
+      height: welcomesection == true
+          ? MediaQuery.of(context).size.height * 0.33
+          : MediaQuery.of(context).size.height * 0.26,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(50), bottomRight: Radius.circular(50)),
+        gradient: LinearGradient(
+          colors: [ColoRs.background, ColoRs.white],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            BlocBuilder<ProfileBloc, ProfileState>(
-              builder: (context, state) {
-                if (state is ProfileLoaded) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Empire in',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: Fonts.ralewayExtraBold,
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            state.user.name!,
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontFamily: Fonts.ralewayExtraBold,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          state.user.photourl == null
-                              ? const Icon(Icons.person_pin)
-                              : ClipRRect(
-                                  borderRadius:
-                                      BorderRadiusGeometry.circular(30),
-                                  child: OptimizedNetworkImage(
-                                    height: 65,
-                                    width: 65,
-                                    imageUrl: state.user.photourl,
-                                    errorWidget: const Icon(Icons.error),
-                                    borderRadius: 12,
-                                    fit: BoxFit.fill,
-                                    placeholder: const Center(
-                                        child: CircularProgressIndicator()),
-                                    widthQueryParam: 'resize_width',
-                                  ),
-                                ),
-                        ],
-                      ),
-                      SizedBox(height: MediaQuery.of(context).size.height / 60),
-                      SizedBox(height: MediaQuery.of(context).size.height / 60),
-                    ],
-                  );
-                }
-                return const Column(
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BlocBuilder<ProfileBloc, ProfileState>(
+            builder: (context, state) {
+              if (state is ProfileLoaded) {
+                return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 24),
-                    Text(
-                      'Welcome',
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Empire in',
                       style: TextStyle(
                         fontSize: 16,
+                        fontFamily: Fonts.ralewayExtraBold,
                         color: Colors.black87,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    SizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Hello User',
-                          style: TextStyle(
+                          state.user.name!,
+                          style: const TextStyle(
                             fontSize: 28,
+                            fontFamily: Fonts.ralewayExtraBold,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
                           ),
                         ),
-                        CircleAvatar(
-                          child: Icon(Icons.person_pin),
-                        )
+                        state.user.photourl == null
+                            ? const Icon(Icons.person_pin)
+                            : ClipRRect(
+                                borderRadius: BorderRadiusGeometry.circular(30),
+                                child: OptimizedNetworkImage(
+                                  height: 65,
+                                  width: 65,
+                                  imageUrl: state.user.photourl,
+                                  errorWidget: const Icon(Icons.error),
+                                  borderRadius: 12,
+                                  fit: BoxFit.fill,
+                                  placeholder: const Center(
+                                      child: CircularProgressIndicator()),
+                                  widthQueryParam: 'resize_width',
+                                ),
+                              ),
                       ],
                     ),
-                    SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.home, size: 16, color: Colors.black54),
-                        SizedBox(width: 4),
-                        Text(
-                          'Home',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        SizedBox(width: 4),
-                        Text(
-                          ' ',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        Icon(Icons.keyboard_arrow_down,
-                            size: 16, color: Colors.black54),
-                      ],
-                    ),
-                    SizedBox(height: 24),
+                    SizedBox(height: MediaQuery.of(context).size.height / 60),
+                    SizedBox(height: MediaQuery.of(context).size.height / 60),
                   ],
                 );
-              },
-            ),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+              }
+              return const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 24),
+                  Text(
+                    'Welcome',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
+                  SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Hello User',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      CircleAvatar(
+                        child: Icon(Icons.person_pin),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.home, size: 16, color: Colors.black54),
+                      SizedBox(width: 4),
+                      Text(
+                        'Home',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        ' ',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      Icon(Icons.keyboard_arrow_down,
+                          size: 16, color: Colors.black54),
+                    ],
+                  ),
+                  SizedBox(height: 24),
                 ],
-              ),
-              child: TextField(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (context) {
-                      return const ProductSearchScreen();
-                    },
-                  ));
-                },
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: ColoRs.white,
-                  hintText: 'Search ',
-                  hintStyle: TextStyle(
-                    color: ColoRs.black,
-                    fontSize: 16,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: ColoRs.black,
-                    size: 24,
-                  ),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.all(Radius.circular(10))),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 6,
-                  ),
+              );
+            },
+          ),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: TextField(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) {
+                    return const ProductSearchScreen();
+                  },
+                ));
+              },
+              decoration: const InputDecoration(
+                filled: true,
+                fillColor: ColoRs.white,
+                hintText: 'Search ',
+                hintStyle: TextStyle(
+                  color: ColoRs.black,
+                  fontSize: 16,
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: ColoRs.black,
+                  size: 24,
+                ),
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 6,
                 ),
               ),
             ),
-            welcomesection == true
-                ? SizedBox(
-                    width: double.infinity,
-                    height: MediaQuery.of(context).size.height * 0.10,
-                    child: const Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          'Welcome',
-                          style: TextStyle(
-                            fontSize: 30,
-                            color: Color.fromARGB(255, 190, 28, 16),
-                            fontWeight: FontWeight.w400,
-                            fontFamily: Fonts.momoSignature,
-                          ),
+          ),
+          welcomesection == true
+              ? SizedBox(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.10,
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Welcome',
+                        style: TextStyle(
+                          fontSize: 30,
+                          color: Color.fromARGB(255, 190, 28, 16),
+                          fontWeight: FontWeight.w400,
+                          fontFamily: Fonts.momoSignature,
                         ),
-                        Text(
-                          'order not to available exciting offer',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: ColoRs.red,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: Fonts.raleway,
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                : Container(),
-          ],
-        ),
+                      ),
+                      Text(
+                        'order not to available exciting offer',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: ColoRs.red,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: Fonts.raleway,
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              : Container(),
+        ],
       ),
     );
   }

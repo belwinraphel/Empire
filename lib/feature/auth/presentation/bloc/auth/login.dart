@@ -46,7 +46,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         user.fold((failures) {
           emit(ErrorLogin(failures.toString()));
         }, (succees) async {
-          return saveLoginStatus(true);
+          saveLoginStatus(true);
+          emit(LoginSucess());
         });
         // emit(LoginSucess());)
         // await login(event.email, event.password).then((user) async {

@@ -221,92 +221,92 @@ class _MapConfirmPageState extends State<MapConfirmPage> {
       ),
       body: Stack(
         children: [
-          // GoogleMap(
-          //   initialCameraPosition: _initialCamera,
-          //   onMapCreated: (c) => _mapController = c,
-          //   myLocationEnabled: true,
-          //   myLocationButtonEnabled: false,
-          //   zoomControlsEnabled: false,
-          //   compassEnabled: false,
-          //   mapToolbarEnabled: false,
-          //   rotateGesturesEnabled: true,
-          //   scrollGesturesEnabled: true,
-          //   tiltGesturesEnabled: false,
-          //   zoomGesturesEnabled: true,
-          //   onCameraMove: _onCameraMove,
-          //   onCameraIdle: _onCameraIdle,
-          //   padding: const EdgeInsets.only(bottom: 280, top: 90),
-          //   minMaxZoomPreference: const MinMaxZoomPreference(10, 20),
-          //   liteModeEnabled: false,
-          // ),
-          // const Positioned(
-          //   left: 20,
-          //   right: 20,
-          //   bottom: 570,
-          //   child: IgnorePointer(
-          //     ignoring: true,
-          //     child: Column(
-          //       mainAxisSize: MainAxisSize.min,
-          //       children: [
-          //         _Bubble(
-          //           color: dark,
-          //           text1: 'Your order will be delivered here',
-          //           text2: 'Move pin to your exact location',
-          //         ),
-          //         SizedBox(height: 6),
-          //         _MapPin(),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-          // Positioned(
-          //   left: 20,
-          //   right: 20,
-          //   bottom: 340,
-          //   child: Padding(
-          //     padding: const EdgeInsets.only(
-          //       right: 80.0,
-          //       left: 80.0,
-          //     ),
-          //     child: OutlinedButton.icon(
-          //       style: OutlinedButton.styleFrom(
-          //         side: const BorderSide(color: green, width: 1),
-          //         shape: RoundedRectangleBorder(
-          //             borderRadius: BorderRadius.circular(13)),
-          //         padding: const EdgeInsets.symmetric(vertical: 16),
-          //         backgroundColor: Colors.white,
-          //         foregroundColor: green,
-          //         textStyle: const TextStyle(fontWeight: FontWeight.w600),
-          //       ),
-          //       onPressed: _isLoadingLocation ? null : _goToCurrentLocation,
-          //       icon: _isLoadingLocation
-          //           ? const SizedBox(
-          //               width: 20,
-          //               height: 20,
-          //               child: CircularProgressIndicator(
-          //                 strokeWidth: 2,
-          //                 valueColor: AlwaysStoppedAnimation<Color>(green),
-          //               ),
-          //             )
-          //           : const Icon(Icons.my_location),
-          //       label: Text(_isLoadingLocation
-          //           ? 'Getting location...'
-          //           : 'Go to current location'),
-          //     ),
-          //   ),
-          // ),
-          // Align(
-          //   alignment: Alignment.bottomCenter,
-          //   child: _BottomSheetPanel(
-          //     labelcontroller: label,
-          //     green: green,
-          //     distanceKm: _distanceKm,
-          //     pin: _pin,
-          //     addressLine1: _addressLine1,
-          //     addressLine2: _addressLine2,
-          //     isLoadingAddress: _isLoadingAddress,
-          //   ),
-          // ),
+          GoogleMap(
+            initialCameraPosition: _initialCamera,
+            onMapCreated: (c) => _mapController = c,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false,
+            zoomControlsEnabled: false,
+            compassEnabled: false,
+            mapToolbarEnabled: false,
+            rotateGesturesEnabled: true,
+            scrollGesturesEnabled: true,
+            tiltGesturesEnabled: false,
+            zoomGesturesEnabled: true,
+            onCameraMove: _onCameraMove,
+            onCameraIdle: _onCameraIdle,
+            padding: const EdgeInsets.only(bottom: 280, top: 90),
+            minMaxZoomPreference: const MinMaxZoomPreference(10, 20),
+            liteModeEnabled: false,
+          ),
+          const Positioned(
+            left: 20,
+            right: 20,
+            bottom: 570,
+            child: IgnorePointer(
+              ignoring: true,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _Bubble(
+                    color: dark,
+                    text1: 'Your order will be delivered here',
+                    text2: 'Move pin to your exact location',
+                  ),
+                  SizedBox(height: 6),
+                  _MapPin(),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 340,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                right: 80.0,
+                left: 80.0,
+              ),
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: green, width: 1),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(13)),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.white,
+                  foregroundColor: green,
+                  textStyle: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                onPressed: _isLoadingLocation ? null : _goToCurrentLocation,
+                icon: _isLoadingLocation
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(green),
+                        ),
+                      )
+                    : const Icon(Icons.my_location),
+                label: Text(_isLoadingLocation
+                    ? 'Getting location...'
+                    : 'Go to current location'),
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: _BottomSheetPanel(
+              labelcontroller: label,
+              green: green,
+              distanceKm: _distanceKm,
+              pin: _pin,
+              addressLine1: _addressLine1,
+              addressLine2: _addressLine2,
+              isLoadingAddress: _isLoadingAddress,
+            ),
+          ),
         ],
       ),
     );
