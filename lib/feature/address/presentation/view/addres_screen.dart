@@ -2,7 +2,7 @@ import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/feature/address/domain/entity/address.dart';
 import 'package:empire/feature/address/presentation/bloc/address.dart';
- import 'package:empire/feature/address/presentation/view/widget.dart';
+import 'package:empire/feature/address/presentation/view/widget.dart';
 
 import 'package:flutter/material.dart';
 
@@ -105,7 +105,6 @@ class AddressView extends StatelessWidget {
                       .add(SelectAddress(id: address.id, mainAddress: address));
                 },
                 child: Container(
-                  height: MediaQuery.sizeOf(context).height * 0.09,
                   width: MediaQuery.sizeOf(context).width * 0.5,
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
@@ -218,13 +217,13 @@ class EmptyAddress extends StatelessWidget {
                 value: BlocProvider.of<AddressBloc>(context),
                 child: const MapConfirmPage());
 
-            //   Navigator.of(context).push(
-            //   MaterialPageRoute(builder: (_) {
-            //     return BlocProvider.value(
-            //         value: BlocProvider.of<AddressBloc>(context),
-            //         child: const MapConfirmPage());
-            //   }),
-            // );
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) {
+                return BlocProvider.value(
+                    value: BlocProvider.of<AddressBloc>(context),
+                    child: const MapConfirmPage());
+              }),
+            );
           },
           child: const Text('Add Address'),
         ),

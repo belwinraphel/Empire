@@ -3,6 +3,7 @@ import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
 class OrderEntity {
   final String orderId;
   final String userId;
+    final String? address;
   final List<CartItem> items;
   final double totalAmount;
   final String currency;
@@ -16,6 +17,7 @@ class OrderEntity {
     required this.orderId,
     required this.userId,
     required this.items,
+    required this.address,
     required this.totalAmount,
     required this.currency,
     required this.status,
@@ -31,6 +33,7 @@ class OrderEntity {
     double? totalAmount,
     String? currency,
     String? status,
+    String? address,
     String? paymentStatus,
     DateTime? createdAt,
     String? paymentIntentId,
@@ -40,6 +43,7 @@ class OrderEntity {
       orderId: orderId ?? this.orderId,
       userId: userId ?? this.userId,
       items: items ?? this.items,
+      address: address ?? this.address,
       totalAmount: totalAmount ?? this.totalAmount,
       currency: currency ?? this.currency,
       status: status ?? this.status,

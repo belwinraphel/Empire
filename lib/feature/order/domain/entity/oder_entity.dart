@@ -7,6 +7,7 @@ class OrderEntity extends Equatable {
   final List<CartItem> items;
   final double totalAmount;
   final String currency;
+  final String? address;
   final String status;
   final String paymentStatus;
   final DateTime createdAt;
@@ -18,6 +19,7 @@ class OrderEntity extends Equatable {
     required this.over,
     required this.userId,
     required this.items,
+    required this.address,
     required this.totalAmount,
     required this.currency,
     required this.status,
@@ -31,6 +33,7 @@ class OrderEntity extends Equatable {
   List<Object?> get props => [
     orderId,
     userId,
+    address,
     items,
     totalAmount,
     currency,

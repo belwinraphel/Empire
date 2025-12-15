@@ -321,7 +321,7 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
         }
 
         transaction.update(orderRef, {
-          FirestoreKeys.status: 'shipped',
+          FirestoreKeys.status: 'Processing',
           FirestoreKeys.paymentStatus: 'succeeded',
           FirestoreKeys.updatedAt: FieldValue.serverTimestamp(),
         });

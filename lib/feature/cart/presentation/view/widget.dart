@@ -389,7 +389,7 @@ class CheckoutSection extends StatelessWidget {
                   ? () {
                       Navigator.push(context, MaterialPageRoute(
                         builder: (context) {
-                          return const CheckoutPage();
+                          return   CheckoutPage();
                         },
                       ));
                     }

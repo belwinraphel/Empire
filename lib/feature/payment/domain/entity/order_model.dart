@@ -3,13 +3,14 @@ import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
 import 'package:empire/feature/payment/domain/entity/Payment_entity.dart';
 
 class OrderModel extends OrderEntity {
-  const OrderModel({
+    OrderModel({
     required super.orderId,
     required super.userId,
     required super.items,
     required super.totalAmount,
     required super.currency,
     required super.status,
+    required super.address,
     required super.paymentStatus,
     required super.createdAt,
     super.paymentIntentId,
@@ -23,6 +24,7 @@ class OrderModel extends OrderEntity {
         totalAmount: entity.totalAmount,
         currency: entity.currency,
         status: entity.status,
+          address: entity.address,
         paymentStatus: entity.paymentStatus,
         createdAt: entity.createdAt,
         paymentIntentId: entity.paymentIntentId,
@@ -45,6 +47,7 @@ class OrderModel extends OrderEntity {
         currency: json['currency'],
         status: json['status'],
         paymentStatus: json['paymentStatus'],
+          address: json['address'],
         createdAt: (json['createdAt'] as Timestamp).toDate(),
         paymentIntentId: json['paymentIntentId'],
         retryCount: json['retryCount'] ?? 0,
@@ -65,6 +68,7 @@ class OrderModel extends OrderEntity {
             .toList(),
         'totalAmount': totalAmount,
         'currency': currency,
+          'address': address,
         'status': status,
         'paymentStatus': paymentStatus,
         'createdAt': FieldValue.serverTimestamp(),

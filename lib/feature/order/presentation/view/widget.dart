@@ -1,11 +1,12 @@
 import 'package:empire/core/utilis/color.dart';
+import 'package:empire/core/utilis/date.dart';
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/core/utilis/widgets.dart';
 import 'package:empire/feature/order/domain/entity/oder_entity.dart';
 import 'package:empire/feature/order/presentation/Bloc/order_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// TODO: add flutter_svg package to pubspec.yaml
+ 
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -254,6 +255,34 @@ class _CartItemsList extends StatelessWidget {
             padding: const EdgeInsets.only(left: 8.0, right: 8.0),
             child: Divider(color: Colors.grey[300]),
           ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.location_on, size: 16, color: Colors.black54),
+                    Text("Address",
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87)),
+                  ],
+                ),
+                Text(order.address ?? "Address not available",
+                    style: order.address != null
+                        ? const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87)
+                        : const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w300,
+                            color: Colors.black87)),
+              ],
+            ),
+          ),
           const Padding(
             padding: EdgeInsets.all(8.0),
             child: Text("Order Summary",
@@ -421,7 +450,7 @@ class OrderHeader extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      order.currency,
+                      formatTimeAgo(order.createdAt.toString()),
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,

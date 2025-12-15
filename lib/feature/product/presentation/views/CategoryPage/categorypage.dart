@@ -17,11 +17,11 @@ class CategoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar( 
+      appBar: AppBar(
         backgroundColor: ColoRs.background,
         elevation: 0,
       ),
-      backgroundColor: ColoRs.background,
+      backgroundColor: ColoRs.addresBackgroundcolor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(

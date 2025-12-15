@@ -72,7 +72,7 @@ class LocalAddressDataSource {
           .doc(userid)
           .collection('address')
           .get();
-
+        
       for (var doc in addressesSnapshot.docs) {
         final data = doc.data();
         final addressList = data['address'] as List<dynamic>;

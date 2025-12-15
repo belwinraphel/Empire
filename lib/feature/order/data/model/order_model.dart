@@ -6,6 +6,7 @@ class OrderModel extends OrderEntity {
     required super.orderId,
     required super.userId,
     required super.items,
+    required super.address,
     required super.totalAmount,
     required super.currency,
     required super.status,
@@ -20,6 +21,7 @@ class OrderModel extends OrderEntity {
         over: entity.over,
         orderId: entity.orderId,
         userId: entity.userId,
+        address: entity.address,
         items: entity.items,
         totalAmount: entity.totalAmount,
         currency: entity.currency,
@@ -33,6 +35,7 @@ class OrderModel extends OrderEntity {
   factory OrderModel.fromJson(Map<String, dynamic> json) => OrderModel(
         orderId: json['orderId'],
         userId: json['userId'],
+        address: json['address'],
         over: json['over'] ?? false,
         items: (json['items'] as List)
             .map(
@@ -61,6 +64,7 @@ class OrderModel extends OrderEntity {
         'orderId': orderId,
         'userId': userId,
         'over': over,
+        'address': address,
         'items': items
             .map(
               (item) => {
