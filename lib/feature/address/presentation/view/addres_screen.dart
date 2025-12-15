@@ -105,7 +105,6 @@ class AddressView extends StatelessWidget {
                       .add(SelectAddress(id: address.id, mainAddress: address));
                 },
                 child: Container(
-                  height: MediaQuery.sizeOf(context).height * 0.09,
                   width: MediaQuery.sizeOf(context).width * 0.5,
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(

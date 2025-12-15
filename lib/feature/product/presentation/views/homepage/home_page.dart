@@ -23,8 +23,8 @@ class HomePage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SearchSection(welcomesection: true),
-                    ModernCarousel(),
-                    Category(),
+                    const ModernCarousel(),
+                    const Category(),
                     MostUsed(
                       issmallScreen: isSmallScreen,
                     ),

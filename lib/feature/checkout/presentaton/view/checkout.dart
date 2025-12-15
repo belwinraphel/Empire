@@ -12,11 +12,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CheckoutPage extends StatelessWidget {
-  const CheckoutPage({super.key});
+  CheckoutPage({super.key});
+
+  String? address = '';
 
   @override
   Widget build(BuildContext context) {
     final cartState = BlocProvider.of<CartBloc>(context).state;
+
     if (cartState is! CartLoaded) {
       return const Scaffold(
         body: Center(child: Text('Cart empty')),
@@ -29,7 +32,6 @@ class CheckoutPage extends StatelessWidget {
           create: (context) => sl<CheckoutBloc>()
             ..add(InitializeCheckout(cartState.items, cartState.breakdown)),
         ),
-       
         BlocProvider<MapBloc>(
           create: (context) => sl<MapBloc>(),
         ),
@@ -584,6 +586,8 @@ class CheckoutPage extends StatelessWidget {
                           ),
                         ],
                       );
+                    } else {
+                      address = state.selectedAddress?.fullAddress;
                     }
 
                     return Column(
@@ -701,9 +705,19 @@ class CheckoutPage extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
                   onTap: () {
+                    if (address == null || address!.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please select a delivery address.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
                     Navigator.push(context, MaterialPageRoute(
                       builder: (context) {
                         return Payment(
+                          address: address ,
                             cartItems: state.data.items,
                             totalAmount:
                                 state.data.breakdown.subtotal.toDouble());

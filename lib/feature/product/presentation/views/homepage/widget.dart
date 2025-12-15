@@ -1,4 +1,4 @@
- import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:empire/core/di/service_locator.dart';
 import 'package:empire/core/utilis/color.dart';
@@ -423,15 +423,7 @@ class Category extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Categories',
-            style: TextStyle(
-              fontSize: 20,
-              fontFamily: Fonts.celiasbold,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
+          const CatergorySection(),
           const SizedBox(height: 16),
           BlocBuilder<CategoryBloc, CategoryState>(builder: (context, state) {
             if (state is CategoryLoadingState) {
@@ -504,6 +496,8 @@ class Category extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
+                                overflow: TextOverflow.ellipsis,
+                                
                                 fontFamily: Fonts.celiasregular,
                               ),
                             ),
@@ -516,6 +510,25 @@ class Category extends StatelessWidget {
             return homeShimmerLoading(context);
           }),
         ],
+      ),
+    );
+  }
+}
+
+class CatergorySection extends StatelessWidget {
+  const CatergorySection({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      'Categories',
+      style: TextStyle(
+        fontSize: 20,
+        fontFamily: Fonts.celiasbold,
+        fontWeight: FontWeight.bold,
+        color: Colors.black87,
       ),
     );
   }

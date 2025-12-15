@@ -70,10 +70,12 @@ class CartCard extends StatelessWidget {
 class CheckoutCard extends StatelessWidget {
   double totalAmount;
   List<CartItem> cartItem;
+  final String? address;
   CheckoutCard({
     super.key,
     required this.totalAmount,
     required this.cartItem,
+    required this.address,
   });
 
   @override
@@ -137,10 +139,12 @@ class CheckoutCard extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
+                      print(address);
                       final order = OrderEntity(
                         orderId: '${DateTime.now().millisecondsSinceEpoch}',
                         userId: '',
                         items: cartItem,
+                        address: address,
                         totalAmount: totalAmount,
                         currency: 'INR',
                         status: 'pending',

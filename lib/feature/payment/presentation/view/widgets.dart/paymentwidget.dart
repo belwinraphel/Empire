@@ -12,11 +12,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class CheckoutView extends StatefulWidget {
   final List<CartItem> cartItems;
   final double totalAmount;
-
+  final String? address;
   const CheckoutView({
     super.key,
     required this.cartItems,
     required this.totalAmount,
+    required this.address,
   });
 
   @override
@@ -134,6 +135,7 @@ class _CheckoutViewState extends State<CheckoutView> {
         ),
         const SizedBox(height: 16),
         CheckoutCard(
+          address: widget.address,
           totalAmount: widget.totalAmount,
           cartItem: widget.cartItems,
         )
