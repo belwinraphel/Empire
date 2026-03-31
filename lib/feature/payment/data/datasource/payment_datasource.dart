@@ -160,6 +160,7 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
           paymentIntentId: data['id'],
           amount: amount,
           currency: currency,
+          
         );
       } else {
         final errorMessage =
@@ -204,6 +205,7 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: paymentIntentDetails.clientSecret,
           merchantDisplayName: 'Belwin',
+          
         ),
       );
       await Stripe.instance.presentPaymentSheet();
