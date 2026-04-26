@@ -28,7 +28,7 @@ class Failures extends Equatable {
   /////////unexpectedFailure
   const Failures.platformFailure(String message)
       : this._(message, 'platformFailure ');
-  /////////unexpectedFailure
+  /////////unexpectedFailurź
   const Failures.unexpectedFailure(String message)
       : this._(message, 'unexpectedFailure ');
 

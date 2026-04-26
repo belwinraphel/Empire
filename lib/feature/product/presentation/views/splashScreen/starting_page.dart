@@ -1,8 +1,8 @@
 import 'package:empire/core/utilis/color.dart';
-import 'package:empire/core/utilis/fonts.dart';
+
 import 'package:empire/core/utilis/widgets.dart';
 import 'package:empire/feature/auth/presentation/views/loginpage/login_page.dart';
-import 'package:empire/feature/product/presentation/views/myapp/my_app.dart';
+
 import 'package:flutter/material.dart';
 
 class StartingScreen extends StatefulWidget {

@@ -1,3 +1,4 @@
+import 'package:empire/app/mainscreen/main_screen.dart';
 import 'package:empire/core/utilis/color.dart';
 import 'package:empire/core/utilis/fonts.dart';
 import 'package:empire/feature/cart/domain/entities/cart_entities.dart';
@@ -5,8 +6,7 @@ import 'package:empire/feature/payment/domain/entity/Payment_entity.dart';
 import 'package:empire/feature/payment/presentation/bloc/paymentbloc.dart';
 import 'package:empire/feature/payment/presentation/view/widgets.dart/ordercard.dart';
 import 'package:empire/feature/payment/presentation/view/widgets.dart/paymentfailed_screen.dart';
-import 'package:empire/feature/product/presentation/views/mainscreen/main_screen.dart';
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CheckoutView extends StatefulWidget {

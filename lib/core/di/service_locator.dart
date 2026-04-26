@@ -109,13 +109,10 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GoogleSignIn());
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
   sl.registerLazySingleton(() => SigningWithGoogle(sl()));
+  sl.registerLazySingleton(() => SharedPreferences.getInstance());
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
-  sl.registerLazySingleton(() => AuthRemoteDataSource(
-        sl(),
-        sl(),
-        sl(),
-      ));
+  sl.registerLazySingleton(() => AuthRemoteDataSource(sl(), sl(), sl(), sl()));
 
   sl.registerLazySingleton(() => AuthCheckingLoginStatus());
 
@@ -373,7 +370,7 @@ Future<void> init() async {
   // BLoC
   sl.registerLazySingleton<MapBloc>(() => MapBloc(
         getCurrentPosition: sl(),
-        getAddressFromCoordinates: sl(),      
+        getAddressFromCoordinates: sl(),
         checkLocationPermission: sl(),
       ));
 

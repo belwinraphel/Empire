@@ -497,7 +497,6 @@ class Category extends StatelessWidget {
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
                                 overflow: TextOverflow.ellipsis,
-                                
                                 fontFamily: Fonts.celiasregular,
                               ),
                             ),

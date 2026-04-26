@@ -122,7 +122,7 @@ class CheckoutLoaded extends CheckoutState {
   }
 
   @override
-  List<Object?> get props => [data, addresses,  paymentMethods];
+  List<Object?> get props => [data, addresses, paymentMethods];
 }
 
 class CheckoutSuccess extends CheckoutState {
@@ -141,6 +141,14 @@ class CheckoutFailure extends CheckoutState {
 
   @override
   List<Object?> get props => [message];
+}
+
+class CheckBloc extends Bloc<CheckoutEvent, CheckoutState> {
+  CheckBloc() : super(CheckoutInitial()) {
+    on<CheckoutEvent>((event, emit) {
+      
+    });
+  }
 }
 
 class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {

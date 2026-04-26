@@ -1,6 +1,6 @@
+import 'package:empire/app/myapp/my_app.dart';
 import 'package:empire/core/di/service_locator.dart';
 import 'package:empire/core/utilis/bloc_observer.dart';
-import 'package:empire/feature/product/presentation/views/myapp/my_app.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

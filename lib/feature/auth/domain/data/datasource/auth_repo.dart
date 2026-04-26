@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
+import 'package:empire/core/utilis/constants.dart';
 import 'package:empire/core/utilis/device_info.dart';
 import 'package:empire/core/utilis/failure.dart';
 import 'package:empire/core/utilis/widgets.dart';
@@ -14,13 +15,15 @@ import 'package:flutter/services.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRemoteDataSource {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
   final FirebaseFirestore _firestore;
-
-  AuthRemoteDataSource(this._firebaseAuth, this._googleSignIn, this._firestore);
+  final SharedPreferences _sharedPreference;
+  AuthRemoteDataSource(this._firebaseAuth, this._googleSignIn, this._firestore,
+      this._sharedPreference);
   String? verificationId;
   var logger = Logger();
 
@@ -48,11 +51,9 @@ class AuthRemoteDataSource {
             'Sign-in succeeded but no user ID available'));
       }
 
-      // Map Firebase User to your Entity (implement as needed)
       final firebaseUser = userCredential.user!;
       final userEntity = UserEntity.fromFirebaseUser(firebaseUser);
 
-      // Store in Firestore; handle potential failure here too
       await FirebaseFirestore.instance.collection("user").doc(authUid).set({
         'name': firebaseUser.displayName ?? '',
         'email': firebaseUser.email ?? '',
@@ -60,7 +61,7 @@ class AuthRemoteDataSource {
         'photoUrl': firebaseUser.photoURL ?? '',
         'createdAt': FieldValue.serverTimestamp(),
       });
-
+      _sharedPreference.setBool(SharedpreferenceKey.isLoggedIn, true);
       return right(userEntity);
     } on firebase_auth.FirebaseAuthException catch (e) {
       String message;
@@ -322,7 +323,7 @@ class AuthRemoteDataSource {
         email: email,
         password: password,
       );
-
+      _sharedPreference.setBool(SharedpreferenceKey.isLoggedIn, true);
       return Right(user.user!);
     } on FirebaseAuthException catch (e) {
       logger.e('Firebase Auth Error during login: ${e.code} - ${e.message}');
@@ -393,6 +394,7 @@ class AuthRemoteDataSource {
   }
 
   Future<void> logout() async {
+    _sharedPreference.setBool(SharedpreferenceKey.isLoggedIn, false);
     await _firebaseAuth.signOut();
   }
 }
